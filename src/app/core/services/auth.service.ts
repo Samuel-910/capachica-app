@@ -19,19 +19,16 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
   register(userData: {
-    name: string;
+    nombre: string;
+    apellidos: string;
     email: string;
     password: string;
-    rol: string;
   }): Observable<any> {
-    return this.http.get(this.CSRF_URL, { withCredentials: true }).pipe(
-      switchMap(() =>
-        this.http.post<any>(this.REGISTER_URL, userData, { withCredentials: true }).pipe(
-          tap(() => this.router.navigate(['/login']))
-        )
-      )
+    return this.http.post<any>(this.REGISTER_URL, userData, { withCredentials: true }).pipe(
+      tap(() => this.router.navigate(['/login']))
     );
   }
+
 
   login(email: string, password: string): Observable<any> {
     return this.http

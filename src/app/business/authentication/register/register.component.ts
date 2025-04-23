@@ -13,11 +13,11 @@ import { AuthService }    from '../../../core/services/auth.service';
 })
 export class RegisterComponent {
   name = '';
+  apellido = '';
   email = '';
   password = '';
-  rol = 'cliente';       // o el rol que por defecto quieras
-  confirmPassword = '';         // <<< declara esto
-  acceptedTerms = false;        // <<< y esto
+  confirmPassword = '';
+  acceptedTerms = false;
   showPassword = false;
 
   constructor(private authService: AuthService) {}
@@ -29,10 +29,11 @@ export class RegisterComponent {
   onSubmit() {
     // Envía sólo si el formulario estuviera validado
     this.authService.register({
-      name: this.name,
+      nombre: this.name,
+      apellidos: this.apellido,
       email: this.email,
       password: this.password,
-      rol: this.rol
+
     }).subscribe({
       next: res => console.log('Usuario registrado:', res),
       error: err => console.error('Error al registrar:', err)
