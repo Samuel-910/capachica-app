@@ -24,10 +24,10 @@ export  class LoginComponent {
   }
 
   login(): void {
-    console.log('Login con:', this.email, this.password); // Debug opcional
+    console.log('Login con:', this.email, this.password);
     this.authService.login(this.email, this.password).subscribe({
       next: (response) => {
-        const token = response.access_token; // Asegúrate que sea access_token
+        const token = response.token;
         const payload = JSON.parse(atob(token.split('.')[1]));
         const role = payload.role;
         if (role === 'admin') {

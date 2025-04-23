@@ -38,8 +38,9 @@ export class AuthService {
       .post<any>(this.LOGIN_URL, { email, password }, { withCredentials: true })
       .pipe(
         tap(response => {
-          if (response.access_token) {
-            this.setToken(response.access_token);
+          if (response.token) {
+            console.log('Access Token:', response.token);
+            this.setToken(response.token);
 
             if (response.refresh_token) {
               this.setRefreshToken(response.refresh_token);
