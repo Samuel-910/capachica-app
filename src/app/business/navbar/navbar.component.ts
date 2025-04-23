@@ -12,6 +12,9 @@ import { initFlowbite } from 'flowbite';
 })
 export class NavbarComponent implements OnInit{
   ngOnInit(): void {
-    initFlowbite();
+    if (typeof window !== 'undefined') {
+      // Código que depende del DOM
+      initFlowbite();
+    }
   }
 }

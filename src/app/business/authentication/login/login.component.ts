@@ -29,11 +29,13 @@ export  class LoginComponent {
       next: (response) => {
         const token = response.token;
         const payload = JSON.parse(atob(token.split('.')[1]));
-        const role = payload.role;
+        const role = payload.roles[0];
+        console.log(payload);
+        console.log(role);
         if (role === 'admin') {
-          this.router.navigate(['/dashboard']);
+          window.location.href = 'https://v0-desarrollar-vista-shadcn.vercel.app/';
         } else {
-          this.router.navigate(['/profile']);
+          this.router.navigate(['/']);
         }
       },
       error: (err) => console.error('Login failed', err)
