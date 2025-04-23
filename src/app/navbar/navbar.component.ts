@@ -1,12 +1,12 @@
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { initFlowbite } from 'flowbite';
 
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [],
-
+  imports: [RouterModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.css'
 })
