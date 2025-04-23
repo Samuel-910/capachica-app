@@ -1,0 +1,168 @@
+<!-- home.component.html -->
+<div class="page-container">
+  <!-- Header with background -->
+  <header class="top-header">
+    <div class="header-content">
+      <!-- Language selector -->
+      <div class="language-selector">
+        <span>ES</span>
+        <img src="https://flagcdn.com/w20/es.png" alt="Español">
+      </div>
+
+      <!-- Logo -->
+      <div class="logo">
+        <h1><span class="green">CAPACHICA</span>TURS</h1>
+      </div>
+
+      <!-- Reservation button -->
+      <div class="reservation" style="display: flex; gap: 16px;">
+        <!-- Botón de Reserva -->
+        <button class="reserve-btn" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background-color: #2c5e2e; color: white; border: none; border-radius: 4px; cursor: pointer;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          Reserva
+        </button>
+
+        <!-- Botón de Login -->
+        <a routerLink="/login" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background-color: #2c5e2e; color: white; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; margin-left: 16px;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+          Iniciar Sesión
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation bar -->
+  <nav class="main-nav">
+    <div class="nav-content" style="display: flex; align-items: center;">
+      <!-- Menús centrados -->
+      <div class="nav-menu" style="display: flex; justify-content: center; flex: 1;">
+        <div class="menu-item">
+          <span>Paquetes Turísticos</span>
+          <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+          <div class="dropdown-menu">
+            <a href="#">Paquete 1</a>
+            <a href="#">Paquete 2</a>
+          </div>
+        </div>
+
+        <div class="menu-item">
+          <span>Rutas Turísticas</span>
+          <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+          <div class="dropdown-menu">
+            <a href="#">Ruta 1</a>
+            <a href="#">Ruta 2</a>
+          </div>
+        </div>
+
+        <div class="menu-item">
+          <span>Familias</span>
+          <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+          <div class="dropdown-menu">
+            <a href="#">Familia 1</a>
+            <a href="#">Familia 2</a>
+          </div>
+        </div>
+
+        <div class="menu-item">
+          <span>Islas</span>
+          <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+          <div class="dropdown-menu">
+            <a href="#">Isla 1</a>
+            <a href="#">Isla 2</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ícono menú a la derecha -->
+      <div class="menu-item" style="margin-left: auto;">
+        <i class="fa-solid fa-bars dropdown-icon"></i>
+        <div class="dropdown-menu">
+          <a href="#">Nosotros</a>
+          <a href="#">Contáctanos</a>
+          <a href="#">Misión y Visión</a>
+          <a href="#">Otros</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero-section" style="background-image: url('https://static1.evcdn.net/images/reduction/174270_w-3840_h-2160_q-70_m-crop.jpg'); background-size: cover; background-position: center; background-repeat: no-repeat; color: white; padding: 60px 20px;">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h2>Capachica: tradición, calma y belleza natural.</h2>
+        <p>Capachica es un destino tranquilo, donde la naturaleza y las tradiciones andinas se combinan para ofrecer a los visitantes una experiencia auténtica de paz y conexión cultural.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Galería tipo carrusel -->
+  <div class="gallery" style="padding: 40px 0; overflow: hidden; position: relative; max-width: 100%;">
+    <ul class="cards" style="display: flex; transition: transform 0.5s ease-in-out; gap: 15px; padding: 0; list-style: none;">
+      <li style="min-width: 300px; height: 200px; background-color: #2c5e2e; color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; border-radius: 8px;">0</li>
+      <li style="min-width: 300px; height: 200px; background-color: #3a7d3c; color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; border-radius: 8px;">1</li>
+      <li style="min-width: 300px; height: 200px; background-color: #4b9c4b; color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; border-radius: 8px;">2</li>
+      <li style="min-width: 300px; height: 200px; background-color: #60b260; color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; border-radius: 8px;">3</li>
+      <li style="min-width: 300px; height: 200px; background-color: #78c978; color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; border-radius: 8px;">4</li>
+      <li style="min-width: 300px; height: 200px; background-color: #93dd93; color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; border-radius: 8px;">5</li>
+      <li style="min-width: 300px; height: 200px; background-color: #b0f2b0; color: white; display: flex; justify-content: center; align-items: center; font-size: 24px; border-radius: 8px;">6</li>
+      <li style="min-width: 300px; height: 200px; background-color: #d0ffd0; color: #333; display: flex; justify-content: center; align-items: center; font-size: 24px; border-radius: 8px;">7</li>
+    </ul>
+    <div class="controls" style="display: flex; justify-content: center; margin-top: 20px; gap: 10px;">
+      <button id="prev" style="padding: 10px 20px; background-color: #2c5e2e; color: white; border: none; border-radius: 4px; cursor: pointer;">PREV</button>
+      <button id="next" style="padding: 10px 20px; background-color: #2c5e2e; color: white; border: none; border-radius: 4px; cursor: pointer;">NEXT</button>
+    </div>
+  </div>
+
+  <!-- Script del carrusel -->
+  <script>
+    const cards = document.querySelector('.cards');
+    const prevBtn = document.getElementById('prev');
+    const nextBtn = document.getElementById('next');
+    let currentIndex = 2;
+
+    function updateCarousel() {
+      const cardWidth = document.querySelector('.cards li').offsetWidth + 15;
+      cards.style.transform = `translateX(-${currentIndex * cardWidth}px)`;
+    }
+
+    prevBtn.addEventListener('click', () => {
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateCarousel();
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentIndex < 5) {
+        currentIndex++;
+        updateCarousel();
+      }
+    });
+
+    updateCarousel();
+  </script>
+
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="footer-content">
+      © 2023, hecho con <span class="heart">♥</span> por Creative Tim para un mejor web.
+    </div>
+  </footer>
+</div>

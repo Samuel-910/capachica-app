@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "capachica-app": {
+    "ng-menu-dashboard": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/capachica-app",
+            "outputPath": "dist/ng-menu-dashboard",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -24,12 +24,19 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+                
+              },
+              "src/assets"
             ],
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "server": "src/main.server.ts",
+            "prerender": true,
+            "ssr": {
+              "entry": "server.ts"
+            }
           },
           "configurations": {
             "production": {
@@ -59,10 +66,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "capachica-app:build:production"
+              "buildTarget": "ng-menu-dashboard:build:production"
             },
             "development": {
-              "buildTarget": "capachica-app:build:development"
+              "buildTarget": "ng-menu-dashboard:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -94,6 +101,6 @@
     }
   },
   "cli": {
-    "analytics": false
+    "analytics": "24f983b5-e7e9-489c-9116-273e77b916d1"
   }
 }
