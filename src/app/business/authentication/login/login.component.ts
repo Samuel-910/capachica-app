@@ -34,7 +34,8 @@ export  class LoginComponent {
         console.log(payload);
         console.log(role);
         if (role === 'admin') {
-          window.location.href = 'https://v0-desarrollar-vista-shadcn.vercel.app/';
+          this.router.navigate(['/dashboard']);
+          // window.location.href = 'https://v0-desarrollar-vista-shadcn.vercel.app/';
           // Mostrar SweetAlert de éxito
           Swal.fire({
             icon: 'success',

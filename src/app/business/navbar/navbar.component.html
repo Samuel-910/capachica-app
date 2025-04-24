@@ -31,7 +31,7 @@
               <div id="dropdownNavbar" class="z-10 hidden font-normal bg-white rounded-lg shadow-sm bg-white/80 backdrop-blur-md">
                   <ul class="py-2 text-sm text-black" aria-labelledby="dropdownLargeButton">
                     <li>
-                      <a href="#" class="block px-4 py-2">Aventuras en Capachica</a>
+                      <a routerLink="/sidebar" class="block px-4 py-2">Aventuras en Capachica</a>
                     </li>
                     <li>
                       <a href="#" class="block px-4 py-2">Descubre Capachica</a>
@@ -84,25 +84,11 @@
             <!-- Dropdown menu -->
             <div id="dropdownNavbar2" class="z-10 hidden font-normal bg-white rounded-lg shadow-sm bg-white/80 backdrop-blur-md">
                 <ul class="py-2 text-sm text-black" aria-labelledby="dropdownLargeButton2">
-                  <li>
-                    <a href="#" class="block px-4 py-2">Familia Mamani Mamani</a>
-                  </li>
-                  <li>
-                    <a href="#" class="block px-4 py-2">Familia Quispe Quispe</a>
-                  </li>
-                  <li>
-                    <a href="#" class="block px-4 py-2">Familia Callirgos Callirgos</a>
-                  </li>
-                  <li>
-                    <a href="#" class="block px-4 py-2">Familia Apaza Apaza</a>
-                  </li>
-                  <li>
-                    <a href="#" class="block px-4 py-2">Familia Condori Condori</a>
-                  </li>
-                  <li>
-                    <a href="#" class="block px-4 py-2">Familia Mamani Condori</a>
-                  </li>
-
+                  <div *ngFor="let emp of emprendimientos">
+                    <li >
+                      <a href="#" class="block px-4 py-2">{{ emp.nombre }}</a>
+                    </li>
+                  </div>
                 </ul>
             </div>
 

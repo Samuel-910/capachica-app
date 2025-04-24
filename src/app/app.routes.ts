@@ -41,18 +41,24 @@ export const routes: Routes = [
       },
     ],
   },
-  // Rutas privadas dentro de un layout con sidebar u otros elementos comunes
+  // Rutas privadas
   {
     path: '',
-    loadComponent: () =>
-      import('./shared/components/layout/layout.component').then(m => m.LayoutComponent),
-    // canActivate: [AuthGuard], // Eliminar el guard temporalmente
     children: [
       {
         path: 'dashboard',
         loadComponent: () =>
           import('./business/dashboard/dashboard.component').then(m => m.DashboardComponent),
-        canActivate: [AuthenticatedGuard],
+      },
+      {
+        path: 'emprendimiento',
+        loadComponent: () =>
+          import('./business/emprendimiento/emprendimiento.component').then(m => m.EmprendimientoComponent),
+      },
+      {
+        path: 'newemprendimiento',
+        loadComponent: () =>
+          import('./business/emprendimiento/form-emprendimiento/form-emprendimiento.component').then(m => m.FormEmprendimientoComponent),
       },
       {
         path: 'profile',
@@ -60,9 +66,9 @@ export const routes: Routes = [
           import('./business/profile/profile.component').then(m => m.ProfileComponent),
       },
       {
-        path: 'tables',
+        path: 'sidebar',
         loadComponent: () =>
-          import('./business/tables/tables.component').then(m => m.TablesComponent),
+          import('./business/sidebar/sidebar.component').then(m => m.SidebarComponent),
       },
       // Otras rutas privadas…
     ],
