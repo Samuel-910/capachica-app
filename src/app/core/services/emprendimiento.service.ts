@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, switchMap, tap } from 'rxjs';
@@ -28,7 +28,11 @@ export class EmprendimientoService {
   }
 
   crearEmprendimiento(data: any): Observable<any> {
-    return this.http.post<any>(this.CREATE_URL, data, { withCredentials: true });
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.post<any>(this.CREATE_URL, data, { headers });
   }
 
   misEmprendimientos(): Observable<any> {
@@ -36,11 +40,21 @@ export class EmprendimientoService {
   }
 
   actualizarEmprendimiento(id: number | string, data: any): Observable<any> {
-    return this.http.put<any>(this.UPDATE_URL(id), data, { withCredentials: true });
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.put<any>(this.UPDATE_URL(id), data, { headers });
   }
 
   eliminarEmprendimiento(id: number | string): Observable<any> {
-    return this.http.delete<any>(this.DELETE_URL(id), { withCredentials: true });
+    const token = localStorage.getItem('authToken'); // Asegúrate que el token está guardado ahí
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+
+    return this.http.delete<any>(this.DELETE_URL(id), { headers });
   }
 
   cambiarEstadoEmprendimiento(id: number | string, estado: string): Observable<any> {

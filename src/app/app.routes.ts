@@ -75,6 +75,11 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./business/sidebar/sidebar.component').then(m => m.SidebarComponent),
       },
+      {
+        path: 'roles',
+        loadComponent: () =>
+          import('./business/role-list/role-list.component').then(m => m.RoleListComponent),
+      },
       // Otras rutas privadas…
     ],
   },

@@ -1,0 +1,56 @@
+<div class="flex">
+  <app-sidebar class="w-[260px] fixed h-screen z-20"></app-sidebar>
+  <div class="flex-1 ml-[260px]">
+  <app-navbar class="fixed top-0 left-[260px] right-0 h-[64px] z-10 bg-white border-b"></app-navbar>
+  <ul class="shadow-xl rounded-xl w-full mt-20 bg-white px-4 sm:px-50 md:px-50 lg:px-100">
+
+    <li
+      *ngFor="let role of roles; let i = index"
+      [ngClass]="{
+        'bg-green-100': i === 0,
+        'bg-yellow-100': i === 1,
+        'bg-blue-100': i === 2,
+        'bg-white': i > 2
+      }"
+      class="border border-gray-200 rounded-lg mb-6"
+      style="background-image: url('/assets/container.png'); background-size: cover; background-position: center;"
+    >
+      <div class="px-6 py-6 sm:px-10">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <h3 class="text-xl leading-6 font-semibold text-gray-900">{{ role.nombre }}</h3>
+          <p class="text-base text-gray-600">{{ role.descripcion }}</p>
+        </div>
+
+        <div class="mt-6 flex items-center justify-between flex-wrap gap-4">
+          <p class="text-sm font-medium text-gray-500">
+            Estado: <span class="text-green-600">Activo</span>
+          </p>
+
+          <div class="flex gap-3">
+            <!-- Botón Asignar con color verde oscuro semi-transparente -->
+            <a
+              routerLink="/roles/asignar"
+              class="inline-block bg-green-800 text-white hover:bg-green-700 focus:ring-2 focus:ring-green-500 font-medium text-sm rounded-lg px-5 py-2 transition duration-200"
+              style="background-color: rgba(0, 128, 0, 0.7);"
+            >
+              Asignar
+            </a>
+            <!-- Botón Editar con color verde oscuro semi-transparente -->
+            <a
+              routerLink="/roles/editar"
+              class="inline-block bg-green-800 text-white hover:bg-green-700 focus:ring-2 focus:ring-green-500 font-medium text-sm rounded-lg px-5 py-2 transition duration-200"
+              style="background-color: rgba(0, 128, 0, 0.7);"
+            >
+              Editar
+            </a>
+          </div>
+        </div>
+      </div>
+    </li>
+
+    <div *ngIf="!loading && roles.length === 0" class="px-6 py-6 text-center text-gray-500">
+      <p>No se encontraron roles.</p>
+    </div>
+  </ul>
+  </div></div>
+
