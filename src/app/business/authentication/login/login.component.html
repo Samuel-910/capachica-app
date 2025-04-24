@@ -3,22 +3,22 @@
 <div class="relative min-h-screen flex justify-center items-center bg-transparent rounded-3xl z-10">
   <!-- Contenedor principal con fondo ARDOX -->
   <div class="bg-cover bg-center mx-auto rounded-3xl w-[900px] flex overflow-hidden shadow-lg" style="background-image: url('assets/ARDOX.png');">
-    
+
     <!-- Contenedor que mantiene tanto la imagen de ChatGPT como el formulario de login -->
     <div class="w-full flex flex-col lg:flex-row">
-      
+
       <!-- Imagen a la izquierda -->
       <div class="w-full lg:w-1/2 flex items-center justify-center p-6 bg-white bg-opacity-50">
-        <img src="assets/chatgpt-image.png" 
-             alt="Imagen de login"
+        <img src="assets/chatgpt-image.png"
+             alt="Login"
              class="w-full h-auto max-h-[400px] object-contain">
       </div>
-      
+
       <!-- Formulario a la derecha -->
       <div class="w-full lg:w-1/2 p-10 bg-white bg-opacity-50">
         <div class="mb-7">
           <h3 class="font-semibold text-2xl text-gray-800">Iniciar sesión</h3>
-          <p class="text-gray-400">¿No tienes una cuenta? 
+          <p class="text-gray-400">¿No tienes una cuenta?
             <a routerLink="/register" class="text-sm text-black-700 hover:text-purple-700">Inscribirse</a>
           </p>
         </div>
@@ -27,7 +27,7 @@
           <div>
             <input [(ngModel)]="email" class="w-full text-sm px-4 py-3 bg-white focus:bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:border-purple-400" type="email" placeholder="Correo Electrónico">
           </div>
-          
+
 
           <div class="relative">
             <input [(ngModel)]="password" [type]="showPassword ? 'text' : 'password'"
@@ -38,11 +38,11 @@
               <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'" style="color: gray;"></i>
             </div>
           </div>
-          
+
 
           <div class="flex items-center justify-between">
             <div class="text-sm ml-auto">
-              <a href="#" class="text-black-700 hover:text-purple-600">¿Olvidaste tu contraseña?</a>
+              <a routerLink="/verificacion" class="text-black-700 hover:text-purple-600">¿Olvidaste tu contraseña?</a>
             </div>
           </div>
 
@@ -50,7 +50,7 @@
             <button (click)="login()" type="submit" class="w-full flex justify-center bg-black hover:bg-gray-900 text-white p-3 rounded-lg tracking-wide font-semibold cursor-pointer transition ease-in duration-500">
               Iniciar Sesión
             </button>
-            
+
           </div>
 
           <div class="flex items-center justify-center space-x-2 my-5">

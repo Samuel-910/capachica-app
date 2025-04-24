@@ -5,18 +5,32 @@ import { Observable, switchMap, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private API_BASE         = 'https://capachica-tours-backend.vercel.app/api/auth';
-  private LOGIN_URL        = `${this.API_BASE}/login`;
-  private REGISTER_URL     = `${this.API_BASE}/register`;
-  private REFRESH_URL      = `${this.API_BASE}/refresh`;
-  private LOGOUT_URL       = `${this.API_BASE}/logout`;
-  private ME_URL           = `${this.API_BASE}/me`;
-  private CSRF_URL         = 'http://127.0.0.1:8000/sanctum/csrf-cookie';
+  private readonly API_BASE         = 'https://capachica-tours-backend.vercel.app/api/auth';
+  private readonly LOGIN_URL        = `${this.API_BASE}/login`;
+  private readonly REGISTER_URL     = `${this.API_BASE}/register`;
+  private readonly REFRESH_URL      = `${this.API_BASE}/refresh`;
+  private readonly LOGOUT_URL       = `${this.API_BASE}/logout`;
+  private readonly RESET_PASSWORD_URL       = `${this.API_BASE}/request-password-reset`;
+  private readonly ME_URL           = `${this.API_BASE}/me`;
 
-  private tokenKey         = 'authToken';
-  private refreshTokenKey  = 'refreshToken';
+  private readonly tokenKey         = 'authToken';
+  private readonly refreshTokenKey  = 'refreshToken';
 
   constructor(private http: HttpClient, private router: Router) {}
+
+  resetPassword(token: string, newPassword: string): Observable<any> {
+    const resetData = { token, newPassword };  // Preparar los datos para el POST
+    return this.http.post<any>('https://capachica-tours-backend.vercel.app/api/auth/reset-password', resetData, { withCredentials: true }).pipe(
+      tap(() => console.log('Contraseña reseteada correctamente'))
+    );
+  }
+
+  requestPasswordReset(email: string): Observable<any> {
+    const resetData = { email };  // Preparar los datos para el POST
+    return this.http.post<any>(this.RESET_PASSWORD_URL, resetData, { withCredentials: true }).pipe(
+      tap(() => console.log('Se ha solicitado el reseteo de la contraseña'))
+    );
+  }
 
   register(userData: {
     nombre: string;

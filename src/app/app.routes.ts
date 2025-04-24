@@ -25,7 +25,19 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./business/authentication/register/register.component')
             .then(m => m.RegisterComponent),
+      },
+      {
+        path: 'verificacion',
+        loadComponent: () =>
+          import('./business/authentication/password-recovery/password-recovery.component')
+            .then(m => m.PasswordRecoveryComponent),
         // canActivate: [AuthenticatedGuard], // Eliminar el guard temporalmente
+      },
+      {
+        path: 'verificacioncodigo',
+        loadComponent: () =>
+          import('./business/authentication/verification-code/verification-code.component')
+            .then(m => m.VerificationCodeComponent),
       },
     ],
   },

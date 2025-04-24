@@ -27,6 +27,7 @@
     "flowbite": "^3.1.2",
     "ng-menu-dashboard": "file:",
     "rxjs": "~7.8.0",
+    "sweetalert2": "^11.19.1",
     "swiper": "^11.2.6",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"

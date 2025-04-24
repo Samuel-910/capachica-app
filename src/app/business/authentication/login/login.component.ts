@@ -3,6 +3,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -34,11 +35,34 @@ export  class LoginComponent {
         console.log(role);
         if (role === 'admin') {
           window.location.href = 'https://v0-desarrollar-vista-shadcn.vercel.app/';
+          // Mostrar SweetAlert de éxito
+          Swal.fire({
+            icon: 'success',
+            title: '¡Bienvenido!',
+            text: 'Has iniciado sesión como administrador.',
+            confirmButtonText: 'Aceptar'
+          });
         } else {
           this.router.navigate(['/']);
+          // Mostrar SweetAlert de éxito para usuarios comunes
+          Swal.fire({
+            icon: 'success',
+            title: '¡Bienvenido!',
+            text: 'Has iniciado sesión correctamente.',
+            confirmButtonText: 'Aceptar'
+          });
         }
       },
-      error: (err) => console.error('Login failed', err)
+      error: (err) => {
+        console.error('Login failed', err);
+        // Mostrar mensaje de error con SweetAlert
+        Swal.fire({
+          icon: 'error',
+          title: '¡Error!',
+          text: 'Hubo un problema al iniciar sesión. Verifica tus credenciales.',
+          confirmButtonText: 'Aceptar'
+        });
+      }
     });
   }
 }
