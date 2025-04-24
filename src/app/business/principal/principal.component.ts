@@ -4,6 +4,7 @@ import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { register } from 'swiper/element/bundle';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { EmprendimientoService } from '../../core/services/emprendimiento.service';
+import { Router } from '@angular/router';
 
 // register Swiper custom elements
 register();
@@ -18,7 +19,7 @@ register();
 export class PrincipalComponent implements OnInit{
   emprendimientos: any[] = [];
 
-  constructor(private emprendimientoService:EmprendimientoService) {}
+  constructor(private emprendimientoService:EmprendimientoService, private router: Router) {}
 
   ngOnInit(): void {
     this.cargarEmprendimientos();
@@ -35,5 +36,8 @@ export class PrincipalComponent implements OnInit{
       }
     });
 
+  }
+  irADetalles(id: number) {
+    this.router.navigate(['/detalles', id]);
   }
 }

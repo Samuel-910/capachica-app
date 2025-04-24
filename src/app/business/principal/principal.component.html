@@ -92,7 +92,11 @@
   <h1 class="text-3xl font-bold mb-4">Familias</h1>
   <div class="border-b-2 border-blue-500 w-full mb-6"></div>
   <div class="flex space-x-4 overflow-x-auto pb-4 justify-center">
-    <div *ngFor="let emp of emprendimientos" class="w-64 flex-shrink-0 bg-white shadow rounded-xl">
+    <div
+    *ngFor="let emp of emprendimientos"
+    class="w-64 flex-shrink-0 bg-white shadow rounded-xl cursor-pointer hover:shadow-lg transition"
+    (click)="irADetalles(emp.id)"
+  >
       <div class="relative">
         <img src="img/fam1.png" alt="Casa Ccoto" class="rounded-t-xl w-full h-40 object-cover">
         <button class="absolute top-2 right-2 bg-white p-2 rounded-full shadow hover:bg-gray-100">

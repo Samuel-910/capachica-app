@@ -66,6 +66,11 @@ export const routes: Routes = [
           import('./business/profile/profile.component').then(m => m.ProfileComponent),
       },
       {
+        path: 'detalles/:id',
+        loadComponent: () =>
+          import('./business/detemprendedor/detemprendedor.component').then(m => m.DetemprendedorComponent),
+      },
+      {
         path: 'sidebar',
         loadComponent: () =>
           import('./business/sidebar/sidebar.component').then(m => m.SidebarComponent),
