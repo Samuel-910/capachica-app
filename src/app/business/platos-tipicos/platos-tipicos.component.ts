@@ -1,28 +1,24 @@
+import { Component, OnInit } from '@angular/core';
+import { SidebarComponent } from '../sidebar/sidebar.component';
 import { CommonModule } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
-// import function to register Swiper custom elements
-import { register } from 'swiper/element/bundle';
-import { NavbarComponent } from '../navbar/navbar.component';
-import { EmprendimientoService } from '../../core/services/emprendimiento.service';
-import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
+import { NavbarComponent } from '../sidebar/navbar/navbar.component';
+import Swal from 'sweetalert2';
 
-// register Swiper custom elements
-register();
 @Component({
-  selector: 'app-principal',
+  selector: 'app-platos-tipicos',
   standalone: true,
-  imports: [CommonModule, NavbarComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA  ],
-  templateUrl: './principal.component.html',
-  styleUrl: './principal.component.css'
+  imports: [SidebarComponent,NavbarComponent, CommonModule, RouterModule],
+  templateUrl: './platos-tipicos.component.html',
+  styleUrl: './platos-tipicos.component.css'
 })
-export class PrincipalComponent implements OnInit{
-  emprendimientos: any[] = [];
+export class PlatosTipicosComponent implements OnInit{
   platosTipicos: any[] = [];
-  constructor(private emprendimientoService:EmprendimientoService, private router: Router) {}
-
+  paginaActual: number = 1;
+  totalPaginas: number = 1;
+  totalElementos: number = 0;
+  limitePorPagina: number = 10;
   ngOnInit(): void {
-    this.cargarEmprendimientos();
     this.cargarPlatosTipicos();
   }
   cargarPlatosTipicos(): void {
@@ -82,19 +78,40 @@ export class PrincipalComponent implements OnInit{
     this.platosTipicos = simulatedData.platos_tipicos;
     console.log('Platos típicos cargados:', this.platosTipicos);
   }
-  cargarEmprendimientos(): void {
-    this.emprendimientoService.listarEmprendimientos({ page: 1, limit: 10 }).subscribe({
-      next: (data) => {
-        this.emprendimientos = data.emprendimientos;  // 👈 Aquí está el cambio
-        console.log('Emprendimientos cargados:', this.emprendimientos);
-      },
-      error: (err) => {
-        console.error('Error al cargar emprendimientos:', err);
-      }
-    });
+    editar(plato: any): void {
+      // Aquí podrías redirigir a un formulario o abrir un modal con los datos
+      console.log('Editar emprendimiento:', plato);
+      Swal.fire('Editar', `Editando: ${plato.nombre}`, 'info');
+    }
 
-  }
-  irADetalles(id: number) {
-    this.router.navigate(['/detalles', id]);
-  }
+    eliminar(id: number): void {
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: '¡Esta acción no se puede deshacer!',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar'
+      }).then((result) => {
+        if (result.isConfirmed) {
+
+        }
+      });
+    }
+    paginaSiguiente(): void {
+      if (this.paginaActual < this.totalPaginas) {
+        this.paginaActual++;
+        this.cargarPlatosTipicos();
+      }
+    }
+    paginaAnterior(): void {
+      if (this.paginaActual > 1) {
+        this.paginaActual--;
+        this.cargarPlatosTipicos();
+      }
+    }
+    getLimiteSuperior(): number {
+      return Math.min(this.paginaActual * this.limitePorPagina, this.totalElementos);
+    }
 }

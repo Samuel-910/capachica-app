@@ -56,6 +56,11 @@ export const routes: Routes = [
           import('./business/emprendimiento/emprendimiento.component').then(m => m.EmprendimientoComponent),
       },
       {
+        path: 'platos',
+        loadComponent: () =>
+          import('./business/platos-tipicos/platos-tipicos.component').then(m => m.PlatosTipicosComponent),
+      },
+      {
         path: 'newemprendimiento',
         loadComponent: () =>
           import('./business/emprendimiento/form-emprendimiento/form-emprendimiento.component').then(m => m.FormEmprendimientoComponent),

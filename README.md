@@ -1,42 +1,27 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://miro.medium.com/v2/resize:fit:1400/1*Klh1l7wkoG6PDPb9A5oCHQ.png" width="200" alt="Angular Logo" /></a>
-</p>
+# CapachicaApp
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.3.
 
-  <p align="center">Menu Dashboard en Angular 18+</p>
+## Development server
 
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
-## Contact
+## Code scaffolding
 
-- Author - [Neiser Custodio](https://instagram.com/neisercode)
-- Youtube - [https://www.youtube.com/@neisercp](https://youtube.com/@neisercp)
-- X - [@neisercp](https://twitter.com/neisercp)
-- Instagram - [@neisercode](https://instagram.com/neisercode)
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
-## Installation
+## Build
 
-```bash
-$ npm install
-```
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-## Running the app
+## Running unit tests
 
-```bash
-# development
-$ ng serve
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-```
+## Running end-to-end tests
 
-## Test
+Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
 
-```bash
-# unit tests
-$ ng test
+## Further help
 
-```
-
-## License
-
-By [Neiser Custodio](https://instagram.com/neisercode).
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.

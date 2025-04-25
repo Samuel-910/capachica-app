@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { EmprendimientoService } from '../../core/services/emprendimiento.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-detemprendedor',
   standalone: true,
-  imports: [NavbarComponent, RouterModule],
+  imports: [NavbarComponent, RouterModule, CommonModule],
   templateUrl: './detemprendedor.component.html',
   styleUrl: './detemprendedor.component.css'
 })
