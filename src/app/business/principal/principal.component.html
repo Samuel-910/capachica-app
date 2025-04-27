@@ -60,32 +60,46 @@
 
 
 <div class="max-w-6xl mx-auto">
-  <h1 class="text-3xl font-bold mb-4">Paquetes turisticos</h1>
+  <div class="flex justify-between items-center">
+    <h1 class="text-3xl font-bold mb-4">Paquetes turisticos</h1>
+    <button routerLink="/paquetesprin" class="text-2xl font-bold mb-4">Ver todo</button>
+  </div>
   <div class="border-b-2 border-blue-500 w-full mb-6"></div>
   <div class="flex justify-center p-3">
     <div class="grid grid-rows-2 gap-4">
       <div class="grid grid-cols-2 gap-4">
-        <div>
-          <img class="h-auto w-full rounded-lg" src="img/Link.png" alt="">
-        </div>
-        <div>
-          <img class="h-auto w-full rounded-lg" src="img/Link2.png" alt="">
-        </div>
+        <button
+          *ngFor="let paquete of paquetes.slice(0, 2)"
+          class="flex justify-center items-center"
+          [routerLink]="['/paquetesdetalle', paquete.id]"
+          >
+          <div class="relative">
+            <img class="h-auto w-full rounded-lg" src="img/Picture.png" alt="{{ paquete.titulo }}" />
+            <div class="absolute top-4 left-4 rounded-lg flex items-center gap-2">
+              <span class="font-bold text-white text-3xl">{{ paquete.titulo }}</span>
+            </div>
+          </div>
+        </button>
       </div>
 
       <div class="grid grid-cols-3 gap-4">
-        <div>
-          <img class="h-auto w-full rounded-lg" src="img/Link3.png" alt="">
-        </div>
-        <div>
-          <img class="h-auto w-full rounded-lg" src="img/Link4.png" alt="">
-        </div>
-        <div>
-          <img class="h-auto w-full rounded-lg" src="img/Link5.png" alt="">
-        </div>
+        <!-- Mostramos los siguientes tres paquetes -->
+        <button
+          *ngFor="let paquete of paquetes.slice(2, 5)"
+          class="flex justify-center items-center"
+          [routerLink]="['/paquetesdetalle', paquete.id]"
+        >
+          <div class="relative">
+            <img class="h-auto w-full rounded-lg" src="img/Picture (1).png" alt="{{ paquete.titulo }}" />
+            <div class="absolute top-4 left-4 rounded-lg flex items-center gap-2">
+              <span class="font-bold text-white text-3xl">{{ paquete.titulo }}</span>
+            </div>
+          </div>
+        </button>
       </div>
     </div>
   </div>
+
 </div>
 <div class="max-w-6xl mx-auto">
 <!-- familias -->

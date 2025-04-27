@@ -61,6 +61,41 @@ export const routes: Routes = [
           import('./business/platos-tipicos/platos-tipicos.component').then(m => m.PlatosTipicosComponent),
       },
       {
+        path: 'newplatos',
+        loadComponent: () =>
+          import('./business/platos-tipicos/form-platos/form-platos.component').then(m => m.FormPlatosComponent),
+      },
+      {
+        path: 'editplatos/:id',
+        loadComponent: () =>
+          import('./business/platos-tipicos/form-platos/form-platos.component').then(m => m.FormPlatosComponent),
+      },
+      {
+        path: 'paquetes',
+        loadComponent: () =>
+          import('./business/paquete-turistico/paquete-turistico.component').then(m => m.PaqueteTuristicoComponent),
+      },
+      {
+        path: 'paquetesdetalle/:id',
+        loadComponent: () =>
+          import('./business/paquetedet/paquetedet.component').then(m => m.PaquetedetComponent),
+      },
+      {
+        path: 'paquetesprin',
+        loadComponent: () =>
+          import('./business/paqueteprin/paqueteprin.component').then(m => m.PaqueteprinComponent),
+      },
+      {
+        path: 'newpaquetes',
+        loadComponent: () =>
+          import('./business/paquete-turistico/form-paquete/form-paquete.component').then(m => m.FormPaqueteComponent),
+      },
+      {
+        path: 'editpaquetes/:id',
+        loadComponent: () =>
+          import('./business/paquete-turistico/form-paquete/form-paquete.component').then(m => m.FormPaqueteComponent),
+      },
+      {
         path: 'newemprendimiento',
         loadComponent: () =>
           import('./business/emprendimiento/form-emprendimiento/form-emprendimiento.component').then(m => m.FormEmprendimientoComponent),

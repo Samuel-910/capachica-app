@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { NavbarComponent } from '../sidebar/navbar/navbar.component';
 import Swal from 'sweetalert2';
 
@@ -18,6 +18,7 @@ export class PlatosTipicosComponent implements OnInit{
   totalPaginas: number = 1;
   totalElementos: number = 0;
   limitePorPagina: number = 10;
+  constructor(private router: Router) {}
   ngOnInit(): void {
     this.cargarPlatosTipicos();
   }
@@ -78,11 +79,15 @@ export class PlatosTipicosComponent implements OnInit{
     this.platosTipicos = simulatedData.platos_tipicos;
     console.log('Platos típicos cargados:', this.platosTipicos);
   }
-    editar(plato: any): void {
-      // Aquí podrías redirigir a un formulario o abrir un modal con los datos
-      console.log('Editar emprendimiento:', plato);
-      Swal.fire('Editar', `Editando: ${plato.nombre}`, 'info');
-    }
+  editar(ip: string): void {
+    // Aquí puedes trabajar con la IP recibida como parámetro
+    console.log('Editando plato con IP:', ip);
+
+    // Lógica para redirigir o realizar la edición según la IP
+    // Si quieres navegar a una página de edición, por ejemplo:
+    this.router.navigate(['/editplatos', ip]); // Redirige a la página de edición, pasando la IP en la URL
+  }
+
 
     eliminar(id: number): void {
       Swal.fire({

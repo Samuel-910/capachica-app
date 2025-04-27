@@ -1,0 +1,63 @@
+<div class="flex">
+  <app-sidebar class="w-[260px] fixed h-screen z-20"></app-sidebar>
+  <div class="flex-1 ml-[260px]">
+    <app-navbar class="fixed top-0 left-[260px] right-0 h-[64px] z-10 bg-white border-b"></app-navbar>
+
+    <div class="m-[80px]">
+      <div class="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">
+          {{ isEdit ? 'Editar Paquete' : 'Crear Paquete' }}
+        </h2>
+        <form [formGroup]="paqueteForm" (ngSubmit)="guardarPaquete()">
+          <div class="space-y-6">
+            <!-- Título y Precio -->
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label for="titulo" class="block font-medium text-gray-700">Título del Paquete</label>
+                <input type="text" id="titulo" formControlName="titulo" class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Ej. Paquete Paramis" required>
+              </div>
+              <div>
+                <label for="precio" class="block font-medium text-gray-700">Precio</label>
+                <input type="text" id="precio" formControlName="precio" class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Ej. s/ 132.50" required>
+              </div>
+            </div>
+
+            <!-- Lugares a Visitar y Servicios Adicionales -->
+            <div class="grid md:grid-cols-2 gap-6">
+              <div class="md:col-span-2">
+                <label for="lugares_visitar" class="block font-medium text-gray-700">Lugares que Visitarás</label>
+                <textarea id="lugares_visitar" formControlName="lugares_visitar" class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Lista de lugares a visitar" required></textarea>
+              </div>
+              <div class="md:col-span-2">
+                <label for="servicios_adicionales" class="block font-medium text-gray-700">Servicios Adicionales</label>
+                <textarea id="servicios_adicionales" formControlName="servicios_adicionales" class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Lista de servicios adicionales" required></textarea>
+              </div>
+            </div>
+
+            <!-- Políticas de Cancelación y Requisitos -->
+            <div class="grid md:grid-cols-2 gap-6">
+              <div class="md:col-span-2">
+                <label for="politicas_cancelacion" class="block font-medium text-gray-700">Políticas de Cancelación</label>
+                <textarea id="politicas_cancelacion" formControlName="politicas_cancelacion" class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Detalles sobre las políticas de cancelación" required></textarea>
+              </div>
+              <div class="md:col-span-2">
+                <label for="requisitos" class="block font-medium text-gray-700">Requisitos</label>
+                <textarea id="requisitos" formControlName="requisitos" class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Requisitos para participar en el paquete" required></textarea>
+              </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="flex justify-end gap-6 mt-6">
+              <button type="submit" [disabled]="paqueteForm.invalid" class="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700 transition duration-300 ease-in-out">
+                {{ isEdit ? 'Actualizar' : 'Guardar' }}
+              </button>
+              <button type="button" class="bg-gray-300 text-gray-800 px-8 py-3 rounded hover:bg-gray-400 transition duration-300 ease-in-out" (click)="cancelar()">
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

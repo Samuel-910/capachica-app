@@ -1,88 +1,25 @@
+import { Component, OnInit } from '@angular/core';
+import { NavbarComponent } from "../navbar/navbar.component";
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
-// import function to register Swiper custom elements
-import { register } from 'swiper/element/bundle';
-import { NavbarComponent } from '../navbar/navbar.component';
-import { EmprendimientoService } from '../../core/services/emprendimiento.service';
-import { Router, RouterModule } from '@angular/router';
 
-// register Swiper custom elements
-register();
 @Component({
-  selector: 'app-principal',
+  selector: 'app-paquetedet',
   standalone: true,
-  imports: [CommonModule, NavbarComponent,RouterModule],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA  ],
-  templateUrl: './principal.component.html',
-  styleUrl: './principal.component.css'
+  imports: [NavbarComponent, CommonModule],
+  templateUrl: './paquetedet.component.html',
+  styleUrl: './paquetedet.component.css'
 })
-export class PrincipalComponent implements OnInit{
-  emprendimientos: any[] = [];
-  platosTipicos: any[] = [];
-  paquetes: any[] = [];
-  constructor(private emprendimientoService:EmprendimientoService, private router: Router) {}
-
-  ngOnInit(): void {
-    this.cargarEmprendimientos();
-    this.cargarPlatosTipicos();
-    this.cargarPaquetes();
-  }
-  cargarPlatosTipicos(): void {
-    // Simulamos una respuesta desde el servicio
-    const simulatedData = {
-      platos_tipicos: [
-        {
-          id: 1,
-          nombre: "Ceviche",
-          descripcion: "Plato de pescado o mariscos frescos, marinados en jugo de limón, con cebolla, cilantro y ají.",
-          ingredientes: ["Pescado fresco", "Cebolla", "Cilantro", "Limón", "Ají"],
-          region: "Costa",
-          origen: "Perú",
-          tipo: "Entrada"
-        },
-        {
-          id: 2,
-          nombre: "Lomo Saltado",
-          descripcion: "Plato con carne de res salteada con cebolla, tomate, ají amarillo y servido con papas fritas y arroz.",
-          ingredientes: ["Carne de res", "Cebolla", "Tomate", "Ají amarillo", "Papas fritas", "Arroz"],
-          region: "Sierra",
-          origen: "Perú",
-          tipo: "Plato principal"
-        },
-        {
-          id: 3,
-          nombre: "Aji de Gallina",
-          descripcion: "Plato a base de pechuga de pollo desmenuzada, salsa cremosa de ají amarillo, con arroz blanco.",
-          ingredientes: ["Pollo", "Ají amarillo", "Leche evaporada", "Pan", "Nuez moscada"],
-          region: "Sierra",
-          origen: "Perú",
-          tipo: "Plato principal"
-        },
-        {
-          id: 4,
-          nombre: "Causa Limeña",
-          descripcion: "Plato frío de puré de papa amarilla sazonado con ají, limón y relleno de atún o pollo.",
-          ingredientes: ["Papa amarilla", "Ají", "Limón", "Atún", "Mayonesa"],
-          region: "Costa",
-          origen: "Perú",
-          tipo: "Entrada"
-        },
-        {
-          id: 5,
-          nombre: "Pachamanca",
-          descripcion: "Carne, papas, habas y maíz cocidos bajo tierra con hierbas aromáticas, típico de los Andes.",
-          ingredientes: ["Carne de cerdo", "Papas", "Habas", "Maíz", "Hierbas aromáticas"],
-          region: "Andina",
-          origen: "Perú",
-          tipo: "Plato principal"
-        }
-      ]
-    };
-
-    // Simula la respuesta exitosa
-    this.platosTipicos = simulatedData.platos_tipicos;
-    console.log('Platos típicos cargados:', this.platosTipicos);
-  }
+export class PaquetedetComponent implements OnInit{
+  currentPaquete: any = null;
+  constructor(
+        private router: Router,
+        private route: ActivatedRoute,  // Inyectamos ActivatedRoute para acceder a los parámetros de la URL
+        // private platoService: PlatoService
+      ) {};
+      ngOnInit(): void {
+        this.cargarPaquetes();
+      }
   cargarPaquetes(): void {
     const simulatedData = {
       paquetes: [
@@ -231,22 +168,8 @@ export class PrincipalComponent implements OnInit{
         }
       ]
     };
-    this.paquetes = simulatedData.paquetes;
-    console.log('Platos típicos cargados:', this.paquetes);
-  }
-  cargarEmprendimientos(): void {
-    this.emprendimientoService.listarEmprendimientos({ page: 1, limit: 10 }).subscribe({
-      next: (data) => {
-        this.emprendimientos = data.emprendimientos;  // 👈 Aquí está el cambio
-        console.log('Emprendimientos cargados:', this.emprendimientos);
-      },
-      error: (err) => {
-        console.error('Error al cargar emprendimientos:', err);
-      }
-    });
-
-  }
-  irADetalles(id: number) {
-    this.router.navigate(['/detalles', id]);
+    const id = this.route.snapshot.paramMap.get('id');
+    const paquetes = simulatedData.paquetes.find(p => p.id.toString() === id);
+    this.currentPaquete = paquetes;
   }
 }

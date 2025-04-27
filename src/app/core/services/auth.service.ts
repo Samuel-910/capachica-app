@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, switchMap, tap } from 'rxjs';
@@ -65,12 +65,12 @@ export class AuthService {
       );
   }
 
-  logout(): void {
-    this.http.post(this.LOGOUT_URL, {}, { withCredentials: true })
-      .subscribe(() => {
-        this.clearAuthData();
-        this.router.navigate(['/']);
-      });
+  logout(): Observable<any> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.post(this.LOGOUT_URL, {}, { headers });
   }
 
   getMe(): Observable<any> {
