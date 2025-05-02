@@ -2,7 +2,7 @@
 
 <div class="relative min-h-screen flex justify-center items-center bg-transparent rounded-3xl z-10">
   <!-- Contenedor principal con fondo ARDOX -->
-  <div class="bg-cover bg-center mx-auto rounded-3xl w-[900px] flex overflow-hidden shadow-lg" style="background-image: url('assets/ARDOX.png');">
+  <div class="bg-cover bg-center mx-auto rounded-3xl w-[900px] flex overflow-hidden shadow-lg" style="background-image: url('img/ARDOX.png');">
 
     <!-- Contenedor que mantiene tanto la imagen de ChatGPT como el formulario de login -->
     <div class="w-full flex flex-col lg:flex-row">
@@ -10,8 +10,8 @@
       <!-- Imagen a la izquierda -->
       <div class="w-full lg:w-1/2 flex items-center justify-center p-6 bg-white bg-opacity-50">
         <img src="img/chatgpt-image.png"
-             alt="Login"
-             class="w-full h-auto max-h-[400px] object-contain">
+          alt="Login"
+          class="w-full h-auto max-h-[400px] object-contain">
       </div>
 
       <!-- Formulario a la derecha -->
@@ -31,10 +31,10 @@
 
           <div class="relative">
             <input [(ngModel)]="password" [type]="showPassword ? 'text' : 'password'"
-                   placeholder="Contraseña"
-                   class="text-sm text-black px-4 py-3 rounded-lg w-full bg-white focus:bg-gray-100 border border-gray-200 focus:outline-none focus:border-purple-400">
+              placeholder="Contraseña"
+              class="text-sm text-black px-4 py-3 rounded-lg w-full bg-white focus:bg-gray-100 border border-gray-200 focus:outline-none focus:border-purple-400">
             <div class="flex items-center absolute inset-y-0 right-0 mr-3 text-sm leading-5 cursor-pointer"
-                 (click)="togglePasswordVisibility()">
+              (click)="togglePasswordVisibility()">
               <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'" style="color: gray;"></i>
             </div>
           </div>

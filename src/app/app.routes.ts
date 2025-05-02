@@ -1,6 +1,5 @@
 // src/app/app.routes.ts
 import { Routes } from '@angular/router';
-import { AuthenticatedGuard } from './core/guards/authenticated.guard';
 
 export const routes: Routes = [
   // Rutas públicas
