@@ -52,15 +52,15 @@ export class AuthService {
       .post<any>(this.LOGIN_URL, { email, password }, { withCredentials: true })
       .pipe(
         tap(response => {
-          if (response.token) {
-            console.log('Access Token:', response.token);
-            this.setToken(response.token);
-            // ✅ Redirige al dashboard si todo fue bien
+          if (response.access_token) {
+            console.log('Access Token:', response.access_token);
+            this.setToken(response.access_token);
             this.router.navigate(['/dashboard']);
           }
         })
       );
   }
+  
 
   // logout(): Observable<any> {
   //   const token = localStorage.getItem('authToken');
