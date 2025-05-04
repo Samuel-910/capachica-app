@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, Input, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { initFlowbite } from 'flowbite';
 import { EmprendimientoService } from '../../core/services/emprendimiento.service';
@@ -13,6 +13,12 @@ import { CommonModule } from '@angular/common';
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent implements OnInit{
+  ocultarNav = false;
+
+  @HostListener('window:scroll', [])
+  onScroll(): void {
+    this.ocultarNav = window.scrollY > 80;
+  }
   emprendimientos: any[] = [];
   ngOnInit(): void {
     if (typeof window !== 'undefined') {

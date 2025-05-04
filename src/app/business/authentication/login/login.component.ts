@@ -25,27 +25,26 @@ export  class LoginComponent {
   }
 
   login(): void {
-    console.log('Login con:', this.email, this.password);
     this.authService.login(this.email, this.password).subscribe({
       next: (response) => {
-        const token = response.token;
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        const role = payload.roles[0];
-        console.log(payload);
-        console.log(role);
-        if (role === 'admin') {
+        const token = response.access_token;
+        const usuario = response.usuario;
+        const role = usuario.roles[0];
+
+        localStorage.setItem('token', token);
+        localStorage.setItem('usuario', JSON.stringify(usuario));
+        console.log('Rol:', role);
+  
+        if (role === 'SuperAdmin') {
           this.router.navigate(['/dashboard']);
-          // window.location.href = 'https://v0-desarrollar-vista-shadcn.vercel.app/';
-          // Mostrar SweetAlert de éxito
           Swal.fire({
             icon: 'success',
             title: '¡Bienvenido!',
-            text: 'Has iniciado sesión como administrador.',
+            text: 'Has iniciado sesión como SuperAdmin.',
             confirmButtonText: 'Aceptar'
           });
         } else {
           this.router.navigate(['/']);
-          // Mostrar SweetAlert de éxito para usuarios comunes
           Swal.fire({
             icon: 'success',
             title: '¡Bienvenido!',
@@ -56,7 +55,6 @@ export  class LoginComponent {
       },
       error: (err) => {
         console.error('Login failed', err);
-        // Mostrar mensaje de error con SweetAlert
         Swal.fire({
           icon: 'error',
           title: '¡Error!',
@@ -66,4 +64,5 @@ export  class LoginComponent {
       }
     });
   }
+  
 }

@@ -38,6 +38,11 @@ export class AuthService {
   register(userData: {
     nombre: string;
     apellidos: string;
+    telefono: string;
+    direccion: string;
+    fotoPerfilUrl: string;
+    fechaNacimiento: string;
+    subdivisionId: number;
     email: string;
     password: string;
   }): Observable<any> {

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, HostListener, OnInit } from '@angular/core';
 // import function to register Swiper custom elements
 import { register } from 'swiper/element/bundle';
 import { NavbarComponent } from '../navbar/navbar.component';
@@ -17,6 +17,13 @@ register();
   styleUrl: './principal.component.css'
 })
 export class PrincipalComponent implements OnInit{
+  ocultarNav = false;
+
+  @HostListener('window:scroll', [])
+  onScroll(): void {
+    this.ocultarNav = window.scrollY > 80;
+  }
+
   emprendimientos: any[] = [];
   platosTipicos: any[] = [];
   paquetes: any[] = [];
