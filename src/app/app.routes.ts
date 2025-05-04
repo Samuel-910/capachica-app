@@ -1,5 +1,6 @@
 // src/app/app.routes.ts
 import { Routes } from '@angular/router';
+import { LugaresTuristicosComponent } from './business/lugares-turisticos/lugares-turisticos.component';
 
 export const routes: Routes = [
   // Rutas públicas
@@ -119,7 +120,21 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./business/role-list/role-list.component').then(m => m.RoleListComponent),
       },
-      // Otras rutas privadas…
+      {
+        path: 'lugares-turisticos',
+        loadComponent: () => import('./business/lugares-turisticos/lugares-turisticos.component').then(m => m.LugaresTuristicosComponent),
+      },
+      {
+        path: 'lugares-turisticos/new',
+        loadComponent: () => import('./business/lugares-turisticos/form-lugar/form-lugar.component').then(m => m.FormLugarComponent),
+      },
+      {
+        path: 'lugares-turisticos/edit/:id',
+        loadComponent: () => import('./business/lugares-turisticos/form-lugar/form-lugar.component').then(m => m.FormLugarComponent),
+      }
+      
+
+
     ],
   },
   // Ruta comodín para redirección en caso de ruta no encontrada
