@@ -119,6 +119,21 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./business/role-list/role-list.component').then(m => m.RoleListComponent),
       },
+      {
+        path: 'usuario',
+        loadComponent: () =>
+          import('./super-admin/usuario/usuario.component').then(m => m.UsuarioComponent),
+      },
+      {
+        path: 'newusuario',
+        loadComponent: () =>
+          import('./super-admin/usuario/form-usuario/form-usuario.component').then(m => m.FormUsuarioComponent),
+      },
+      {
+        path: 'editusuario/:id',
+        loadComponent: () =>
+          import('./super-admin/usuario/form-usuario/form-usuario.component').then(m => m.FormUsuarioComponent),
+      },
       // Otras rutas privadas…
     ],
   },

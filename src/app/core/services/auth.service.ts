@@ -13,11 +13,7 @@ export class AuthService {
   private readonly REQUEST_PASSWORD_URL       = `${this.API_BASE_usuario}/request-password-reset`;
   private readonly RESET_PASSWORD_URL       = `${this.API_BASE_usuario}/reset-password`;
   private readonly RESET_PASSWORD_ADMIN_URL       = `${this.API_BASE_usuario}/reset-password`;
-
-
-
   private readonly tokenKey         = 'authToken';
-  private readonly refreshTokenKey  = 'refreshToken';
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -47,10 +43,10 @@ export class AuthService {
     password: string;
   }): Observable<any> {
     return this.http.post<any>(this.REGISTER_URL, userData, { withCredentials: true }).pipe(
-      tap(() => this.router.navigate(['/login']))
+      tap(response => console.log('Respuesta del servidor:', response))
     );
   }
-
+  
 
   login(email: string, password: string): Observable<any> {
     return this.http
@@ -65,18 +61,6 @@ export class AuthService {
         })
       );
   }
-  
-
-  // logout(): Observable<any> {
-  //   const token = localStorage.getItem('authToken');
-  //   const headers = new HttpHeaders({
-  //     Authorization: `Bearer ${token}`
-  //   });
-  //   return this.http.post(this.LOGOUT_URL, {}, { headers });
-  // }
-
-
-
 
   private setToken(token: string): void {
     if (typeof window !== 'undefined') {
@@ -84,17 +68,59 @@ export class AuthService {
     }
   }
 
-  private getToken(): string | null {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem(this.tokenKey);
-    }
-    return null;
+  getUsuarios(): Observable<any[]> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.get<any[]>(`${this.API_BASE_usuario}`, { headers });
   }
-
-  private setRefreshToken(token: string): void {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(this.refreshTokenKey, token);
-    }
+  getUsuarioById(id: number): Observable<any> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+  
+    return this.http.get<any>(`${this.API_BASE_usuario}/${id}`, { headers }).pipe(
+      tap((usuario) => {
+        console.log('Usuario obtenido desde la API:', usuario);
+      })
+    );
   }
-
+  
+  actualizarUsuario(id: number, datos: any): Observable<any> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.patch(`${this.API_BASE_usuario}/${id}`, datos, { headers });
+  }
+  eliminarUsuario(id: number): Observable<any> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.delete(`${this.API_BASE_usuario}/${id}`, { headers });
+  }
+  asignarRol(userId: number, roleId: number): Observable<any> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.post(`${this.API_BASE_usuario}/${userId}/roles/${roleId}`, {}, { headers });
+  }
+  quitarRol(userId: number, roleId: number): Observable<any> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.delete(`${this.API_BASE_usuario}/${userId}/roles/${roleId}`, { headers });
+  }
+  crearUsuarioComoAdmin(data: any): Observable<any> {
+    const token = localStorage.getItem('authToken');
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.post(`${this.API_BASE_usuario}`, data, { headers });
+  }
 }

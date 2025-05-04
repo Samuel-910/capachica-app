@@ -19,6 +19,14 @@ export class NavbarComponent implements OnInit{
   onScroll(): void {
     this.ocultarNav = window.scrollY > 100;
   }
+  tema: 'light' | 'dark' | 'theme-verde' = 'light';
+
+  cambiarTema(nuevoTema: 'light' | 'dark' | 'theme-verde') {
+    console.log(this.tema);
+    this.tema = nuevoTema;
+  }
+  
+
   emprendimientos: any[] = [];
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
