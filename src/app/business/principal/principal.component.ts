@@ -17,12 +17,7 @@ register();
   styleUrl: './principal.component.css'
 })
 export class PrincipalComponent implements OnInit{
-  ocultarNav = false;
 
-  @HostListener('window:scroll', [])
-  onScroll(): void {
-    this.ocultarNav = window.scrollY > 80;
-  }
 
   emprendimientos: any[] = [];
   platosTipicos: any[] = [];

@@ -17,7 +17,7 @@ export class NavbarComponent implements OnInit{
 
   @HostListener('window:scroll', [])
   onScroll(): void {
-    this.ocultarNav = window.scrollY > 80;
+    this.ocultarNav = window.scrollY > 100;
   }
   emprendimientos: any[] = [];
   ngOnInit(): void {
