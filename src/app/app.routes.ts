@@ -134,7 +134,21 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./super-admin/usuario/form-usuario/form-usuario.component').then(m => m.FormUsuarioComponent),
       },
-      // Otras rutas privadas…
+      {
+        path: 'lugares-turisticos',
+        loadComponent: () => import('./business/lugares-turisticos/lugares-turisticos.component').then(m => m.LugaresTuristicosComponent),
+      },
+      {
+        path: 'lugares-turisticos/new',
+        loadComponent: () => import('./business/lugares-turisticos/form-lugar/form-lugar.component').then(m => m.FormLugarComponent),
+      },
+      {
+        path: 'lugares-turisticos/edit/:id',
+        loadComponent: () => import('./business/lugares-turisticos/form-lugar/form-lugar.component').then(m => m.FormLugarComponent),
+      }
+      
+
+
     ],
   },
   // Ruta comodín para redirección en caso de ruta no encontrada
