@@ -155,15 +155,7 @@ export const routes: Routes = [
       {
         path: 'lugares-turisticos/edit/:id',
         loadComponent: () => import('./business/lugares-turisticos/form-lugar/form-lugar.component').then(m => m.FormLugarComponent),
-      },
-      {
-        path: 'sliders',
-        loadComponent: () => import('./business/sliders/sliders.component').then(m => m.SlidersComponent),
-      },
-      {
-        path: 'newslider',
-        loadComponent: () => import('./business/sliders/form-slider/form-slider.component').then(m => m.FormSliderComponent),
-      },
+      }
       
 
 

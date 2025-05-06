@@ -15,7 +15,7 @@ import { RouterModule } from '@angular/router';
 export class LugaresTuristicosComponent implements OnInit {
   lugares: any[] = [];
   isLoading = true;
-  errorMessage = '';
+  errorMessage = '';  
 
   constructor(private lugaresService: LugaresService) { }
 
@@ -42,7 +42,7 @@ export class LugaresTuristicosComponent implements OnInit {
     if (confirm('¿Estás seguro de eliminar este lugar?')) {
       this.lugaresService.deleteLugar(id).subscribe({
         next: () => {
-          this.lugares = this.lugares.filter(l => l.id !== id);
+          this.lugares = this.lugares.filter(l => l.id !== id); // Actualiza la lista
         },
         error: (err) => {
           console.error('Error al eliminar:', err);
@@ -50,4 +50,5 @@ export class LugaresTuristicosComponent implements OnInit {
       });
     }
   }
+  
 }
