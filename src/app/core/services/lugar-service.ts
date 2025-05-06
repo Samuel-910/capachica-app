@@ -54,15 +54,15 @@ export class LugaresService {
   }
 
   crearLugar(lugar: LugarTuristico): Observable<any> {
-    return this.http.post<any>(this.apiUrl, lugar, {
-      headers: this.getAuthHeaders()
-    }).pipe(
-      catchError(error => {
-        console.error('Error al crear el lugar:', error);
-        return throwError(() => new Error('Error al crear el lugar'));
-      })
-    );
-  }
+  return this.http.post<any>(this.apiUrl, lugar, {
+    headers: this.getAuthHeaders()
+  }).pipe(
+    catchError(error => {
+      console.error('Error al crear el lugar:', error);
+      return throwError(() => new Error('Error al crear el lugar'));
+    })
+  );
+}
 
   updateLugar(id: string, lugar: LugarTuristico): Observable<LugarTuristico> {
     return this.http.put<LugarTuristico>(`${this.apiUrl}/${id}`, lugar, {

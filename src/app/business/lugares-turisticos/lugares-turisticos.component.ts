@@ -15,7 +15,7 @@ import { RouterModule } from '@angular/router';
 export class LugaresTuristicosComponent implements OnInit {
   lugares: any[] = [];
   isLoading = true;
-  errorMessage = '';
+  errorMessage = '';  
 
   constructor(private lugaresService: LugaresService) { }
 

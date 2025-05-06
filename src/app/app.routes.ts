@@ -145,9 +145,23 @@ export const routes: Routes = [
       {
         path: 'lugares-turisticos/edit/:id',
         loadComponent: () => import('./business/lugares-turisticos/form-lugar/form-lugar.component').then(m => m.FormLugarComponent),
+      },
+      {
+        path: 'servicios',
+        loadComponent: () =>
+          import('./business/servicios/servicios.component').then(m => m.ServicioComponent),
+      },
+      {
+        path: 'newservicio', // Ruta para crear nuevo servicio
+        loadComponent: () =>
+          import('./business/servicios/form-servicios/form-servicios.component').then(m => m.FormServiciosComponent),
+      },
+      {
+        path: 'editservicio/:id', // Ruta para editar un servicio existente
+        loadComponent: () =>
+          import('./business/servicios/form-servicios/form-servicios.component').then(m => m.FormServiciosComponent),
       }
       
-
 
     ],
   },
