@@ -80,15 +80,14 @@
             </div>
 
             <!-- Imágenes -->
-<div formArrayName="imagenes">
-  <div *ngFor="let imgCtrl of imagenesControls; let i = index" [formGroupName]="i" class="space-x-2">
-    <input formControlName="url" placeholder="URL imagen" class="border p-2 rounded" />
-    <input formControlName="descripcion" placeholder="Descripción" class="border p-2 rounded" />
-    <button type="button" (click)="removeImagen(i)" class="text-red-600">Eliminar</button>
-  </div>
-  <button type="button" (click)="addImagen()" class="mt-2 text-green-600">Agregar imagen</button>
-</div>
-
+            <div formArrayName="imagenes">
+              <div *ngFor="let imgCtrl of imagenesControls; let i = index" [formGroupName]="i" class="space-x-2">
+                <input formControlName="url" placeholder="URL imagen" class="border p-2 rounded" />
+                <input formControlName="descripcion" placeholder="Descripción" class="border p-2 rounded" />
+                <button type="button" (click)="removeImagen(i)" class="text-red-600">Eliminar</button>
+              </div>
+              <button type="button" (click)="addImagen()" class="mt-2 text-green-600">Agregar imagen</button>
+            </div>
 
             <!-- Botones -->
             <div class="flex justify-end gap-4 pt-4">
