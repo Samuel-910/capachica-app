@@ -25,7 +25,7 @@ export interface LugarTuristico {
   providedIn: 'root'
 })
 export class LugaresService {
-  private apiUrl = 'https://capachica-app-back-production.up.railway.app/lugares-turisticos';
+  private apiUrl = 'https://capachica-app-back-production.up.railway.app/lugares-turisticos'; // URL directamente en el servicio
 
   constructor(private http: HttpClient) {}
 
@@ -44,35 +44,55 @@ export class LugaresService {
   getLugares(): Observable<LugarTuristico[]> {
     return this.http.get<LugarTuristico[]>(this.apiUrl, {
       headers: this.getAuthHeaders()
-    });
+    }).pipe(
+      catchError(error => {
+        console.error('Error al obtener lugares:', error);
+        return throwError(() => new Error('Error al obtener lugares'));
+      })
+    );
   }
 
   getLugar(id: string): Observable<LugarTuristico> {
     return this.http.get<LugarTuristico>(`${this.apiUrl}/${id}`, {
       headers: this.getAuthHeaders()
-    });
+    }).pipe(
+      catchError(error => {
+        console.error('Error al obtener el lugar:', error);
+        return throwError(() => new Error('Error al obtener el lugar'));
+      })
+    );
   }
 
   crearLugar(lugar: LugarTuristico): Observable<any> {
-  return this.http.post<any>(this.apiUrl, lugar, {
-    headers: this.getAuthHeaders()
-  }).pipe(
-    catchError(error => {
-      console.error('Error al crear el lugar:', error);
-      return throwError(() => new Error('Error al crear el lugar'));
-    })
-  );
-}
+    return this.http.post<any>(this.apiUrl, lugar, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      catchError(error => {
+        console.error('Error al crear el lugar:', error);
+        return throwError(() => new Error('Error al crear el lugar'));
+      })
+    );
+  }
 
   updateLugar(id: string, lugar: LugarTuristico): Observable<LugarTuristico> {
-    return this.http.put<LugarTuristico>(`${this.apiUrl}/${id}`, lugar, {
+    return this.http.patch<LugarTuristico>(`${this.apiUrl}/${id}`, lugar, {
       headers: this.getAuthHeaders()
-    });
+    }).pipe(
+      catchError(error => {
+        console.error('Error al actualizar el lugar:', error);
+        return throwError(() => new Error('Error al actualizar el lugar'));
+      })
+    );
   }
 
   deleteLugar(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`, {
       headers: this.getAuthHeaders()
-    });
+    }).pipe(
+      catchError(error => {
+        console.error('Error al eliminar el lugar:', error);
+        return throwError(() => new Error('Error al eliminar el lugar'));
+      })
+    );
   }
 }

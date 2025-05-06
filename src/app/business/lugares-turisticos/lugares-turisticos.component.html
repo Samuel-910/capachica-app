@@ -48,9 +48,12 @@
                 Ver detalles
               </a>
               <div class="flex space-x-2">
-                <button [routerLink]="['/lugares-turisticos', lugar.id, 'editar']" class="text-blue-600 hover:text-blue-800">
+                <!-- Editar lugar -->
+                <button [routerLink]="['/lugares-turisticos/edit', lugar.id]" class="text-blue-600 hover:text-blue-800">
                   <i class="fas fa-edit"></i>
                 </button>
+      
+                <!-- Eliminar lugar -->
                 <button (click)="deleteLugar(lugar.id!)" class="text-red-600 hover:text-red-800">
                   <i class="fas fa-trash"></i>
                 </button>
