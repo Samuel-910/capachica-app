@@ -9,23 +9,29 @@ export class TiposServicioService {
   public apiUrl = 'https://capachica-app-back-production.up.railway.app/servicios'; // ajusta tu URL base
 
   constructor(private http: HttpClient) {}
+  
 
-  // Crear un nuevo tipo de servicio
-  crearTipoServicio(data: any): Observable<any> {
-    return this.http.post<any>(this.apiUrl, data);
-  }
-
-  // Obtener todos los tipos de servicio
-  obtenerTiposServicio(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+   // Obtener todos los tipos de servicio
+   obtenerTiposServicio(): Observable<any> {
+    return this.http.get<any>(this.apiUrl);
   }
 
   // Obtener un tipo de servicio por ID
-  obtenerTipoServicio(id: number): Observable<any> {
+  obtenerTipoServicio(id: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 
-  // Eliminar un tipo de servicio por ID
+  // Crear un nuevo tipo de servicio
+  crearTipoServicio(tipoServicio: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl, tipoServicio);
+  }
+
+  // Editar un tipo de servicio existente
+  editarTipoServicio(id: number, tipoServicio: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, tipoServicio);
+  }
+
+  // Eliminar un tipo de servicio
   eliminarTipoServicio(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
