@@ -1,100 +1,106 @@
 <div class="flex">
-    <app-sidebar class="w-[260px] fixed h-screen z-20"></app-sidebar>
-    <div class="flex-1 ml-[260px]">
-      <app-navbar class="fixed top-0 left-[260px] right-0 h-[64px] z-10 bg-white border-b"></app-navbar>
-  
-      <div class="m-[80px]">
-        <div class="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-          <h2 class="text-2xl font-bold mb-4 text-gray-800">
-            {{ isEdit ? 'Editar Lugar Turístico' : 'Crear Lugar Turístico' }}
-          </h2>
-          <form [formGroup]="lugarForm" (ngSubmit)="onSubmit()">
-            <div class="space-y-6">
-              <!-- Campos principales -->
-              <!-- Nombre & Dirección -->
-              <div class="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label class="block font-medium text-gray-700">Nombre</label>
-                  <input type="text" formControlName="nombre" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500" />
-                </div>
-                <div>
-                  <label class="block font-medium text-gray-700">Dirección</label>
-                  <input type="text" formControlName="direccion" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500" />
-                </div>
-              </div>
-              <!-- Descripción -->
+  <app-sidebar class="w-[260px] fixed h-screen z-20"></app-sidebar>
+  <div class="flex-1 ml-[260px]">
+    <app-navbar class="fixed top-0 left-[260px] right-0 h-[64px] z-10 bg-white border-b"></app-navbar>
+
+    <div class="m-[80px]">
+      <div class="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">
+          {{ isEdit ? 'Editar Lugar Turístico' : 'Crear Lugar Turístico' }}
+        </h2>
+        <form [formGroup]="lugarForm" (ngSubmit)="onSubmit()">
+          <div class="space-y-6">
+            <!-- Campos principales -->
+            <div class="grid md:grid-cols-2 gap-6">
               <div>
-                <label class="block font-medium text-gray-700">Descripción</label>
-                <textarea formControlName="descripcion" rows="3" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+                <label class="block font-medium text-gray-700">Nombre</label>
+                <input type="text" formControlName="nombre" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500" />
               </div>
-              <!-- Coordenadas & Costo -->
-              <div class="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label class="block font-medium text-gray-700">Coordenadas (lat,long)</label>
-                  <input type="text" formControlName="coordenadas" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500" />
-                </div>
-                <div>
-                  <label class="block font-medium text-gray-700">Costo Entrada</label>
-                  <input type="number" formControlName="costoEntrada" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500" />
-                </div>
-              </div>
-              <!-- Horarios -->
-              <div class="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label class="block font-medium text-gray-700">Apertura</label>
-                  <input type="time" formControlName="horarioApertura" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500" />
-                </div>
-                <div>
-                  <label class="block font-medium text-gray-700">Cierre</label>
-                  <input type="time" formControlName="horarioCierre" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500" />
-                </div>
-              </div>
-              <!-- Recomendaciones & Restricciones -->
-              <div class="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label class="block font-medium text-gray-700">Recomendaciones</label>
-                  <textarea formControlName="recomendaciones" rows="2" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
-                </div>
-                <div>
-                  <label class="block font-medium text-gray-700">Restricciones</label>
-                  <textarea formControlName="restricciones" rows="2" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
-                </div>
-              </div>
-              <!-- Estado & Destacado -->
-              <div class="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label class="block font-medium text-gray-700">Estado</label>
-                  <select formControlName="estado" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <option value="activo">Activo</option>
-                    <option value="inactivo">Inactivo</option>
-                  </select>
-                </div>
-                <div class="flex items-center">
-                  <input type="checkbox" id="esDestacado" formControlName="esDestacado" class="h-4 w-4 rounded border-gray-300 focus:ring-green-500" />
-                  <label for="esDestacado" class="ml-2 block text-sm text-gray-700">Destacado</label>
-                </div>
-              </div>
-              <!-- Imágenes -->
-              <div formArrayName="imagenes">
-                <div *ngFor="let imgCtrl of imagenesControls; let i = index" [formGroupName]="i" class="space-x-2">
-                  <input formControlName="url" placeholder="URL imagen" class="border p-2 rounded" />
-                  <input formControlName="descripcion" placeholder="Descripción" class="border p-2 rounded" />
-                  <button type="button" (click)="removeImagen(i)" class="text-red-600">Eliminar</button>
-                </div>
-                <button type="button" (click)="addImagen()" class="mt-2 text-green-600">Agregar imagen</button>
-              </div>
-              <!-- Botones -->
-            <div class="flex justify-end gap-4 pt-4">
-                <button type="button" (click)="cancelar()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Cancelar</button>
-                <button type="submit" [disabled]="lugarForm.invalid || isLoading" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:bg-green-300">
-                  {{ isEdit ? 'Actualizar' : 'Guardar' }}
-                  <span *ngIf="isLoading" class="ml-2 inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></span>
-                </button>
+              <div>
+                <label class="block font-medium text-gray-700">Dirección</label>
+                <input type="text" formControlName="direccion" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500" />
               </div>
             </div>
-          </form>
-        </div>
+
+            <!-- Descripción -->
+            <div>
+              <label class="block font-medium text-gray-700">Descripción</label>
+              <textarea formControlName="descripcion" rows="3" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+            </div>
+
+            <!-- Coordenadas & Costo -->
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label class="block font-medium text-gray-700">Coordenadas (lat,long)</label>
+                <input type="text" formControlName="coordenadas" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500" />
+              </div>
+              <div>
+                <label class="block font-medium text-gray-700">Costo Entrada</label>
+                <input type="number" formControlName="costoEntrada" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500" />
+              </div>
+            </div>
+
+            <!-- Horarios -->
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label class="block font-medium text-gray-700">Apertura</label>
+                <input type="time" formControlName="horarioApertura" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500" />
+              </div>
+              <div>
+                <label class="block font-medium text-gray-700">Cierre</label>
+                <input type="time" formControlName="horarioCierre" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500" />
+              </div>
+            </div>
+
+            <!-- Recomendaciones & Restricciones -->
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label class="block font-medium text-gray-700">Recomendaciones</label>
+                <textarea formControlName="recomendaciones" rows="2" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+              </div>
+              <div>
+                <label class="block font-medium text-gray-700">Restricciones</label>
+                <textarea formControlName="restricciones" rows="2" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"></textarea>
+              </div>
+            </div>
+
+            <!-- Estado & Destacado -->
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label class="block font-medium text-gray-700">Estado</label>
+                <select formControlName="estado" required class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500">
+                  <option value="activo">Activo</option>
+                  <option value="inactivo">Inactivo</option>
+                </select>
+              </div>
+              <div class="flex items-center">
+                <input type="checkbox" id="esDestacado" formControlName="esDestacado" class="h-4 w-4 rounded border-gray-300 focus:ring-green-500" />
+                <label for="esDestacado" class="ml-2 block text-sm text-gray-700">Destacado</label>
+              </div>
+            </div>
+
+            <!-- Imágenes -->
+<div formArrayName="imagenes">
+  <div *ngFor="let imgCtrl of imagenesControls; let i = index" [formGroupName]="i" class="space-x-2">
+    <input formControlName="url" placeholder="URL imagen" class="border p-2 rounded" />
+    <input formControlName="descripcion" placeholder="Descripción" class="border p-2 rounded" />
+    <button type="button" (click)="removeImagen(i)" class="text-red-600">Eliminar</button>
+  </div>
+  <button type="button" (click)="addImagen()" class="mt-2 text-green-600">Agregar imagen</button>
+</div>
+
+
+            <!-- Botones -->
+            <div class="flex justify-end gap-4 pt-4">
+              <button type="button" (click)="cancelar()" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Cancelar</button>
+              <button type="submit" [disabled]="lugarForm.invalid || isLoading" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 disabled:bg-green-300">
+                {{ isEdit ? 'Actualizar' : 'Guardar' }}
+                <span *ngIf="isLoading" class="ml-2 inline-block animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white"></span>
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>
-  
+</div>

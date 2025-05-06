@@ -40,17 +40,16 @@ export class FormLugarComponent implements OnInit {
       restricciones: ['', Validators.required],
       esDestacado: [false],
       estado: ['activo', Validators.required],
-      imagenes: this.fb.array([])
+      imagenes: this.fb.array([])  // Inicializar el array de imágenes
     });
 
-    // Verificar modo edición o creación
+    // Verificar si es edición o creación
     this.lugarId = this.route.snapshot.paramMap.get('id');
     if (this.lugarId) {
       this.isEdit = true;
       this.loadLugar(this.lugarId);
     } else {
-      // en creación, añadir un grupo de imagen inicial
-      this.addImagen();
+      this.addImagen();  // Añadir imagen por defecto
     }
   }
 
@@ -82,12 +81,27 @@ export class FormLugarComponent implements OnInit {
     this.lugaresService.getLugar(id).subscribe({
       next: lugar => {
         this.lugarForm.patchValue(lugar);
+
+        // Convertir los horarios a instancias de Date
+        if (lugar.horarioApertura) {
+          this.lugarForm.patchValue({
+            horarioApertura: new Date(lugar.horarioApertura).toISOString().substring(11, 16)
+          });
+        }
+        if (lugar.horarioCierre) {
+          this.lugarForm.patchValue({
+            horarioCierre: new Date(lugar.horarioCierre).toISOString().substring(11, 16)
+          });
+        }
+
+        // Cargar las imágenes
         if (lugar.imagenes?.length) {
           this.imagenesFormArray.clear();
           lugar.imagenes.forEach((img: any) => {
             this.imagenesFormArray.push(this.fb.group(img));
           });
         }
+
         this.isLoading = false;
       },
       error: err => {
@@ -97,19 +111,29 @@ export class FormLugarComponent implements OnInit {
     });
   }
 
+  convertToDate(time: string): Date {
+    const [hours, minutes] = time.split(':');
+    const date = new Date();
+    date.setHours(Number(hours), Number(minutes), 0, 0);
+    return date;
+  }
+
   onSubmit(): void {
-    console.log('onSubmit:', this.lugarForm.value, 'válido?', this.lugarForm.valid);
+    // Convertir los horarios a Date antes de enviar
+    const data = this.lugarForm.value;
+    data.horarioApertura = this.convertToDate(data.horarioApertura);
+    data.horarioCierre = this.convertToDate(data.horarioCierre);
+
     if (this.lugarForm.invalid) {
       this.lugarForm.markAllAsTouched();
       return;
     }
-  
+
     this.isLoading = true;
-    const data = this.lugarForm.value;
     const request$ = this.isEdit
       ? this.lugaresService.updateLugar(this.lugarId!, data)
-      : this.lugaresService.crearLugar(data); // El servicio maneja el Bearer token
-  
+      : this.lugaresService.crearLugar(data);
+
     request$.subscribe({
       next: () => this.router.navigate(['/lugares-turisticos']),
       error: err => {
@@ -118,7 +142,6 @@ export class FormLugarComponent implements OnInit {
       }
     });
   }
-  
 
   cancelar(): void {
     this.router.navigate(['/lugares-turisticos']);
