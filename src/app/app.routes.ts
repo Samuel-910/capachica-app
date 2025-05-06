@@ -160,7 +160,23 @@ export const routes: Routes = [
         path: 'editservicio/:id', // Ruta para editar un servicio existente
         loadComponent: () =>
           import('./business/servicios/form-servicios/form-servicios.component').then(m => m.FormServiciosComponent),
+      },
+      {
+        path: 'newservicio/:emprendimientoId', // Ruta para crear nuevo servicio con emprendimientoId
+        loadComponent: () =>
+          import('./business/servicios/form-servicios/form-servicios.component').then(m => m.FormServiciosComponent),
+      },
+      {
+        path: 'editservicio/:id/:emprendimientoId', // Ruta para editar un servicio existente con emprendimientoId
+        loadComponent: () =>
+          import('./business/servicios/form-servicios/form-servicios.component').then(m => m.FormServiciosComponent),
+      },{
+        path: 'tipos-servicio', // Ruta para ver todos los tipos de servicio
+        loadComponent: () =>
+          import('./business/tipos-servicio/tipos-servicio.component').then(m => m.TiposServicioComponent),
       }
+      
+      
       
 
     ],

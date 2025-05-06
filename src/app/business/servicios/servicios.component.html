@@ -21,7 +21,25 @@
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
             </svg>
           </div>
-          <input type="text" placeholder="Buscar Servicio" class="px-4 py-2 border rounded-lg w-64 focus:outline-none focus:ring focus:border-blue-300 text-black" />
+        <!-- Agrega un campo de búsqueda en tu HTML -->
+<div class="relative w-64 mb-4">
+    <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+      <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2"
+        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"></path>
+      </svg>
+    </span>
+    <input
+      type="text"
+      placeholder="Buscar Servicio"
+      class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-black"
+      [(ngModel)]="searchTerm" (input)="onSearch()"
+    />
+  </div>
+  
+          
+          
         </div>
       </div>
   

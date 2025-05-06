@@ -39,17 +39,53 @@ export class FormServiciosComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadServicioData();
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.isEdit = true;
+      this.serviciosService.getServicioById(+id).subscribe((servicio: any) => {
+        this.currentServicio = servicio;
+        this.servicioForm.patchValue(servicio);
+      });
+    }
+  }
+  
+  
+  guardar(): void {
+    if (this.servicioForm.invalid) return;
+  
+    const data = this.servicioForm.value;
+  
+    if (this.isEdit && this.currentServicio?.id) {
+      this.serviciosService.actualizarServicio(this.currentServicio.id, data).subscribe(() => {
+        this.router.navigate(['/servicios']);
+      });
+    } else {
+      const emprendimientoId = 1; // ajustar según lógica de negocio
+      this.serviciosService.crearServicio(emprendimientoId, data).subscribe(() => {
+        this.router.navigate(['/servicios']);
+      });
+    }
+  }
+  
+  loadEmprendimientoId(): void {
+    const emprendimientoId = this.route.snapshot.paramMap.get('emprendimientoId');
+    if (emprendimientoId) {
+      this.servicioForm.patchValue({ emprendimientoId });
+    }
   }
 
   loadServicioData(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.isEdit = true;
-
       this.serviciosService.getServicioById(Number(id)).subscribe(
         (data) => {
           this.currentServicio = data;
+          if (this.currentServicio && this.currentServicio.emprendimientoId) {
+            this.servicioForm.patchValue({
+              emprendimientoId: this.currentServicio.emprendimientoId
+            });
+          }
           this.servicioForm.patchValue(data);  // Rellenamos el formulario con los datos del servicio
         },
         (error) => {
@@ -60,10 +96,18 @@ export class FormServiciosComponent implements OnInit {
       this.isEdit = false;
     }
   }
+  
 
   guardarServicio(): void {
     if (this.servicioForm.valid) {
       const nuevoServicio = this.servicioForm.value;
+      const emprendimientoId = this.servicioForm.value.emprendimientoId;
+      
+      if (!emprendimientoId) {
+        console.error('Falta el emprendimientoId');
+        return; // O mostrar un mensaje de advertencia al usuario
+      }
+  
       if (this.isEdit && this.currentServicio) {
         // Actualizar servicio
         this.serviciosService.actualizarServicio(this.currentServicio.id, nuevoServicio).subscribe(
@@ -76,7 +120,7 @@ export class FormServiciosComponent implements OnInit {
         );
       } else {
         // Crear servicio
-        this.serviciosService.crearServicio(this.currentServicio?.emprendimientoId, nuevoServicio).subscribe(
+        this.serviciosService.crearServicio(emprendimientoId, nuevoServicio).subscribe(
           () => {
             this.router.navigate(['/servicios']);
           },
@@ -87,6 +131,9 @@ export class FormServiciosComponent implements OnInit {
       }
     }
   }
+  
+  
+  
 
   cancelar(): void {
     this.router.navigate(['/servicios']);

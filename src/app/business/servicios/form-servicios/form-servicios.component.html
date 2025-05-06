@@ -11,21 +11,9 @@
             <div class="space-y-6">
               <!-- Tipo de Servicio -->
               <div>
-                <label for="tipoServicioId" class="block font-medium text-gray-700">Tipo de Servicio</label>
-                <select
-                  id="tipoServicioId"
-                  formControlName="tipoServicioId"
-                  class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
-                >
-                  <option value="" disabled>Seleccione el tipo de servicio</option>
-                  <!-- Aquí debes agregar opciones dinámicas si es necesario -->
-                  <option value="1">Tipo 1</option>
-                  <option value="2">Tipo 2</option>
-                  <option value="3">Tipo 3</option>
-                </select>
+                <label>Tipo de Servicio</label>
+                <input formControlName="tipoServicioId" type="number" class="input" />
               </div>
-  
               <!-- Nombre y Descripción -->
               <div class="grid md:grid-cols-2 gap-6">
                 <div>
@@ -135,12 +123,13 @@
               <!-- Botones -->
               <div class="flex justify-end gap-6 mt-6">
                 <button
-                  type="submit"
-                  [disabled]="servicioForm.invalid"
-                  class="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700 transition duration-300 ease-in-out"
-                >
-                  {{ isEdit ? 'Actualizar' : 'Guardar' }}
-                </button>
+  type="submit"
+  [disabled]="servicioForm.invalid"
+  class="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700 transition duration-300 ease-in-out"
+>
+  {{ isEdit ? 'Actualizar' : 'Guardar' }}
+</button>
+
                 <button
                   type="button"
                   class="bg-gray-300 text-gray-800 px-8 py-3 rounded hover:bg-gray-400 transition duration-300 ease-in-out"

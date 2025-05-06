@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ServiciosService } from '../../core/services/servicios.service';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '../sidebar/sidebar.component';
@@ -8,14 +8,15 @@ import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-servicio',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, SidebarComponent, RouterModule],
+  imports: [ReactiveFormsModule, CommonModule, SidebarComponent, RouterModule, FormsModule],
   templateUrl: './servicios.component.html',
   styleUrls: ['./servicios.component.css']
 })
 export class ServicioComponent implements OnInit {
   servicios: any[] = [];
+  serviciosFiltrados: any[] = [];  // Servicios después de aplicar la búsqueda
   formServicio: FormGroup;
-  emprendimientoId = 1; // puedes cambiar esto dinámicamente
+  emprendimientoId = 1; // Puedes cambiar esto dinámicamente
   editando = false;
   servicioEditandoId: number | null = null;
   cargando = false;
@@ -24,22 +25,28 @@ export class ServicioComponent implements OnInit {
   paginaActual = 1;
   limitePorPagina = 10;
   totalElementos = 0;
-  
-  
+
+  // Variable de búsqueda
+  searchTerm: string = '';
 
   constructor(private servicioService: ServiciosService, private fb: FormBuilder) {
+    // Aquí agregamos los controles de 'detallesServicio' como un FormGroup anidado
     this.formServicio = this.fb.group({
       nombre: ['', Validators.required],
       descripcion: ['', Validators.required],
-      precio: ['', [Validators.required, Validators.min(0)]]
+      precio: ['', [Validators.required, Validators.min(0)]],
+      // Añadimos el FormGroup 'detallesServicio'
+      detallesServicio: this.fb.group({
+        idiomas: [''],
+        experiencia: [''],
+        incluye: [''] // Asegúrate de que 'incluye' esté aquí
+      })
     });
-    
   }
 
   ngOnInit(): void {
     this.obtenerServicios();
   }
-  
 
   obtenerServicios(): void {
     this.servicioService.getAllServicios(this.paginaActual, this.limitePorPagina).subscribe(
@@ -48,7 +55,7 @@ export class ServicioComponent implements OnInit {
         if (res) {
           this.servicios = res; // Si directamente es un array
           this.totalElementos = res.length; // Ajusta si la respuesta es un array simple
-          // No necesitas asignar 'totalPaginas' aquí, porque se calcula dinámicamente con el getter
+          this.filtrarServicios();  // Filtra los servicios según el término de búsqueda
         } else {
           console.error('Error al obtener datos', res);
         }
@@ -58,9 +65,22 @@ export class ServicioComponent implements OnInit {
       }
     );
   }
-  
-  
-  
+
+  filtrarServicios(): void {
+    if (this.searchTerm) {
+      this.serviciosFiltrados = this.servicios.filter(servicio =>
+        servicio.nombre.toLowerCase().includes(this.searchTerm.toLowerCase()) || 
+        servicio.descripcion.toLowerCase().includes(this.searchTerm.toLowerCase())
+      );
+    } else {
+      this.serviciosFiltrados = this.servicios; // Si no hay búsqueda, muestra todos los servicios
+    }
+  }
+
+  onSearch(): void {
+    this.filtrarServicios();  // Llama al método de filtrado cuando el usuario escribe en el campo
+  }
+
   crearServicio(): void {
     if (this.editando && this.servicioEditandoId !== null) {
       this.servicioService.actualizarServicio(this.servicioEditandoId, this.formServicio.value).subscribe(() => {
