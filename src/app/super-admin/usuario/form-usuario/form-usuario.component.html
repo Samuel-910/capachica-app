@@ -8,7 +8,7 @@
         <h2 class="text-2xl font-bold mb-4 text-gray-800">
           {{ isEdit ? 'Editar Usuario' : 'Registrar Usuario' }}
         </h2>
-        <form [formGroup]="usuarioForm" (ngSubmit)="guardarUsuario()">
+        <form [formGroup]="usuarioForm" (ngSubmit)="guardarUsuario()" enctype="multipart/form-data">
           <div class="space-y-6">
             <div class="grid md:grid-cols-2 gap-6">
               <div>
@@ -29,10 +29,15 @@
                 <input type="text" formControlName="direccion" placeholder="Dirección" class="border p-3 rounded w-full" />
               </div>
 
+              <!-- Imagen de perfil -->
               <div>
-                <label class="block font-medium text-gray-700">Foto de Perfil (URL)</label>
-                <input type="text" formControlName="fotoPerfilUrl" placeholder="https://..." class="border p-3 rounded w-full" />
+                <label class="block font-medium text-gray-700">Foto de Perfil</label>
+                <input type="file" accept="image/*" (change)="onFileChange($event)" class="border p-3 rounded w-full" />
+                <div *ngIf="previewUrl" class="mt-2">
+                  <img [src]="previewUrl" alt="Vista previa" class="w-32 h-32 object-cover rounded border shadow" />
+                </div>
               </div>
+
               <div>
                 <label class="block font-medium text-gray-700">Fecha de Nacimiento</label>
                 <input type="date" formControlName="fechaNacimiento" class="border p-3 rounded w-full" />

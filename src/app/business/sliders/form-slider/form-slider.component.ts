@@ -6,6 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import Swal from 'sweetalert2';
 import { SlidersService } from '../../../core/services/sliders.service';
 import { CommonModule } from '@angular/common';
+import { SupabaseService } from '../../../core/services/supabase.service';
 
 @Component({
   selector: 'app-form-slider',
@@ -25,13 +26,14 @@ export class FormSliderComponent implements OnInit {
     private fb: FormBuilder,
     private slidersService: SlidersService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private supabaseService: SupabaseService
   ) {}
 
   ngOnInit() {
     this.sliderForm = this.fb.group({
       nombre: ['', Validators.required],
-      descripcion: ['', Validators.required], // CAMBIADO de 'description' a 'descripcion'
+      descripcion: ['', Validators.required],
       estado: ['activo', Validators.required]
     });
 
@@ -44,7 +46,7 @@ export class FormSliderComponent implements OnInit {
         next: (slider) => {
           this.sliderForm.patchValue({
             nombre: slider.nombre,
-            descripcion: slider.description, // Mantiene la propiedad que viene del backend
+            descripcion: slider.description,
             estado: slider.estado
           });
 
@@ -72,14 +74,14 @@ export class FormSliderComponent implements OnInit {
   }
 
   async subirImagenASupabase(file: File): Promise<string> {
-    const supabase = (window as any)['supabase'];
+    const supabase = this.supabaseService.getClient();
     const filePath = `sliders/${Date.now()}-${file.name}`;
 
     const { data, error } = await supabase.storage.from('sliders').upload(filePath, file);
     if (error) throw new Error(error.message);
 
-    const { publicURL } = supabase.storage.from('sliders').getPublicUrl(filePath);
-    return publicURL;
+    const { data: publicUrlData } = supabase.storage.from('sliders').getPublicUrl(filePath);
+    return publicUrlData?.publicUrl;
   }
 
   async guardarSlider(): Promise<void> {

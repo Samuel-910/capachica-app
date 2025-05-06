@@ -155,9 +155,58 @@ export const routes: Routes = [
       {
         path: 'lugares-turisticos/edit/:id',
         loadComponent: () => import('./business/lugares-turisticos/form-lugar/form-lugar.component').then(m => m.FormLugarComponent),
+      },
+      {
+        path: 'sliders',
+        loadComponent: () => import('./business/sliders/sliders.component').then(m => m.SlidersComponent),
+      },
+      {
+        path: 'newslider',
+        loadComponent: () => import('./business/sliders/form-slider/form-slider.component').then(m => m.FormSliderComponent),
+      },
+    {
+        path: 'servicios',
+        loadComponent: () =>
+          import('./business/servicios/servicios.component').then(m => m.ServicioComponent),
+      },
+      {
+        path: 'newservicio', // Ruta para crear nuevo servicio
+        loadComponent: () =>
+          import('./business/servicios/form-servicios/form-servicios.component').then(m => m.FormServiciosComponent),
+      },
+      {
+        path: 'editservicio/:id', // Ruta para editar un servicio existente
+        loadComponent: () =>
+          import('./business/servicios/form-servicios/form-servicios.component').then(m => m.FormServiciosComponent),
+      },
+      {
+        path: 'newservicio/:emprendimientoId', // Ruta para crear nuevo servicio con emprendimientoId
+        loadComponent: () =>
+          import('./business/servicios/form-servicios/form-servicios.component').then(m => m.FormServiciosComponent),
+      },
+      {
+        path: 'editservicio/:id/:emprendimientoId', // Ruta para editar un servicio existente con emprendimientoId
+        loadComponent: () =>
+          import('./business/servicios/form-servicios/form-servicios.component').then(m => m.FormServiciosComponent),
+      },
+      {
+        path: 'tipos-servicio', // Ruta para ver todos los tipos de servicio
+        loadComponent: () =>
+          import('./business/tipos-servicio/tipos-servicio.component').then(m => m.TiposServicioComponent),
+      },
+      {
+        path: 'newtipos-servicio', // Ruta para crear un nuevo tipo de servicio
+        loadComponent: () =>
+          import('./business/tipos-servicio/form-tipos-servicio/form-tipos-servicio.component').then(m => m.FormTiposServicioComponent),
+      },
+      {
+        path: 'edittipos-servicio/:id', // Ruta para editar un tipo de servicio existente
+        loadComponent: () =>
+          import('./business/tipos-servicio/form-tipos-servicio/form-tipos-servicio.component').then(m => m.FormTiposServicioComponent),
       }
       
-
+      
+      
 
     ],
   },

@@ -122,21 +122,4 @@ export class AuthService {
     return this.http.post(`${this.API_BASE_usuario}`, data, { headers });
   }
 
-  // 🔒 Solicitar restablecimiento de contraseña
-  requestPasswordReset(email: string): Observable<any> {
-    return this.http.post<any>(this.REQUEST_PASSWORD_URL, { email }, { withCredentials: true });
-  }
-
-  // 🔒 Restablecer contraseña con token
-  resetPassword(token: string, password: string): Observable<any> {
-    return this.http.post<any>(
-      this.RESET_PASSWORD_URL,
-      {
-        token,
-        password,
-        password_confirmation: password
-      },
-      { withCredentials: true }
-    );
-  }
 }

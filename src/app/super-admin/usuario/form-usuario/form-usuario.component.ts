@@ -5,11 +5,13 @@ import { NavbarComponent } from '../../../business/sidebar/navbar/navbar.compone
 import { Router, ActivatedRoute } from '@angular/router';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../../core/services/auth.service';
+import { SupabaseService } from '../../../core/services/supabase.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-form-usuario',
   standalone: true,
-  imports: [SidebarComponent, NavbarComponent, ReactiveFormsModule],
+  imports: [SidebarComponent, NavbarComponent, ReactiveFormsModule, CommonModule],
   templateUrl: './form-usuario.component.html',
   styleUrl: './form-usuario.component.css'
 })
@@ -25,7 +27,8 @@ export class FormUsuarioComponent implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private supabaseService: SupabaseService
   ) {}
 
   ngOnInit() {
@@ -87,7 +90,28 @@ export class FormUsuarioComponent implements OnInit {
     return null;
   }
 
-  guardarUsuario() {
+  onFileChange(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = () => (this.previewUrl = reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  }
+
+  async subirImagenASupabase(file: File): Promise<string> {
+    const supabase = this.supabaseService.getClient();
+    const filePath = `usuarios/${Date.now()}-${file.name}`;
+
+    const { data, error } = await supabase.storage.from('usuarios').upload(filePath, file);
+    if (error) throw new Error(error.message);
+
+    const { data: publicUrlData } = supabase.storage.from('usuarios').getPublicUrl(filePath);
+    return publicUrlData?.publicUrl;
+  }
+
+  async guardarUsuario() {
     if (this.usuarioForm.invalid) {
       const camposInvalidos = Object.keys(this.usuarioForm.controls)
         .filter(key => this.usuarioForm.get(key)?.invalid)
@@ -111,29 +135,43 @@ export class FormUsuarioComponent implements OnInit {
     }
   
     const formValue = this.usuarioForm.getRawValue();
-    const formData = new FormData();
-  
-    formData.append('email', formValue.email);
-    formData.append('password', formValue.password);
-    formData.append('nombre', formValue.nombre);
-    formData.append('apellidos', formValue.apellidos);
-    formData.append('telefono', formValue.telefono);
-    formData.append('direccion', formValue.direccion);
-    formData.append('fechaNacimiento', formValue.fechaNacimiento || '');
-    formData.append('subdivisionId', formValue.subdivisionId);
+    let fotoPerfilUrl = '';
   
     if (this.selectedFile) {
-      formData.append('fotoPerfil', this.selectedFile);
+      try {
+        fotoPerfilUrl = await this.subirImagenASupabase(this.selectedFile);
+      } catch (error) {
+        console.error('Error al subir imagen:', error);
+        Swal.fire('Error', 'No se pudo subir la imagen de perfil.', 'error');
+        return;
+      }
     }
   
+    const payload = {
+      email: formValue.email,
+      password: formValue.password,
+      preferencias: {},
+      usuariosRoles: [
+        {
+          rolId: 2 // Emprendedor
+        }
+      ],
+
+        nombre: formValue.nombre,
+        apellidos: formValue.apellidos,
+        telefono: formValue.telefono,
+        direccion: formValue.direccion,
+        fotoPerfilUrl: fotoPerfilUrl,
+        fechaNacimiento: formValue.fechaNacimiento || null,
+        subdivisionId: Number(formValue.subdivisionId) || 0
+
+    };
+  
     if (this.isEdit && this.usuarioIdEdit) {
-      this.authService.actualizarUsuario(this.usuarioIdEdit, formData).subscribe({
-        next: (res) => {
-          console.log('Usuario actualizado:', res);
+      this.authService.actualizarUsuario(this.usuarioIdEdit, payload).subscribe({
+        next: () => {
           Swal.fire('Actualizado', 'El usuario fue actualizado correctamente.', 'success');
           this.usuarioForm.reset();
-          this.isEdit = false;
-          this.usuarioIdEdit = null;
           this.router.navigate(['/usuarios']);
         },
         error: (err) => {
@@ -142,9 +180,8 @@ export class FormUsuarioComponent implements OnInit {
         }
       });
     } else {
-      this.authService.register(formData).subscribe({
-        next: (res) => {
-          console.log('Usuario registrado:', res);
+      this.authService.register(payload).subscribe({
+        next: () => {
           Swal.fire('Registrado', 'El usuario fue registrado correctamente.', 'success');
           this.usuarioForm.reset();
           this.router.navigate(['/usuarios']);
@@ -156,6 +193,7 @@ export class FormUsuarioComponent implements OnInit {
       });
     }
   }
+  
 
   cancelar() {
     this.router.navigate(['/usuarios']);

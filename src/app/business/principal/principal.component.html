@@ -14,11 +14,13 @@
             [ngClass]="{ 'block': i === 0, 'hidden': i !== 0 }">
 
           <!-- Imagen de fondo -->
-          <img 
-          src="img/Hero section.png"
-            class="absolute top-0 left-0 w-full h-full object-cover"
+            <img 
+            *ngIf="slider.imagenes?.length"
+            [src]="'https://twsevdzjdnwjhdysvecm.supabase.co/storage/v1/object/public/sliders/' + slider.imagenes[0]?.url"
             [alt]="slider.nombre" />
-
+            class="absolute top-0 left-0 w-full h-full object-cover"
+          />
+          
           <!-- Degradado superpuesto -->
           <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent z-10"></div>
 
