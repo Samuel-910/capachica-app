@@ -120,6 +120,16 @@ export const routes: Routes = [
           import('./business/role-list/role-list.component').then(m => m.RoleListComponent),
       },
       {
+        path: 'newrol',
+        loadComponent: () =>
+          import('./business/role-list/rol-form/rol-form.component').then(m => m.RolFormComponent),
+      },
+      {
+        path: 'editrol/:id',
+        loadComponent: () =>
+          import('./business/role-list/rol-form/rol-form.component').then(m => m.RolFormComponent),
+      },
+      {
         path: 'usuario',
         loadComponent: () =>
           import('./super-admin/usuario/usuario.component').then(m => m.UsuarioComponent),
@@ -145,7 +155,15 @@ export const routes: Routes = [
       {
         path: 'lugares-turisticos/edit/:id',
         loadComponent: () => import('./business/lugares-turisticos/form-lugar/form-lugar.component').then(m => m.FormLugarComponent),
-      }
+      },
+      {
+        path: 'sliders',
+        loadComponent: () => import('./business/sliders/sliders.component').then(m => m.SlidersComponent),
+      },
+      {
+        path: 'newslider',
+        loadComponent: () => import('./business/sliders/form-slider/form-slider.component').then(m => m.FormSliderComponent),
+      },
       
 
 

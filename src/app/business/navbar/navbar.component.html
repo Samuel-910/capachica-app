@@ -87,47 +87,26 @@
   </div>
 
   <!-- Filtros -->
-  <div class="flex items-center gap-6 overflow-x-auto text-sm text-gray-600 p-4 bg-white">
-    <div class="flex flex-col items-center">
-      <i class="fas fa-tree"></i>
-      <span>Casas rurales</span>
-    </div>
-    <div class="flex flex-col items-center">
-      <i class="fas fa-star"></i>
-      <span>Icónicos</span>
-    </div>
-    <div class="flex flex-col items-center">
-      <i class="fas fa-bed"></i>
-      <span>Habitaciones</span>
-    </div>
-    <div class="flex flex-col items-center">
-      <i class="fas fa-swimming-pool"></i>
-      <span>Piscinas</span>
-    </div>
-    <div class="flex flex-col items-center">
-      <i class="fas fa-snowflake"></i>
-      <span>En el Ártico</span>
-    </div>
-    <div class="flex flex-col items-center">
-      <i class="fas fa-sparkles"></i>
-      <span>Novedad</span>
-    </div>
-    <div class="flex flex-col items-center">
-      <i class="fas fa-umbrella-beach"></i>
-      <span>Frente a la playa</span>
-    </div>
-    <div class="flex flex-col items-center">
-      <i class="fas fa-mountain"></i>
-      <span>Vistas increíbles</span>
-    </div>
-    <div class="flex flex-col items-center">
-      <i class="fas fa-home"></i>
-      <span>Cabañas</span>
-    </div>
-
-    <!-- Botón de filtros -->
-    <button class="ml-auto flex items-center gap-1 border rounded-full px-4 py-2 hover:shadow">
-      <i class="fas fa-sliders-h"></i> Filtros
+  <div class="flex justify-center items-center gap-6 overflow-x-auto text-sm text-gray-600 p-4 bg-white flex-wrap">
+    <button routerLink="/" routerLinkActive="text-green-600" class="flex flex-col items-center">
+      <i class="fas fa-store"></i>
+      <span>Emprendimientos</span>
     </button>
+    <button class="flex flex-col items-center">
+      <i class="fas fa-landmark"></i>
+      <span>Lugares Turísticos</span>
+    </button>
+    <button *ngFor="let tipo of tiposServicio" class="flex flex-col items-center">
+      <i class="fas fa-landmark"></i>
+      <p>{{ tipo.nombre }}</p>
+    </button>
+  
+    <!-- Botón de filtros (centrado con los demás elementos) -->
+    <div class="flex flex-col items-center ml-28">
+      <button class="flex items-center gap-1 border rounded-full px-4 py-2 hover:shadow">
+        <i class="fas fa-sliders-h"></i> Filtros
+      </button>
+    </div>
   </div>
+  
 </div>

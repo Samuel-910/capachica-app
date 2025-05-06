@@ -3,40 +3,40 @@ import { SidebarComponent } from "../../business/sidebar/sidebar.component";
 import { NavbarComponent } from "../../business/sidebar/navbar/navbar.component";
 import Swal from 'sweetalert2';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../core/services/auth.service';
+import { SlidersService } from '../../core/services/sliders.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-usuario',
+  selector: 'app-slider',
   standalone: true,
   imports: [SidebarComponent, NavbarComponent, CommonModule, RouterModule, FormsModule],
-  templateUrl: './usuario.component.html',
-  styleUrl: './usuario.component.css'
+  templateUrl: './sliders.component.html',
+  styleUrl: './sliders.component.css'
 })
-export class UsuarioComponent implements OnInit, DoCheck {
+export class SlidersComponent implements OnInit, DoCheck {
   filtroBusqueda: string = '';
-  columnaBusqueda: string = 'email';
+  columnaBusqueda: string = 'nombre';
   isLoading = true;
-  usuarios: any[] = [];
-  usuariosFiltrados: any[] = [];
+  sliders: any[] = [];
+  slidersFiltrados: any[] = [];
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, private slidersService: SlidersService) {}
 
   ngOnInit(): void {
-    this.cargarUsuarios();
+    this.cargarSliders();
   }
 
-  cargarUsuarios(): void {
-    this.authService.getUsuarios().subscribe({
+  cargarSliders(): void {
+    this.slidersService.listarSliders().subscribe({
       next: (data) => {
-        this.usuarios = data;
+        this.sliders = data.data ?? data;
         this.isLoading = false;
-        this.usuariosFiltrados = [...this.usuarios];
-        console.log('Usuarios cargados:', data);
+        this.slidersFiltrados = [...this.sliders];
+        console.log('Sliders cargados:', data);
       },
       error: (err) => {
-        console.error('Error al obtener usuarios:', err);
+        console.error('Error al obtener sliders:', err);
       }
     });
   }
@@ -44,18 +44,16 @@ export class UsuarioComponent implements OnInit, DoCheck {
   ngDoCheck(): void {
     const texto = this.filtroBusqueda.toLowerCase();
 
-    this.usuariosFiltrados = this.usuarios.filter((u) => {
+    this.slidersFiltrados = this.sliders.filter((s) => {
       if (!texto) return true;
 
       switch (this.columnaBusqueda) {
-        case 'email':
-          return u.email?.toLowerCase().includes(texto);
         case 'nombre':
-          return u.nombre?.toLowerCase().includes(texto);
-        case 'apellidos':
-          return u.apellidos?.toLowerCase().includes(texto);
-        case 'rol':
-          return u.usuariosRoles[0]?.rol?.nombre?.toLowerCase().includes(texto);
+          return s.nombre?.toLowerCase().includes(texto);
+        case 'description':
+          return s.description?.toLowerCase().includes(texto);
+        case 'estado':
+          return s.estado?.toLowerCase().includes(texto);
         default:
           return false;
       }
@@ -63,7 +61,7 @@ export class UsuarioComponent implements OnInit, DoCheck {
   }
 
   editar(id: string): void {
-    this.router.navigate([`/editusuario/${id}`]);
+    this.router.navigate([`/editslider/${id}`]);
   }
 
   eliminar(id: number): void {
@@ -77,21 +75,21 @@ export class UsuarioComponent implements OnInit, DoCheck {
       confirmButtonText: 'Sí, eliminar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.authService.eliminarUsuario(id).subscribe({
+        this.slidersService.eliminarSlider(id).subscribe({
           next: () => {
             Swal.fire({
               icon: 'success',
               title: '¡Eliminado!',
-              text: 'El usuario ha sido eliminado correctamente.'
+              text: 'El slider ha sido eliminado correctamente.'
             });
-            this.cargarUsuarios();
+            this.cargarSliders();
           },
           error: (error) => {
-            console.error('Error al eliminar usuario:', error);
+            console.error('Error al eliminar slider:', error);
             Swal.fire({
               icon: 'error',
               title: 'Error',
-              text: 'No se pudo eliminar el usuario.'
+              text: 'No se pudo eliminar el slider.'
             });
           }
         });

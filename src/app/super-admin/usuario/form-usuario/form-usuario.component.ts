@@ -14,6 +14,8 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrl: './form-usuario.component.css'
 })
 export class FormUsuarioComponent implements OnInit {
+  selectedFile: File | null = null;
+  previewUrl: string | null = null;
   usuarioForm!: FormGroup;
   mostrarPassword: boolean = false;
   isEdit: boolean = false;
@@ -86,24 +88,46 @@ export class FormUsuarioComponent implements OnInit {
   }
 
   guardarUsuario() {
-    if (this.usuarioForm.invalid) return;
-
+    if (this.usuarioForm.invalid) {
+      const camposInvalidos = Object.keys(this.usuarioForm.controls)
+        .filter(key => this.usuarioForm.get(key)?.invalid)
+        .map(key => {
+          switch (key) {
+            case 'nombre': return 'Nombre';
+            case 'apellidos': return 'Apellidos';
+            case 'email': return 'Correo Electrónico válido';
+            case 'password': return 'Contraseña (mínimo 6 caracteres)';
+            case 'confirmPassword': return 'Confirmación de Contraseña';
+            default: return key;
+          }
+        });
+  
+      Swal.fire({
+        icon: 'error',
+        title: 'Formulario incompleto',
+        html: `Por favor corrige o completa los siguientes campos:<br><b>${camposInvalidos.join(', ')}</b>`
+      });
+      return;
+    }
+  
     const formValue = this.usuarioForm.getRawValue();
-
-    const usuario = {
-      nombre: formValue.nombre,
-      apellidos: formValue.apellidos,
-      telefono: formValue.telefono,
-      direccion: formValue.direccion,
-      fotoPerfilUrl: formValue.fotoPerfilUrl,
-      fechaNacimiento: formValue.fechaNacimiento,
-      subdivisionId: +formValue.subdivisionId,
-      email: formValue.email,
-      password: formValue.password
-    };
-
+    const formData = new FormData();
+  
+    formData.append('email', formValue.email);
+    formData.append('password', formValue.password);
+    formData.append('nombre', formValue.nombre);
+    formData.append('apellidos', formValue.apellidos);
+    formData.append('telefono', formValue.telefono);
+    formData.append('direccion', formValue.direccion);
+    formData.append('fechaNacimiento', formValue.fechaNacimiento || '');
+    formData.append('subdivisionId', formValue.subdivisionId);
+  
+    if (this.selectedFile) {
+      formData.append('fotoPerfil', this.selectedFile);
+    }
+  
     if (this.isEdit && this.usuarioIdEdit) {
-      this.authService.actualizarUsuario(this.usuarioIdEdit, usuario).subscribe({
+      this.authService.actualizarUsuario(this.usuarioIdEdit, formData).subscribe({
         next: (res) => {
           console.log('Usuario actualizado:', res);
           Swal.fire('Actualizado', 'El usuario fue actualizado correctamente.', 'success');
@@ -118,7 +142,7 @@ export class FormUsuarioComponent implements OnInit {
         }
       });
     } else {
-      this.authService.register(usuario).subscribe({
+      this.authService.register(formData).subscribe({
         next: (res) => {
           console.log('Usuario registrado:', res);
           Swal.fire('Registrado', 'El usuario fue registrado correctamente.', 'success');

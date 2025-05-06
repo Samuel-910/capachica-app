@@ -1,55 +1,93 @@
-import { Component, inject, PLATFORM_ID } from '@angular/core';
-import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
-import { SidebarComponent } from '../sidebar/sidebar.component';
-import { NavbarComponent } from '../sidebar/navbar/navbar.component';
+import { Component, OnInit, DoCheck } from '@angular/core';
+import { SidebarComponent } from '../../business/sidebar/sidebar.component';
+import { NavbarComponent } from '../../business/sidebar/navbar/navbar.component';
+import Swal from 'sweetalert2';
+import { Router, RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RolesService } from '../../core/services/roles.service';
 
 @Component({
-  selector: 'app-role-list',
+  selector: 'app-rol',
   standalone: true,
-  imports: [CommonModule, HttpClientModule,SidebarComponent,NavbarComponent],
+  imports: [SidebarComponent, NavbarComponent, CommonModule, RouterModule, FormsModule],
   templateUrl: './role-list.component.html',
+  styleUrl: './role-list.component.css'
 })
-export class RoleListComponent {
-  http = inject(HttpClient);
-  platformId = inject(PLATFORM_ID);
+export class RoleListComponent implements OnInit, DoCheck {
+  filtroBusqueda: string = '';
+  columnaBusqueda: string = 'nombre';
+  isLoading = true;
+  roles: any[] = [];
+  rolesFiltrados: any[] = [];
 
-  roles: any[] = []; // Esta variable contendrá los roles
-  errorMessage: string = ''; // Variable para mostrar errores, si los hay
-  loading: boolean = true; // Indicador de carga
+  constructor(private router: Router, private rolesService: RolesService) {}
 
-  ngOnInit() {
-    // Verifica si estamos en el navegador antes de usar localStorage
-    if (isPlatformBrowser(this.platformId)) {
-      const token = localStorage.getItem('authToken'); // Asegúrate de que el token esté en localStorage
+  ngOnInit(): void {
+    this.cargarRoles();
+  }
 
-      if (!token) {
-        this.errorMessage = 'No se encontró el token. Asegúrate de estar logueado.';
-        this.loading = false; // Termina la carga si no hay token
-        return; // Si no hay token, no intentamos hacer la solicitud
+  cargarRoles(): void {
+    this.rolesService.listarRoles().subscribe({
+      next: (data) => {
+        this.roles = data;
+        this.rolesFiltrados = [...this.roles];
+        this.isLoading = false;
+        console.log('Roles cargados:', data);
+      },
+      error: (err) => {
+        console.error('Error al obtener roles:', err);
+        this.isLoading = false;
       }
+    });
+  }
 
-      const headers = new HttpHeaders({
-        Authorization: `Bearer ${token}`,
-      });
+  ngDoCheck(): void {
+    const texto = this.filtroBusqueda.toLowerCase();
+    this.rolesFiltrados = this.roles.filter((rol) => {
+      if (!texto) return true;
 
-      // Realizamos la petición HTTP para obtener los roles
-      this.http.get<any[]>('https://capachica-tours-backend.vercel.app/api/rbac/roles', { headers })
-        .subscribe({
-          next: (data) => {
-            console.log('Roles obtenidos:', data); // Verifica en consola que los datos están llegando
-            this.roles = data; // Asignamos los roles a la variable
-            this.loading = false; // Termina la carga al recibir los datos
+      switch (this.columnaBusqueda) {
+        case 'nombre':
+          return rol.nombre?.toLowerCase().includes(texto);
+        case 'descripcion':
+          return rol.descripcion?.toLowerCase().includes(texto);
+        case 'permiso':
+          return rol.rolesPermisos?.some((rp: any) =>
+            rp.permiso?.nombre?.toLowerCase().includes(texto)
+          );
+        default:
+          return false;
+      }
+    });
+  }
+
+  editar(id: number): void {
+    this.router.navigate([`/editrol/${id}`]);
+  }
+
+  eliminarRol(id: number): void {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: '¡Esta acción no se puede deshacer!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.rolesService.eliminarRol(id).subscribe({
+          next: () => {
+            Swal.fire('Eliminado', 'El rol ha sido eliminado correctamente.', 'success');
+            this.cargarRoles();
           },
-          error: (err) => {
-            this.errorMessage = 'Hubo un error al obtener los roles. Inténtalo nuevamente.';
-            this.loading = false; // Termina la carga en caso de error
-            console.error('Error al obtener roles:', err);
+          error: (error) => {
+            console.error('Error al eliminar rol:', error);
+            Swal.fire('Error', 'No se pudo eliminar el rol.', 'error');
           }
         });
-    } else {
-      this.errorMessage = 'Este componente solo se puede ejecutar en el navegador.';
-      this.loading = false;
-    }
+      }
+    });
   }
 }

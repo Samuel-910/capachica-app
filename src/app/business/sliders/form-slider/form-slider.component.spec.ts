@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LugarprinComponent } from './lugarprin.component';
+import { FormSliderComponent } from './form-slider.component';
 
-describe('LugarprinComponent', () => {
-  let component: LugarprinComponent;
-  let fixture: ComponentFixture<LugarprinComponent>;
+describe('FormSliderComponent', () => {
+  let component: FormSliderComponent;
+  let fixture: ComponentFixture<FormSliderComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [LugarprinComponent]
+      imports: [FormSliderComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(LugarprinComponent);
+    fixture = TestBed.createComponent(FormSliderComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

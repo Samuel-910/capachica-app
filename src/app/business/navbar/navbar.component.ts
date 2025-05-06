@@ -3,6 +3,7 @@ import { RouterModule } from '@angular/router';
 import { initFlowbite } from 'flowbite';
 import { EmprendimientoService } from '../../core/services/emprendimiento.service';
 import { CommonModule } from '@angular/common';
+import { TiposServicioService } from '../../core/services/tipos-servicios.service';
 
 
 @Component({
@@ -13,39 +14,32 @@ import { CommonModule } from '@angular/common';
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent implements OnInit{
+  tiposServicio: any[] = [];
+
+  constructor(private tiposServicioService: TiposServicioService) {}
   ocultarNav = false;
 
   @HostListener('window:scroll', [])
   onScroll(): void {
     this.ocultarNav = window.scrollY > 100;
   }
-  tema: 'light' | 'dark' | 'theme-verde' = 'light';
-
-  cambiarTema(nuevoTema: 'light' | 'dark' | 'theme-verde') {
-    console.log(this.tema);
-    this.tema = nuevoTema;
-  }
   
-
-  emprendimientos: any[] = [];
   ngOnInit(): void {
     if (typeof window !== 'undefined') {
-      // Código que depende del DOM
-      this.cargarEmprendimientos();
       initFlowbite();
+      this.cargarTiposServicio();
     }
   }
-    constructor(private emprendimientoService:EmprendimientoService) {}
-  cargarEmprendimientos(): void {
-    this.emprendimientoService.listarEmprendimientos({ page: 1, limit: 10 }).subscribe({
+  cargarTiposServicio(): void {
+    this.tiposServicioService.listarTiposServicio().subscribe({
       next: (data) => {
-        this.emprendimientos = data.emprendimientos;  // 👈 Aquí está el cambio
-        console.log('Emprendimientos cargados:', this.emprendimientos);
+        this.tiposServicio = data; // o simplemente res si no hay wrapper
+        console.log('Tipos de servicio cargados:', this.tiposServicio);
       },
       error: (err) => {
-        console.error('Error al cargar emprendimientos:', err);
+        console.error('Error al cargar tipos de servicio:', err);
       }
     });
-
   }
+
 }

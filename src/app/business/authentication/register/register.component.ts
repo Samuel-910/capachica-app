@@ -13,6 +13,8 @@ import Swal from 'sweetalert2';
   styleUrls: ['./register.component.css'],
 })
 export class RegisterComponent {
+  selectedFile: File | null = null;
+  previewUrl: string | null = null;
   nombre = '';
   apellidos = '';
   telefono = '';
@@ -34,19 +36,20 @@ export class RegisterComponent {
   }
 
   onSubmit() {
-    // Envía sólo si el formulario estuviera validado
-    this.authService.register({
+    const usuario = {
+      email: this.email,
+      password: this.password,
       nombre: this.nombre,
       apellidos: this.apellidos,
       telefono: this.telefono,
       direccion: this.direccion,
-      fotoPerfilUrl: this.fotoPerfilUrl,
       fechaNacimiento: this.fechaNacimiento,
       subdivisionId: this.subdivisionId,
-      email: this.email,
-      password: this.password
-
-    }).subscribe({
+      preferencias: {},
+      usuariosRoles: []
+    };
+  
+    this.authService.register(usuario).subscribe({
       next: res => {
         console.log('Usuario registrado:', res);
         Swal.fire({
@@ -55,7 +58,7 @@ export class RegisterComponent {
           text: 'Tu cuenta se ha creado correctamente.',
           confirmButtonText: 'Aceptar'
         }).then(() => {
-          this.router.navigate(['/login']); // Redirige si deseas
+          this.router.navigate(['/login']);
         });
       },
       error: err => {
@@ -68,5 +71,20 @@ export class RegisterComponent {
         });
       }
     });
+  }
+  
+  
+  
+
+
+  onFileSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (file) {
+      this.selectedFile = file;
+
+      const reader = new FileReader();
+      reader.onload = (e: any) => this.previewUrl = e.target.result;
+      reader.readAsDataURL(file);
+    }
   }
 }

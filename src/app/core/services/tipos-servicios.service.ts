@@ -1,0 +1,41 @@
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable, tap } from 'rxjs';
+
+@Injectable({ providedIn: 'root' })
+export class TiposServicioService {
+    private readonly API = 'https://capachica-app-back-production.up.railway.app/tipos-servicio';
+
+    constructor(private http: HttpClient) { }
+
+    // Crear un nuevo tipo de servicio (POST /tipos-servicio)
+    crearTipoServicio(data: any): Observable<any> {
+        return this.http.post(this.API, data, this.getAuthHeaders());
+    }
+
+    listarTiposServicio(): Observable<any> {
+        return this.http.get(this.API, this.getAuthHeaders()).pipe(
+            tap((res) => console.log('Respuesta tipos-servicio:', res))
+        );
+    }
+
+    // Obtener un tipo de servicio por ID (GET /tipos-servicio/{id})
+    obtenerTipoServicio(id: number | string): Observable<any> {
+        return this.http.get(`${this.API}/${id}`, this.getAuthHeaders());
+    }
+
+    // Eliminar un tipo de servicio (DELETE /tipos-servicio/{id})
+    eliminarTipoServicio(id: number | string): Observable<any> {
+        return this.http.delete(`${this.API}/${id}`, this.getAuthHeaders());
+    }
+
+    // Utilidad: obtener headers con token
+    private getAuthHeaders() {
+        const token = localStorage.getItem('authToken');
+        return {
+            headers: new HttpHeaders({
+                Authorization: `Bearer ${token}`
+            })
+        };
+    }
+}

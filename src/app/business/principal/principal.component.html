@@ -1,224 +1,79 @@
 <!-- Navbar -->
 <app-navbar></app-navbar>
 
-<!-- Hero -->
-<div class="w-full h-[728px] relative z-10 overflow-hidden">
-  <img src="img/Hero section.png" class="w-full h-full object-cover" alt="Hero Background">
 
-  <div class="absolute left-[227px] top-[434px] w-[567px] h-28 text-black text-2xl font-medium font-['Poppins'] leading-7 tracking-wide">
-    Capachica es un destino tranquilo, donde la naturaleza y las tradiciones andinas se combinan para ofrecer a los visitantes una experiencia auténtica de paz y conexión cultural.
-  </div>
+<div class="w-full h-[712px] mt-20 relative z-10 overflow-hidden">
+  <div *ngIf="sliders.length > 0" id="controls-carousel" class="relative w-full h-full" data-carousel="static">
 
-  <div class="absolute left-[230px] top-[231px] text-white text-6xl font-bold font-['Source_Serif_Pro'] leading-[70px] tracking-[3.20px]">
-    Capachica: tradición, calma y <br />belleza natural.
-  </div>
-</div>
+    <!-- Carousel wrapper -->
+    <div id="default-carousel" class="relative w-full h-full overflow-hidden rounded-lg" data-carousel="slide">
+      <div class="relative h-full w-full">
+        <div *ngFor="let slider of sliders; let i = index"
+            class="duration-700 ease-in-out"
+            [attr.data-carousel-item]="i === 0 ? 'active' : ''"
+            [ngClass]="{ 'block': i === 0, 'hidden': i !== 0 }">
 
-<div class="max-w-6xl mx-auto overflow-hidden">
-  <swiper-container
-    id="mySwiper"
-    class="mySwiper"
-    pagination="true"
-    effect="coverflow"
-    grab-cursor="true"
-    centered-slides="true"
-    slides-per-view="auto"
-    coverflow-effect-rotate="15"
-    coverflow-effect-stretch="0"
-    coverflow-effect-depth="100"
-    coverflow-effect-modifier="1"
-    coverflow-effect-slide-shadows="false"
-    initial-slide="2"
-    loop="true"
-  >
-    <swiper-slide>
-      <img src="img/Slide Item — 1.png" alt="Slide 1">
-      <div class="slide-label">ISLA TIKONATA <img src="img/Peru.png" alt="Peru"></div>
-    </swiper-slide>
+          <!-- Imagen de fondo -->
+          <img 
+          src="img/Hero section.png"
+            class="absolute top-0 left-0 w-full h-full object-cover"
+            [alt]="slider.nombre" />
 
-    <swiper-slide>
-      <img src="img/Slide Item — 2.png" alt="Slide 2">
-      <div class="slide-label">ISLA TIKONATA <img src="img/Peru.png" alt="Peru"></div>
-    </swiper-slide>
+          <!-- Degradado superpuesto -->
+          <div class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent z-10"></div>
 
-    <swiper-slide>
-      <img src="img/Slide Item — 3.png" alt="Slide 3">
-      <div class="slide-label">ISLA TIKONATA <img src="img/Peru.png" alt="Peru"></div>
-    </swiper-slide>
-
-    <swiper-slide>
-      <img src="img/Slide Item — 4.png" alt="Slide 4">
-      <div class="slide-label">ISLA TIKONATA <img src="img/Peru.png" alt="Peru"></div>
-    </swiper-slide>
-
-    <swiper-slide>
-      <img src="img/Slide Item — 1.png" alt="Slide 5">
-      <div class="slide-label">ISLA TIKONATA <img src="img/Peru.png" alt="Peru"></div>
-    </swiper-slide>
-    
-    <swiper-slide>
-      <img src="img/Slide Item — 1.png" alt="Slide 6">
-      <div class="slide-label">ISLA TIKONATA <img src="img/Peru.png" alt="Peru"></div>
-    </swiper-slide>
-  </swiper-container>
-</div>
-
-
-<div class="max-w-6xl mx-auto">
-  <div class="flex justify-between items-center">
-    <h1 class="text-3xl font-bold mb-4">Paquetes turisticos</h1>
-    <button routerLink="/paquetesprin" class="text-2xl font-bold mb-4">Ver todo</button>
-  </div>
-  <div class="border-b-2 border-blue-500 w-full mb-6"></div>
-  <div class="flex justify-center p-3">
-    <div class="grid grid-rows-2 gap-4">
-      <div class="grid grid-cols-2 gap-4">
-        <button
-          *ngFor="let paquete of paquetes.slice(0, 2)"
-          class="flex justify-center items-center"
-          [routerLink]="['/paquetesdetalle', paquete.id]"
-          >
-          <div class="relative">
-            <img class="h-auto w-full rounded-lg" src="img/Picture.png" alt="{{ paquete.titulo }}" />
-            <div class="absolute top-4 left-4 rounded-lg flex items-center gap-2">
-              <span class="font-bold text-white text-3xl">{{ paquete.titulo }}</span>
-            </div>
-          </div>
-        </button>
-      </div>
-
-      <div class="grid grid-cols-3 gap-4">
-        <!-- Mostramos los siguientes tres paquetes -->
-        <button
-          *ngFor="let paquete of paquetes.slice(2, 5)"
-          class="flex justify-center items-center"
-          [routerLink]="['/paquetesdetalle', paquete.id]"
-        >
-          <div class="relative">
-            <img class="h-auto w-full rounded-lg" src="img/Picture (1).png" alt="{{ paquete.titulo }}" />
-            <div class="absolute top-4 left-4 rounded-lg flex items-center gap-2">
-              <span class="font-bold text-white text-3xl">{{ paquete.titulo }}</span>
-            </div>
-          </div>
-        </button>
-      </div>
-    </div>
-  </div>
-
-</div>
-<div class="max-w-6xl mx-auto">
-<!-- familias -->
-<h1 class="text-3xl font-bold mb-4">Familias</h1>
-<div class="border-b-2 border-blue-500 w-full mb-6"></div>
-<swiper-container *ngIf="emprendimientos.length > 0"
-class="mySwiper"
-pagination="true"
-pagination-clickable="true"
-space-between="30"
-slides-per-view="4"
-loop="true"
->
-  <swiper-slide *ngFor="let emp of emprendimientos" class="w-64 flex-shrink-0 bg-white shadow rounded-xl cursor-pointer hover:shadow-lg transition">
-    <div (click)="irADetalles(emp.id)">
-      <div class="relative ">
-        <img [src]="emp.imagen || 'img/fam1.png'" alt="{{ emp.nombre }}" class="rounded-t-xl w-full h-40 object-cover">
-        <button class="absolute top-2 right-2 bg-white p-2 rounded-full shadow hover:bg-gray-100">♥</button>
-      </div>
-      <div class="p-4">
-        <h2 class="font-bold text-lg">{{ emp.nombre }}</h2>
-        <p class="text-sm text-gray-500">{{ emp.direccion }}</p>
-        <div class="mt-2 flex items-center space-x-2 text-sm">
-          <span class="bg-blue-600 text-white px-2 py-0.5 rounded">9.8</span>
-          <span class="text-gray-600">Excepcional · 89 comentarios</span>
-        </div>
-      </div>
-    </div>
-  </swiper-slide>
-</swiper-container>
-
-
-
-<!-- Platos locales -->
-<div class="max-w-6xl mx-auto">
-  <h1 class="text-3xl font-bold mb-4">Platos locales</h1>
-  <div class="border-b-2 border-blue-500 w-full mb-6"></div>
-    <swiper-container *ngIf="platosTipicos && platosTipicos.length > 0"
-    class="mySwiper"
-    pagination="true"
-    pagination-clickable="true"
-    space-between="30"
-    slides-per-view="3"
-    loop="true"
-    >
-      <swiper-slide *ngFor="let plato of platosTipicos">
-        <div class="bg-white border-2 border-yellow-200 rounded-lg shadow-md overflow-hidden h-full">
-          <div class="max-w-sm mx-auto">
-
-            <div class="relative h-40">
-              <img src="img/comi1.png" alt="{{plato.nombre}}" class="w-full h-full object-cover rounded-t-lg">
-              <button class="absolute top-2 right-2 bg-white p-1.5 rounded-full shadow hover:bg-gray-100">♥</button>
-            </div>
-            <div class="p-4">
-              <div class="flex justify-between items-center mb-2">
-                <div class="flex items-center text-yellow-400 text-sm">
-                  ★★★★★ <span class="text-gray-500 ml-2">82 reviews</span>
-                </div>
-                <button class="bg-white border-2 border-yellow-400 p-1.5 rounded-full shadow hover:bg-gray-100">
-                  ♥
-                </button>
-              </div>
-              <h2 class="font-bold text-lg text-center mb-2">{{plato.nombre}}</h2>
-              <p class="text-sm text-gray-700 text-center mb-4">
-                {{plato.descripcion}}
-              </p>
-              <div class="flex justify-center mt-4">
-                <button class="bg-yellow-400 hover:bg-yellow-500 text-white font-semibold px-6 py-1 rounded">Explorar Más</button>
-              </div>
+          <!-- Texto principal -->
+          <div class="absolute inset-y-0 left-0 z-20 flex flex-col justify-center pl-10 md:pl-24 max-w-xl text-white">
+            <h1 class="text-4xl md:text-6xl font-bold leading-tight mb-4">
+              {{ slider.nombre }}
+            </h1>
+            <p class="text-lg md:text-xl mb-6">
+              {{ slider.description }}
+            </p>
+            <div class="flex gap-4">
+              <button routerLink="/alojamientos"
+                      class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition">
+                Explorar alojamientos
+              </button>
+              <button routerLink="/experiencias"
+                      class="bg-white text-blue-900 hover:bg-gray-200 px-6 py-3 rounded-lg font-semibold transition">
+                Descubrir experiencias
+              </button>
             </div>
           </div>
         </div>
-      </swiper-slide>
-    </swiper-container>
-</div>
-
-
-
-
-  <!-- Sección superior -->
-  <div class="max-w-6xl mx-auto mt-10 grid md:grid-cols-2 gap-4">
-    <div>
-      <img src="img/sup.png" alt="Mujer tradicional" class="rounded-md border-2 border-blue-300">
+      </div>
     </div>
-    <div class="bg-blue-100 border border-dashed border-blue-400 p-6 flex flex-col justify-center text-center text-xl leading-relaxed">
-      <h2 class="font-bold mb-4 text-2xl">... Para una aventura inolvidable !</h2>
-      <p class="mb-2 font-princess">Vive la cultura de Capachica con sus familias.
-      Participa en el desarrollo de nuestros Proyectos
-      Disfruta de el sabor y tradición en cada bocado.</p>
-      <p class="mb-2 font-princess">Capachica: tu próximo destino de aventura y cultura.</p>
-    </div>
-  </div>
-  <!-- Sección inferior -->
-  <div class="max-w-6xl mx-auto mt-10 grid md:grid-cols-2 gap-4 items-center p-5">
-    <div class="bg-blue-100 p-6 rounded-md shadow text-center text-[17px] leading-relaxed">
-      <h2 class="font-bold text-xl mb-2">Allin Jamunky Wasiman</h2>
-      <p class="text-red-600 font-semibold mb-4">¡ VIVE UNA EXPERIENCIA AUTÉNTICA ÚNICA !</p>
-      <p class="mb-2 italic"> Descubre las maravillosas islas del Lago Titikaka y la belleza de la península de Capachica.
-      Comparte momentos inolvidables con las comunidades Quechuas.
-      Saborea ricos platos típicos andinos.
-      Participa en las actividades ancestrales: pesca artesanal, tejidos tradicionales, productos agrícolas y plantas medicinales.
-      Sumérgete en las leyendas y los misterios del Lago Titikaka alrededor de una fogata.
-      Observa e interpreta las estrellas del cielo andino.</p>
-      <p class="text-red-600 font-semibold">¡ Vive una nueva sensación en la Tierra de los Quechuas !</p>
-    </div>
-    <div class="w-full">
-      <img src="img/inf.png" alt="Hombre tradicional" class="rounded-md shadow-lg max-w">
-    </div>
+
+    <!-- Botones de navegación -->
+    <button type="button"
+            class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+            data-carousel-prev>
+      <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
+        <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 6 10">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4" />
+        </svg>
+        <span class="sr-only">Anterior</span>
+      </span>
+    </button>
+
+    <button type="button"
+            class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+            data-carousel-next>
+      <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
+        <svg class="w-4 h-4 text-white" fill="none" viewBox="0 0 6 10">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4" />
+        </svg>
+        <span class="sr-only">Siguiente</span>
+      </span>
+    </button>
+
   </div>
 </div>
+
 
 <footer class="bg-[#0f0f0f] text-white py-12 px-6 md:px-20">
   <div class="max-w-7xl mx-auto grid md:grid-cols-5 gap-10 text-sm">
-
     <!-- About us -->
     <div>
       <h3 class="text-white font-semibold mb-3">About us</h3>
@@ -289,18 +144,33 @@ loop="true"
     <!-- Newsletter -->
     <div>
       <h3 class="text-white font-semibold mb-3">Sign up to our Newsletter</h3>
-      <p class="text-gray-400 text-sm mb-3">For a weekly curated collection of 3 things you can watch, read or listen to switch off from the busy everyday.</p>
+      <p class="text-gray-400 text-sm mb-3">
+        For a weekly curated collection of 3 things you can watch, read or
+        listen to switch off from the busy everyday.
+      </p>
       <form class="flex flex-col sm:flex-row gap-2">
-        <input type="email" placeholder="your@email.com" class="px-3 py-2 rounded w-full text-black">
-        <button class="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-4 py-2 rounded">Join the mailing list</button>
+        <input
+          type="email"
+          placeholder="your@email.com"
+          class="px-3 py-2 rounded w-full text-black"
+        />
+        <button
+          class="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold px-4 py-2 rounded"
+        >
+          Join the mailing list
+        </button>
       </form>
     </div>
-
   </div>
 
   <!-- Bottom bar -->
-  <div class="mt-12 border-t border-gray-700 pt-6 flex flex-col sm:flex-row justify-between items-center text-gray-400 text-sm">
-    <p><span class="font-bold text-white">UNWIND</span><span class="text-green-400 font-bold">CABINS</span></p>
+  <div
+    class="mt-12 border-t border-gray-700 pt-6 flex flex-col sm:flex-row justify-between items-center text-gray-400 text-sm"
+  >
+    <p>
+      <span class="font-bold text-white">UNWIND</span
+      ><span class="text-green-400 font-bold">CABINS</span>
+    </p>
     <p class="mt-2 sm:mt-0">&copy; 2023 UnwindCabins</p>
     <div class="flex space-x-4 mt-2 sm:mt-0">
       <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
