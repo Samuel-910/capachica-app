@@ -9,6 +9,8 @@ import { SlidersService } from '../../core/services/sliders.service';
 import { initFlowbite } from 'flowbite';
 import { register } from 'swiper/element/bundle';
 import { ServiciosService } from '../../core/services/servicios.service';
+import { PaqueteTuristicoService } from '../../core/services/paquetes-turisticos.service';
+import { ResenaService } from '../../core/services/resenas.service';
 
 // Registrar componentes personalizados de Swiper (solo si los usas en HTML)
 register();
@@ -23,20 +25,24 @@ register();
 })
 export class PrincipalComponent implements OnInit {
   sliders: any[] = [];
-  emprendimientos: any[] = [];
-  platosTipicos: any[] = [];
-  paquetes: any[] = [];
-  servicios: any[] = [];
-  tipoServicioId: string = '2';
+  paquetesTuristicos: any[] = []; // Aquí almacenamos la lista de paquetes turísticos
+  isLoading: boolean = false;
+  serviciosAlojamiento: any[] = [];  // Variable para almacenar los servicios de alojamiento
+  serviciosExperiencia: any[] = [];
+  tipoServicioId: string = '';
 
   constructor(
     private slidersService: SlidersService,
-    private servicioService: ServiciosService
+    private servicioService: ServiciosService,
+    private paqueteTuristicoService: PaqueteTuristicoService,
+    private resenaService: ResenaService
   ) {}
 
   ngOnInit(): void {
     this.cargarSliders();
-    this.obtenerServiciosPorTipo();
+    this.obtenerServiciosConReseñas();
+    this.obtenerServiciosPorTipoExperiencia();
+    this.obtenerPaquetesTuristicos();
   }
 
 
@@ -55,20 +61,59 @@ export class PrincipalComponent implements OnInit {
       }
     });
   }
-  obtenerServiciosPorTipo(): void {
+  obtenerServiciosConReseñas(): void {
+    this.tipoServicioId = '3';
+    this.isLoading = true; // Indicamos que estamos cargando los datos
+    this.servicioService.listarServiciosPorTipo(this.tipoServicioId).subscribe((res: any) => {
+      this.serviciosAlojamiento = res;
+
+      // Para cada servicio, obtenemos el promedio de calificación y las reseñas
+      this.serviciosAlojamiento.forEach(servicio => {
+        // Obtener el promedio de calificación
+        this.resenaService.obtenerPromedioDeCalificacion(servicio.id).subscribe((promedio: any) => {
+          servicio.promedioCalificacion = promedio.promedioCalificacion; // Asignamos el promedio
+          servicio.totalResenas = promedio.totalResenas; // Asignamos el total de reseñas
+        });
+
+        // Obtener las reseñas
+        this.resenaService.obtenerReseñas().subscribe((reseñas: any) => {
+          servicio.reseñas = reseñas.filter((resena: any) => resena.servicioId === servicio.id);
+        });
+      });
+
+      this.isLoading = false; // Terminamos de cargar los datos
+    });
+  }
+  
+  obtenerServiciosPorTipoExperiencia(): void {
+    this.tipoServicioId = '4';
     this.servicioService.listarServiciosPorTipo(this.tipoServicioId).subscribe(
       (res: any) => {
-        console.log('Servicios por tipo:', res);
+        console.log('Servicios por tipo Experiencia:', res);
         if (res) {
-          this.servicios = res; // Guarda los servicios obtenidos
+          this.serviciosExperiencia = res;  // Guarda los servicios de experiencia obtenidos
         } else {
-          console.error('Error al obtener los servicios por tipo', res);
+          console.error('Error al obtener los servicios de Experiencia', res);
         }
       },
       error => {
-        console.error('Error en la solicitud de servicios por tipo', error);
+        console.error('Error en la solicitud de servicios por tipo Experiencia', error);
       }
     );
   }
-  
+  obtenerPaquetesTuristicos(): void {
+    this.isLoading = true; // Indicamos que la solicitud está en proceso
+    this.paqueteTuristicoService.listarPaquetesTuristicos().subscribe(
+      (res: any) => {
+        this.paquetesTuristicos = res; // Guardamos la respuesta en la variable
+        console.log('Paquetes turísticos obtenidos:', res);
+      },
+      (error) => {
+        console.error('Error al obtener paquetes turísticos:', error);
+      },
+      () => {
+        this.isLoading = false; // Indicamos que la solicitud ha finalizado
+      }
+    );
+  }
 }

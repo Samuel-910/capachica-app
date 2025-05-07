@@ -1,147 +1,150 @@
 <div class="flex">
-    <app-sidebar class="w-[260px] fixed h-screen z-20"></app-sidebar>
-    <div class="flex-1 ml-[260px]">
-      <app-navbar class="fixed top-0 left-[260px] right-0 h-[64px] z-10 bg-white border-b"></app-navbar>
-      <div class="m-[80px]">
-        <div class="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-          <h2 class="text-2xl font-bold mb-4 text-gray-800">
-            {{ isEdit ? 'Editar Servicio' : 'Crear Servicio' }}
-          </h2>
-          <form [formGroup]="servicioForm" (ngSubmit)="guardarServicio()">
-            <div class="space-y-6">
-              <!-- Tipo de Servicio -->
-              <div>
-                <label>Tipo de Servicio</label>
-                <input formControlName="tipoServicioId" type="number" class="input" />
-              </div>
-              <!-- Nombre y Descripción -->
-              <div class="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label for="nombre" class="block font-medium text-gray-700">Nombre del Servicio</label>
-                  <input
-                    type="text"
-                    id="nombre"
-                    formControlName="nombre"
-                    class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Ej. Hotel Amantani"
-                    required
-                  />
-                </div>
-                <div>
-                  <label for="descripcion" class="block font-medium text-gray-700">Descripción</label>
-                  <textarea
-                    id="descripcion"
-                    formControlName="descripcion"
-                    class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Descripción del servicio"
-                    required
-                  ></textarea>
-                </div>
-              </div>
-  
-              <!-- Precio y Moneda -->
-              <div class="grid md:grid-cols-2 gap-6">
-                <div>
-                  <label for="precioBase" class="block font-medium text-gray-700">Precio Base</label>
-                  <input
-                    type="number"
-                    id="precioBase"
-                    formControlName="precioBase"
-                    class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Ej. 120.5"
-                    required
-                  />
-                </div>
-                <div>
-                  <label for="moneda" class="block font-medium text-gray-700">Moneda</label>
-                  <input
-                    type="text"
-                    id="moneda"
-                    formControlName="moneda"
-                    class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Ej. PEN"
-                    required
-                  />
-                </div>
-              </div>
-  
-              <!-- Estado -->
-              <div>
-                <label for="estado" class="block font-medium text-gray-700">Estado</label>
-                <select
-                  id="estado"
-                  formControlName="estado"
-                  class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"
-                  required
-                >
-                  <option value="activo">Activo</option>
-                  <option value="inactivo">Inactivo</option>
-                </select>
-              </div>
-  
-              <!-- Detalles del Servicio -->
-              <div>
-                <h3 class="text-xl font-semibold mt-4 text-gray-800">Detalles del Servicio</h3>
-                <div class="space-y-3 mt-4">
-                  <div>
-                    <label for="detallesServicio.duracion" class="block font-medium text-gray-700">Duración</label>
-                    <input
-                      type="text"
-                      id="detallesServicio.duracion"
-                      formControlName="detallesServicio.duracion"
-                      class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"
-                      placeholder="Ej. 12 horas"
-                    />
-                  </div>
-                  <div>
-                    <label for="detallesServicio.incluye" class="block font-medium text-gray-700">Incluye</label>
-                    <input
-                      type="text"
-                      id="detallesServicio.incluye"
-                      formControlName="detallesServicio.incluye"
-                      class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"
-                      placeholder="Ej. camas, papayas"
-                    />
-                  </div>
-                </div>
-              </div>
-  
-              <!-- Imágenes -->
-              <div>
-                <h3 class="text-xl font-semibold mt-4 text-gray-800">Imágenes</h3>
-                <div class="mt-4">
-                  <input
-                    type="file"
-                    id="imagenes"
-                    formControlName="imagenes"
-                    class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"
-                    multiple
-                  />
-                </div>
-              </div>
-  
-              <!-- Botones -->
-              <div class="flex justify-end gap-6 mt-6">
-                <button
-  type="submit"
-  [disabled]="servicioForm.invalid"
-  class="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700 transition duration-300 ease-in-out"
->
-  {{ isEdit ? 'Actualizar' : 'Guardar' }}
-</button>
+  <app-sidebar class="w-[260px] fixed h-screen z-20"></app-sidebar>
 
-                <button
-                  type="button"
-                  class="bg-gray-300 text-gray-800 px-8 py-3 rounded hover:bg-gray-400 transition duration-300 ease-in-out"
-                  (click)="cancelar()"
-                >
-                  Cancelar
-                </button>
+  <div class="flex-1 ml-[260px]">
+    <app-navbar class="fixed top-0 left-[260px] right-0 h-[64px] z-10 bg-white border-b"></app-navbar>
+
+    <div class="mt-[80px] p-6">
+      <div class="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+        <h2 class="text-2xl font-bold mb-4 text-gray-800">
+          {{ isEdit ? 'Editar Servicio' : 'Crear Servicio' }}
+        </h2>
+
+        <form [formGroup]="servicioForm" (ngSubmit)="guardarServicio()">
+          <div class="space-y-6">
+
+            <!-- Emprendimiento -->
+            <div>
+              <label for="emprendimientoId" class="block font-medium text-gray-700">Emprendimiento</label>
+              <select id="emprendimientoId" formControlName="emprendimientoId"
+                      class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500">
+                <option [ngValue]="null" disabled>Selecciona un emprendimiento</option>
+                <option *ngFor="let emp of emprendimientos" [ngValue]="emp.id">
+                  {{ emp.nombre }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Tipo de Servicio -->
+            <div>
+              <label for="tipoServicioId" class="block font-medium text-gray-700">Tipo de Servicio</label>
+              <select id="tipoServicioId" formControlName="tipoServicioId"
+                      class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500">
+                <option [ngValue]="null" disabled>Selecciona un tipo</option>
+                <option *ngFor="let tipo of tiposServicios" [ngValue]="tipo.id">
+                  {{ tipo.nombre }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Nombre y Descripción -->
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label for="nombre" class="block font-medium text-gray-700">Nombre del Servicio</label>
+                <input
+                  type="text"
+                  id="nombre"
+                  formControlName="nombre"
+                  class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Ej. Hotel Amantani"
+                />
+              </div>
+              <div>
+                <label for="descripcion" class="block font-medium text-gray-700">Descripción</label>
+                <textarea
+                  id="descripcion"
+                  formControlName="descripcion"
+                  class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Descripción del servicio"
+                ></textarea>
               </div>
             </div>
-          </form>
-        </div>
+
+            <!-- Precio y Moneda -->
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label for="precioBase" class="block font-medium text-gray-700">Precio Base</label>
+                <input
+                  type="number"
+                  id="precioBase"
+                  formControlName="precioBase"
+                  class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Ej. 120.5"
+                />
+              </div>
+              <div>
+                <label for="moneda" class="block font-medium text-gray-700">Moneda</label>
+                <input
+                  type="text"
+                  id="moneda"
+                  formControlName="moneda"
+                  class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Ej. PEN"
+                />
+              </div>
+            </div>
+
+            <!-- Estado -->
+            <div>
+              <label for="estado" class="block font-medium text-gray-700">Estado</label>
+              <select
+                id="estado"
+                formControlName="estado"
+                class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"
+              >
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+              </select>
+            </div>
+
+            <!-- Detalles del Servicio -->
+            <div formGroupName="detallesServicio">
+              <h3 class="text-xl font-semibold mt-4 text-gray-800">Detalles del Servicio</h3>
+              <div class="space-y-4 mt-4">
+                <div>
+                  <label for="duracion" class="block font-medium text-gray-700">Duración</label>
+                  <input
+                    type="text"
+                    id="duracion"
+                    formControlName="duracion"
+                    class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="Ej. 12 horas"
+                  />
+                </div>
+                <div>
+                  <label for="incluye" class="block font-medium text-gray-700">Incluye</label>
+                  <input
+                    type="text"
+                    id="incluye"
+                    formControlName="incluye"
+                    class="border p-3 rounded w-full focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="Ej. camas, papayas"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="flex justify-end gap-6 mt-6">
+              <button
+                type="submit"
+                [disabled]="servicioForm.invalid"
+                class="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700 transition duration-300 ease-in-out"
+              >
+                {{ isEdit ? 'Actualizar' : 'Guardar' }}
+              </button>
+
+              <button
+                type="button"
+                class="bg-gray-300 text-gray-800 px-8 py-3 rounded hover:bg-gray-400 transition duration-300 ease-in-out"
+                (click)="cancelar()"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>
-  
+</div>

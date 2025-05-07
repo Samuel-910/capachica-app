@@ -111,7 +111,7 @@
   </div>
 </div>
 
-<div class="max-w-7xl mx-auto">
+<div class="max-w-7xl mx-auto m-5">
   <h2 class="text-4xl font-bold text-gray-900 mb-4">
     Alojamientos en Capachica
   </h2>
@@ -130,41 +130,71 @@
   </div>
 
   <swiper-container
-    *ngIf="servicios.length > 0"
-    class="mySwiper"
-    pagination="true"
-    pagination-clickable="true"
-    space-between="30"
-    slides-per-view="4"
-    loop="true"
-  >
-  <swiper-slide
-  *ngFor="let servicio of servicios"
-  class="flex-shrink-0 bg-white shadow rounded-xl cursor-pointer hover:shadow-lg transition mt-5 mb-5"
+  *ngIf="serviciosAlojamiento.length > 0"
+  class="mySwiper"
+  pagination="true"
+  pagination-clickable="true"
+  space-between="30"
+  slides-per-view="4"
+  loop="true"
 >
-  <div class="w-full">
-    <div class="relative w-full">
-      <img
-        [src]="servicio.imagenes.length > 0 ? servicio.imagenes[0] : 'img/fam1.png'"
-        alt="{{ servicio.nombre }}"
-        class="rounded-t-xl w-full h-auto object-cover" />
-      <button
-        class="absolute top-2 right-2 bg-white px-2 rounded-full shadow hover:bg-gray-100">
-        ♥
-      </button>
-    </div>
-    <div class="p-4">
-      <h2 class="font-bold text-lg">{{ servicio.nombre }}</h2>
-      <p class="text-sm text-gray-500">{{ servicio.descripcion }}</p>
-      <div class="mt-2 flex items-center space-x-2 text-sm">
-        <span class="text-gray-600">Precio base: {{ servicio.precioBase }} {{ servicio.moneda }} por noche</span>
+  <swiper-slide
+    *ngFor="let servicio of serviciosAlojamiento"
+    class="flex-shrink-0 bg-white shadow rounded-xl cursor-pointer hover:shadow-lg transition mt-5 mb-5"
+  >
+    <div class="w-full">
+      <div class="relative w-full">
+        <img
+          [src]="servicio.imagenes.length > 0 ? servicio.imagenes[0] : 'img/fam1.png'"
+          alt="{{ servicio.nombre }}"
+          class="rounded-t-xl w-full h-auto object-cover"
+        />
+        <button class="absolute top-2 right-2 bg-white px-2 rounded-full shadow hover:bg-gray-100">
+          ♥
+        </button>
+      </div>
+      <div class="p-4">
+        <h2 class="font-bold text-lg">{{ servicio.nombre }}</h2>
+        <p class="text-sm text-gray-500">{{ servicio.descripcion }}</p>
+        <div class="mt-2 flex items-center space-x-2 text-sm">
+          <span class="text-gray-600">
+            Precio base: {{ servicio.precioBase }} {{ servicio.moneda }} por noche
+          </span>
+        </div>
+
+        <!-- Mostrar Promedio de Calificación y Total de Reseñas -->
+        <div class="mt-4">
+          <div class="flex items-center">
+            <!-- Calificación -->
+            <div class="flex text-yellow-400">
+              <ng-container *ngFor="let star of [].constructor(servicio.promedioCalificacion); let i = index">
+                <svg
+                  *ngIf="i < servicio.promedioCalificacion"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M9.049 3.924a1 1 0 011.902 0l2.007 4.067 4.494.654a1 1 0 01.555 1.707l-3.25 3.165.766 4.452a1 1 0 01-1.454 1.054l-4-2.1-4 2.1a1 1 0 01-1.453-1.054l.765-4.452-3.25-3.165a1 1 0 01.554-1.707l4.495-.654 2.008-4.067z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </ng-container>
+            </div>
+            <span class="ml-2 text-sm text-gray-600">
+              {{ servicio.promedioCalificacion }} ({{ servicio.totalResenas }} reseñas)
+            </span>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</swiper-slide>
+  </swiper-slide>
+</swiper-container>
 
-
-  </swiper-container>
 </div>
 <div class="max-w-7xl mx-auto m-5">
   <h2 class="text-4xl font-bold text-gray-900 mb-4">
@@ -184,7 +214,7 @@
   </div>
 
   <swiper-container
-    *ngIf="servicios.length > 0"
+    *ngIf="serviciosExperiencia.length > 0"
     class="mySwiper"
     pagination="true"
     pagination-clickable="true"
@@ -193,7 +223,7 @@
     loop="true"
   >
   <swiper-slide
-  *ngFor="let servicio of servicios"
+  *ngFor="let servicio of serviciosExperiencia"
   class="flex-shrink-0 bg-white shadow rounded-xl cursor-pointer hover:shadow-lg transition mt-5 mb-5"
 >
   <div class="w-full">
@@ -237,8 +267,12 @@
     </a>
   </div>
 
+  <div *ngIf="!isLoading && paquetesTuristicos.length === 0">
+    <p>No se encontraron paquetes turísticos.</p> <!-- Mensaje cuando no hay datos -->
+  </div>
+
   <swiper-container
-    *ngIf="servicios.length > 0"
+    *ngIf="paquetesTuristicos.length > 0"
     class="mySwiper"
     pagination="true"
     pagination-clickable="true"
@@ -247,7 +281,7 @@
     loop="true"
   >
   <swiper-slide
-  *ngFor="let servicio of servicios"
+  *ngFor="let servicio of paquetesTuristicos"
   class="flex-shrink-0 bg-white shadow rounded-xl cursor-pointer hover:shadow-lg transition mt-5 mb-5"
 >
   <div class="w-full">
@@ -265,7 +299,7 @@
       <h2 class="font-bold text-lg">{{ servicio.nombre }}</h2>
       <p class="text-sm text-gray-500">{{ servicio.descripcion }}</p>
       <div class="mt-2 flex items-center space-x-2 text-sm">
-        <span class="text-gray-600">Precio base: {{ servicio.precioBase }} {{ servicio.moneda }} por noche</span>
+        <span class="text-gray-600">Precio base: S/{{ servicio.precio }} {{ servicio.moneda }} por noche</span>
       </div>
     </div>
   </div>
@@ -357,7 +391,7 @@
     </div>
   </div>
 </section>
-<section class="bg-gradient-to-r from-green-300 to-green-500 text-white py-16">
+<section class="bg-green-600 text-white py-16">
   <div class="container mx-auto text-center">
     <h2 class="text-3xl font-bold mb-4">¿Listo para vivir la experiencia Capachica?</h2>
     <p class="text-xl mb-8">Reserva ahora y comienza a planificar tu viaje a una de las joyas escondidas del Lago Titicaca.</p>

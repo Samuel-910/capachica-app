@@ -164,7 +164,11 @@ export const routes: Routes = [
         path: 'newslider',
         loadComponent: () => import('./business/sliders/form-slider/form-slider.component').then(m => m.FormSliderComponent),
       },
-    {
+      {
+        path: 'editslider/:id',
+        loadComponent: () => import('./business/sliders/form-slider/form-slider.component').then(m => m.FormSliderComponent),
+      },
+      {
         path: 'servicios',
         loadComponent: () =>
           import('./business/servicios/servicios.component').then(m => m.ServicioComponent),
@@ -189,20 +193,35 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./business/servicios/form-servicios/form-servicios.component').then(m => m.FormServiciosComponent),
       },
+      // {
+      //   path: 'tipos-servicio', // Ruta para ver todos los tipos de servicio
+      //   loadComponent: () =>
+      //     import('./business/tipos-servicio/tipos-servicio.component').then(m => m.TiposServicioComponent),
+      // },
+      // {
+      //   path: 'newtipos-servicio', // Ruta para crear un nuevo tipo de servicio
+      //   loadComponent: () =>
+      //     import('./business/tipos-servicio/form-tipos-servicio/form-tipos-servicio.component').then(m => m.FormTiposServicioComponent),
+      // },
+      // {
+      //   path: 'edittipos-servicio/:id', // Ruta para editar un tipo de servicio existente
+      //   loadComponent: () =>
+      //     import('./business/tipos-servicio/form-tipos-servicio/form-tipos-servicio.component').then(m => m.FormTiposServicioComponent),
+      // },
       {
-        path: 'tipos-servicio', // Ruta para ver todos los tipos de servicio
+        path: 'disponibilidad', // Ruta para ver todas las disponibilidades
         loadComponent: () =>
-          import('./business/tipos-servicio/tipos-servicio.component').then(m => m.TiposServicioComponent),
+          import('./business/disponibilidad/disponibilidad.component').then(m => m.DisponibilidadComponent),
       },
       {
-        path: 'newtipos-servicio', // Ruta para crear un nuevo tipo de servicio
+        path: 'newdisponibilidad', // Ruta para crear nueva disponibilidad
         loadComponent: () =>
-          import('./business/tipos-servicio/form-tipos-servicio/form-tipos-servicio.component').then(m => m.FormTiposServicioComponent),
+          import('./business/disponibilidad/form-disponibilidad/form-disponibilidad.component').then(m => m.FormDisponibilidadComponent),
       },
       {
-        path: 'edittipos-servicio/:id', // Ruta para editar un tipo de servicio existente
+        path: 'editdisponibilidad/:id', // Ruta para editar una disponibilidad existente
         loadComponent: () =>
-          import('./business/tipos-servicio/form-tipos-servicio/form-tipos-servicio.component').then(m => m.FormTiposServicioComponent),
+          import('./business/disponibilidad/form-disponibilidad/form-disponibilidad.component').then(m => m.FormDisponibilidadComponent),
       }
       
       
