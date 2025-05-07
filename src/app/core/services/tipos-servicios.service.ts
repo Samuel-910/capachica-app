@@ -14,9 +14,7 @@ export class TiposServicioService {
     }
 
     listarTiposServicio(): Observable<any> {
-        return this.http.get(this.API, this.getAuthHeaders()).pipe(
-            tap((res) => console.log('Respuesta tipos-servicio:', res))
-        );
+        return this.http.get(this.API, this.getAuthHeaders());
     }
 
     // Obtener un tipo de servicio por ID (GET /tipos-servicio/{id})

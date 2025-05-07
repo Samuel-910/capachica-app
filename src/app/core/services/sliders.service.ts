@@ -17,9 +17,7 @@ export class SlidersService {
 
     // Obtener todos los sliders (GET /sliders)
     listarSliders(): Observable<any> {
-        return this.http.get(this.API, this.getAuthHeaders()).pipe(
-            tap(res => console.log('Sliders obtenidos:', res))
-        );
+        return this.http.get(this.API, this.getAuthHeaders());
     }
 
     // Obtener un slider por ID (GET /sliders/{id})

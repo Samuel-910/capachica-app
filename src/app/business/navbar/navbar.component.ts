@@ -34,7 +34,6 @@ export class NavbarComponent implements OnInit{
     this.tiposServicioService.listarTiposServicio().subscribe({
       next: (data) => {
         this.tiposServicio = data; // o simplemente res si no hay wrapper
-        console.log('Tipos de servicio cargados:', this.tiposServicio);
       },
       error: (err) => {
         console.error('Error al cargar tipos de servicio:', err);

@@ -49,22 +49,9 @@ export class ServicioComponent implements OnInit {
   }
 
   obtenerServicios(): void {
-    this.servicioService.getAllServicios(this.paginaActual, this.limitePorPagina).subscribe(
-      (res: any) => {
-        console.log('Respuesta de la API:', res); // Verifica la estructura
-        if (res) {
-          this.servicios = res; // Si directamente es un array
-          this.totalElementos = res.length; // Ajusta si la respuesta es un array simple
-          this.filtrarServicios();  // Filtra los servicios según el término de búsqueda
-        } else {
-          console.error('Error al obtener datos', res);
-        }
-      },
-      error => {
-        console.error('Error en la solicitud', error);
-      }
-    );
+
   }
+  
 
   filtrarServicios(): void {
     if (this.searchTerm) {
@@ -83,6 +70,7 @@ export class ServicioComponent implements OnInit {
 
   crearServicio(): void {
     if (this.editando && this.servicioEditandoId !== null) {
+      // Actualizar servicio
       this.servicioService.actualizarServicio(this.servicioEditandoId, this.formServicio.value).subscribe(() => {
         this.obtenerServicios();
         this.formServicio.reset();
@@ -90,12 +78,19 @@ export class ServicioComponent implements OnInit {
         this.servicioEditandoId = null;
       });
     } else {
-      this.servicioService.crearServicio(this.emprendimientoId, this.formServicio.value).subscribe(() => {
+      // Crear nuevo servicio
+      const servicioData = { 
+        ...this.formServicio.value, 
+        emprendimientoId: this.emprendimientoId // Aseguramos que emprendimientoId esté dentro del objeto
+      };
+  
+      this.servicioService.crearServicio(servicioData).subscribe(() => {
         this.obtenerServicios();
         this.formServicio.reset();
       });
     }
   }
+  
 
   editarServicio(servicio: any): void {
     this.editando = true;
@@ -111,11 +106,12 @@ export class ServicioComponent implements OnInit {
     }
   }
 
-  cambiarEstado(id: number): void {
-    this.servicioService.cambiarEstado(id).subscribe(() => {
+  cambiarEstado(id: number, estado: any): void {
+    this.servicioService.actualizarEstadoServicio(id, estado).subscribe(() => {
       this.obtenerServicios();
     });
   }
+  
 
   // Métodos de paginación
   get totalPaginas(): number {

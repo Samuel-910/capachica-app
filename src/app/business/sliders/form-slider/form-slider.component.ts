@@ -33,7 +33,7 @@ export class FormSliderComponent implements OnInit {
   ngOnInit() {
     this.sliderForm = this.fb.group({
       nombre: ['', Validators.required],
-      descripcion: ['', Validators.required],
+      description: ['', Validators.required],
       estado: ['activo', Validators.required]
     });
 
@@ -46,7 +46,7 @@ export class FormSliderComponent implements OnInit {
         next: (slider) => {
           this.sliderForm.patchValue({
             nombre: slider.nombre,
-            descripcion: slider.description,
+            description: slider.description,
             estado: slider.estado
           });
 
@@ -91,7 +91,7 @@ export class FormSliderComponent implements OnInit {
         .map(key => {
           switch (key) {
             case 'nombre': return 'Nombre';
-            case 'descripcion': return 'Descripción';
+            case 'description': return 'Description';
             case 'estado': return 'Estado';
             default: return key;
           }
@@ -121,7 +121,7 @@ export class FormSliderComponent implements OnInit {
 
     const payload = {
       nombre: formValue.nombre,
-      descripcion: formValue.descripcion,
+      description: formValue.description,
       estado: formValue.estado,
       imagenes
     };

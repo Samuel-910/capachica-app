@@ -8,6 +8,7 @@ import { SlidersService } from '../../core/services/sliders.service';
 
 import { initFlowbite } from 'flowbite';
 import { register } from 'swiper/element/bundle';
+import { ServiciosService } from '../../core/services/servicios.service';
 
 // Registrar componentes personalizados de Swiper (solo si los usas en HTML)
 register();
@@ -25,15 +26,17 @@ export class PrincipalComponent implements OnInit {
   emprendimientos: any[] = [];
   platosTipicos: any[] = [];
   paquetes: any[] = [];
+  servicios: any[] = [];
+  tipoServicioId: string = '2';
 
   constructor(
-    private emprendimientoService: EmprendimientoService,
     private slidersService: SlidersService,
-    private router: Router
+    private servicioService: ServiciosService
   ) {}
 
   ngOnInit(): void {
     this.cargarSliders();
+    this.obtenerServiciosPorTipo();
   }
 
 
@@ -51,6 +54,21 @@ export class PrincipalComponent implements OnInit {
         console.error('Error al cargar sliders:', err);
       }
     });
+  }
+  obtenerServiciosPorTipo(): void {
+    this.servicioService.listarServiciosPorTipo(this.tipoServicioId).subscribe(
+      (res: any) => {
+        console.log('Servicios por tipo:', res);
+        if (res) {
+          this.servicios = res; // Guarda los servicios obtenidos
+        } else {
+          console.error('Error al obtener los servicios por tipo', res);
+        }
+      },
+      error => {
+        console.error('Error en la solicitud de servicios por tipo', error);
+      }
+    );
   }
   
 }
