@@ -1,34 +1,64 @@
-import { Component, HostListener, Input, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
-import { initFlowbite } from 'flowbite';
-import { EmprendimientoService } from '../../core/services/emprendimiento.service';
+import { Component, HostListener, OnInit, Output, EventEmitter } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { TiposServicioService } from '../../core/services/tipos-servicios.service';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { initFlowbite } from 'flowbite';
 
+import { EmprendimientoService } from '../../core/services/emprendimiento.service';
+import { PaqueteTuristicoService } from '../../core/services/paquetes-turisticos.service';
+import { LugaresService } from '../../core/services/lugar-service';
+import { TiposServicioService } from '../../core/services/tipos-servicios.service';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterModule, CommonModule],
+  imports: [RouterModule, CommonModule, FormsModule],
   templateUrl: './navbar.component.html',
-  styleUrl: './navbar.component.css'
+  styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnInit{
+export class NavbarComponent implements OnInit {
   tiposServicio: any[] = [];
+  emprendimientoNombres: string[] = [];
+  paqueteNombres: string[]        = [];
+  tiposServicios: string[]        = [];
 
-  constructor(private tiposServicioService: TiposServicioService) {}
-  ocultarNav = false;
+  lugarOpciones: string[] = [];
+  resultados: any[]       = [];
 
-  @HostListener('window:scroll', [])
-  onScroll(): void {
+  // Inferior
+  searchSelection: string      = '';
+  searchSelectionLugar: string = '';
+  fechaInferior: string        = '';
+
+  // Superior
+  tipoBusqueda: string  = 'emprendimientos';
+  lugarSuperior: string = '';
+  fechaSuperior: string = '';
+
+  public ocultarNav = false;
+  @Output() resultadosBusqueda = new EventEmitter<any[]>();
+
+  constructor(
+    private emprendimientoService: EmprendimientoService,
+    private paqueteService: PaqueteTuristicoService,
+    private lugarService: LugaresService,
+    private tiposServicioService: TiposServicioService,
+    public router: Router,
+    
+  ) {}
+
+  @HostListener('window:scroll') onScroll() {
     this.ocultarNav = window.scrollY > 100;
   }
-  
+
   ngOnInit(): void {
-    if (typeof window !== 'undefined') {
-      initFlowbite();
-      this.cargarTiposServicio();
-    }
+    initFlowbite();
+    this.loadEmprendimientoNombres();
+    this.loadPaqueteNombres();
+    this.loadTiposServicios();
+    this.loadLugaresTuristicos();
+    this.cargarTiposServicio();
   }
   cargarTiposServicio(): void {
     this.tiposServicioService.listarTiposServicio().subscribe({
@@ -41,4 +71,84 @@ export class NavbarComponent implements OnInit{
     });
   }
 
+  private loadEmprendimientoNombres() {
+    this.emprendimientoService.listarEmprendimientos()
+      .subscribe(data => {
+        const items = Array.isArray((data as any).emprendimientos) ? (data as any).emprendimientos : data;
+        this.emprendimientoNombres = items.map((e: any) => e.nombre).filter((n: string) => !!n);
+      });
+  }
+
+  private loadPaqueteNombres() {
+    this.paqueteService.listarPaquetesTuristicos()
+      .subscribe(data => {
+        this.paqueteNombres = (data as any[]).map(p => p.nombre).filter(n => !!n);
+      });
+  }
+
+  private loadTiposServicios() {
+    this.tiposServicioService.listarTiposServicio()
+      .subscribe(data => {
+        this.tiposServicios = (data as any[]).map(s => s.nombre).filter(n => !!n);
+      });
+  }
+
+  private loadLugaresTuristicos() {
+    this.lugarService.listarLugares()
+      .subscribe(data => {
+        this.lugarOpciones = (data as any[]).map(l => l.nombre).filter(n => !!n);
+      });
+  }
+
+  buscar(): void {
+    console.log('▶️ filtros en buscar():', {
+      tipo: this.tipoBusqueda,
+      nombre: this.searchSelection,
+      lugar: this.searchSelectionLugar || this.lugarSuperior,
+      fecha: this.fechaSuperior || this.fechaInferior
+    });
+
+    const filtros: any = {};
+    if (this.searchSelection)  filtros.nombre = this.searchSelection;
+    const lugar = this.searchSelectionLugar || this.lugarSuperior;
+    if (lugar)                 filtros.lugar  = lugar;
+    const fecha = this.fechaSuperior || this.fechaInferior;
+    if (fecha)                 filtros.fecha  = fecha;
+
+    switch (this.tipoBusqueda) {
+      case 'emprendimientos':
+        this.emprendimientoService.buscarConFiltros(filtros)
+          .subscribe(res => this.onResultados(res));
+        break;
+      case 'paquetes':
+        this.paqueteService.buscarConFiltros(filtros)
+          .subscribe(res => this.onResultados(res));
+        break;
+      case 'servicios':
+        this.tiposServicioService.buscarConFiltros(filtros)
+          .subscribe(res => this.onResultados(res));
+        break;
+      default:
+        this.resultados = [];
+    }
+  }
+
+  private onResultados(res: any) {
+    // Desempaquetar posibles metadatos
+    let items: any[] = [];
+
+    if (res.emprendimientos) {
+      items = res.emprendimientos;
+    } else if (res.paquetes) {
+      items = res.paquetes;
+    } else if (res.servicios) {
+      items = res.servicios;
+    } else if (Array.isArray(res)) {
+      items = res;
+    }
+
+    console.log('🔍 ítems para renderizar:', items);
+    this.resultados = items;
+    this.resultadosBusqueda.emit(items);
+  }
 }

@@ -40,6 +40,9 @@ export class LugaresService {
       Authorization: `Bearer ${token}`
     });
   }
+  listarLugares(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
+  }
 
   getLugares(): Observable<LugarTuristico[]> {
     return this.http.get<LugarTuristico[]>(this.apiUrl, {

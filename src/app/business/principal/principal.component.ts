@@ -11,6 +11,7 @@ import { register } from 'swiper/element/bundle';
 import { ServiciosService } from '../../core/services/servicios.service';
 import { PaqueteTuristicoService } from '../../core/services/paquetes-turisticos.service';
 import { ResenaService } from '../../core/services/resenas.service';
+import Swal from 'sweetalert2';
 
 // Registrar componentes personalizados de Swiper (solo si los usas en HTML)
 register();
@@ -35,7 +36,8 @@ export class PrincipalComponent implements OnInit {
     private slidersService: SlidersService,
     private servicioService: ServiciosService,
     private paqueteTuristicoService: PaqueteTuristicoService,
-    private resenaService: ResenaService
+    private resenaService: ResenaService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -86,7 +88,7 @@ export class PrincipalComponent implements OnInit {
   }
   
   obtenerServiciosPorTipoExperiencia(): void {
-    this.tipoServicioId = '4';
+    this.tipoServicioId = '8';
     this.servicioService.listarServiciosPorTipo(this.tipoServicioId).subscribe(
       (res: any) => {
         console.log('Servicios por tipo Experiencia:', res);
@@ -116,4 +118,88 @@ export class PrincipalComponent implements OnInit {
       }
     );
   }
+
+  verDetallesPaquete(id: number): void {
+    // Redirige a la ruta con el parámetro de id
+    this.router.navigate([`/paquetesdetalle/${id}`]); 
+  }
+
+  showPackageDetails(currentPaquete: any): void {
+    Swal.fire({
+      title: currentPaquete.nombre,
+      html: `
+        <div class="flex justify-center items-start pt-[100px] gap-8 mt-10 px-4">
+          <div class="card" style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; width: 98%; max-width: 1200px; margin: 20px auto; font-family: Arial, sans-serif; display: flex; gap: 15px; align-items: stretch; min-height: 200px;">
+            <div style="flex: 0 0 45%; position: relative; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <img src="${currentPaquete.imagenes.length > 0 ? currentPaquete.imagenes[0] : 'img/fam1.png'}" alt="Paquete Paramis" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div style="flex: 1; padding: 10px 30px 10px 0; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                  <h1 style="margin: 0; font-size: 1.4rem; color: #2c3e50; display: flex; align-items: center;">
+                    <i class="fa-solid fa-bookmark" style="margin-right: 8px; font-size: 1.3rem; color: #f39c12;"></i>
+                    ${currentPaquete.nombre}
+                  </h1>
+                  <img width="50" height="50" src="https://img.icons8.com/ios-filled/50/wifi-logo.png" alt="wifi-logo" style="margin-left: 80px; transform: translateY(-3px);" />
+                </div>
+                <div class="flex items-center" style="margin-top: 5px; font-size: 1.2rem; font-weight: bold; color: #2c3e50;">
+                  Precio: S/${currentPaquete.precio} ${currentPaquete.moneda}
+                </div>
+  
+                <div class="flex items-center">
+                  <span class="text-yellow-300 mr-1" *ngFor="let star of [].constructor(currentPaquete.estrellas); let i = index">
+                    <i class="fas fa-star"></i>
+                  </span>
+                  <span class="text-gray-300" *ngFor="let star of [].constructor(5 - currentPaquete.estrellas); let i = index">
+                    <i class="fas fa-star"></i>
+                  </span>
+                </div>
+              </div>
+  
+              <div>
+                <h3 style="font-size: 1.1rem; color: #34495e;">Emprendimiento</h3>
+                <p><strong>Nombre:</strong> ${currentPaquete.emprendimiento.nombre}</p>
+                <p><strong>Descripción:</strong> ${currentPaquete.emprendimiento.descripcion}</p>
+                <p><strong>Dirección:</strong> ${currentPaquete.emprendimiento.direccion}</p>
+              </div>
+  
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div>
+                  <h2 style="margin: 0 0 10px 0; font-size: 1.1rem; color: #34495e;">Lugares que Visitarás</h2>
+                </div>
+                <div>
+                  <h2 style="margin: 0 0 10px 0; font-size: 1.1rem; color: #34495e;">Servicios Adicionales</h2>
+                </div>
+              </div>
+  
+              <div style="border-top: 1px solid #ecf0f1; border-bottom: 1px solid #ecf0f1; padding: 15px 0; margin: 20px 0;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                  <div>
+                    <h3 style="margin: 0 0 10px 0; font-size: 1.1rem; color: #27ae60;">INCLUYE:</h3>
+                  </div>
+                  <div>
+                    <h3 style="margin: 0 0 10px 0; font-size: 1.1rem; color: #c0392b;">NO INCLUYE:</h3>
+                  </div>
+                </div>
+              </div>
+  
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding-top: 15px;">
+                <div>
+                  <h2 style="margin: 0 0 10px 0; font-size: 1.1rem; color: #34495e;">Políticas de Cancelación</h2>
+                </div>
+                <div>
+                  <h2 style="margin: 0 0 10px 0; font-size: 1.1rem; color: #34495e;">Requisitos</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`,
+      showCancelButton: false,
+      showConfirmButton: true,
+      confirmButtonText: 'Cerrar',
+    });
+  }
+  
 }

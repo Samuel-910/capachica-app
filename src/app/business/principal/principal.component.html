@@ -144,11 +144,12 @@
   >
     <div class="w-full">
       <div class="relative w-full">
-        <img
-          [src]="servicio.imagenes.length > 0 ? servicio.imagenes[0] : 'img/fam1.png'"
-          alt="{{ servicio.nombre }}"
-          class="rounded-t-xl w-full h-auto object-cover"
-        />
+        <img 
+        *ngIf="servicio.imagenes.length > 0 ? servicio.imagenes[0] : 'img/fam1.png'"
+        [src]="'https://twsevdzjdnwjhdysvecm.supabase.co/storage/v1/object/public/servicios/' + servicio.imagenes[0]?.url"
+        alt="Imagen del slider"
+        class="rounded-t-xl w-full h-auto object-cover"
+      />
         <button class="absolute top-2 right-2 bg-white px-2 rounded-full shadow hover:bg-gray-100">
           ♥
         </button>
@@ -228,10 +229,12 @@
 >
   <div class="w-full">
     <div class="relative w-full">
-      <img
-        [src]="servicio.imagenes.length > 0 ? servicio.imagenes[0] : 'img/fam1.png'"
-        alt="{{ servicio.nombre }}"
-        class="rounded-t-xl w-full h-auto object-cover" />
+        <img 
+        *ngIf="servicio.imagenes.length > 0 ? servicio.imagenes[0] : 'img/fam1.png'"
+        [src]="'https://twsevdzjdnwjhdysvecm.supabase.co/storage/v1/object/public/servicios/' + servicio.imagenes[0]?.url"
+        alt="Imagen del slider"
+        class="rounded-t-xl w-full h-auto object-cover"
+      />
       <button
         class="absolute top-2 right-2 bg-white px-2 rounded-full shadow hover:bg-gray-100">
         ♥
@@ -272,41 +275,49 @@
   </div>
 
   <swiper-container
-    *ngIf="paquetesTuristicos.length > 0"
-    class="mySwiper"
-    pagination="true"
-    pagination-clickable="true"
-    space-between="30"
-    slides-per-view="4"
-    loop="true"
-  >
-  <swiper-slide
-  *ngFor="let servicio of paquetesTuristicos"
-  class="flex-shrink-0 bg-white shadow rounded-xl cursor-pointer hover:shadow-lg transition mt-5 mb-5"
+  *ngIf="paquetesTuristicos.length > 0"
+  class="mySwiper"
+  pagination="true"
+  pagination-clickable="true"
+  space-between="30"
+  slides-per-view="4"
+  loop="true"
 >
-  <div class="w-full">
-    <div class="relative w-full">
-      <img
-        [src]="servicio.imagenes.length > 0 ? servicio.imagenes[0] : 'img/fam1.png'"
-        alt="{{ servicio.nombre }}"
-        class="rounded-t-xl w-full h-auto object-cover" />
-      <button
-        class="absolute top-2 right-2 bg-white px-2 rounded-full shadow hover:bg-gray-100">
-        ♥
-      </button>
-    </div>
-    <div class="p-4">
-      <h2 class="font-bold text-lg">{{ servicio.nombre }}</h2>
-      <p class="text-sm text-gray-500">{{ servicio.descripcion }}</p>
-      <div class="mt-2 flex items-center space-x-2 text-sm">
-        <span class="text-gray-600">Precio base: S/{{ servicio.precio }} {{ servicio.moneda }} por noche</span>
+  <swiper-slide
+    *ngFor="let servicio of paquetesTuristicos"
+    class="flex-shrink-0 bg-white shadow rounded-xl cursor-pointer hover:shadow-lg transition mt-5 mb-5"
+  >
+    <div class="w-full">
+      <div class="relative w-full">
+        <img
+          [src]="servicio.imagenes.length > 0 ? servicio.imagenes[0] : 'img/fam1.png'"
+          alt="{{ servicio.nombre }}"
+          class="rounded-t-xl w-full h-auto object-cover"
+        />
+        <button
+          class="absolute top-2 right-2 bg-white px-2 rounded-full shadow hover:bg-gray-100"
+        >
+          ♥
+        </button>
+      </div>
+      <div class="p-4">
+        <h2 class="font-bold text-lg">{{ servicio.nombre }}</h2>
+        <p class="text-sm text-gray-500">{{ servicio.descripcion }}</p>
+        <div class="mt-2 flex items-center space-x-2 text-sm">
+          <span class="text-gray-600">Precio base: S/{{ servicio.precio }} {{ servicio.moneda }} por noche</span>
+        </div>
+        <!-- Botón para obtener detalles -->
+        <button
+          (click)="verDetallesPaquete(servicio.id)"
+          class="mt-4 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+        >
+          Ver Detalles
+        </button>
       </div>
     </div>
-  </div>
-</swiper-slide>
+  </swiper-slide>
+</swiper-container>
 
-
-  </swiper-container>
 </div>
 <section class="bg-green-800 text-white py-16">
   <div class="container mx-auto text-center">

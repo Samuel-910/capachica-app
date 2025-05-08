@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [SidebarComponent, NavbarComponent, ReactiveFormsModule, CommonModule],
   templateUrl: './form-usuario.component.html',
-  styleUrl: './form-usuario.component.css'
+  styleUrls: ['./form-usuario.component.css']
 })
 export class FormUsuarioComponent implements OnInit {
   selectedFile: File | null = null;
@@ -58,11 +58,11 @@ export class FormUsuarioComponent implements OnInit {
       this.authService.getUsuarioById(this.usuarioIdEdit).subscribe({
         next: (usuario) => {
           this.usuarioForm.patchValue({
-            nombre: usuario.nombre,
-            apellidos: usuario.apellidos,
-            telefono: usuario.telefono,
-            direccion: usuario.direccion,
-            fotoPerfilUrl: usuario.fotoPerfilUrl,
+            nombre: usuario.persona.nombre,
+            apellidos: usuario.persona.apellidos,
+            telefono: usuario.persona.telefono,
+            direccion: usuario.persona.direccion,
+            fotoPerfilUrl: usuario.imagenes.fotoPerfilUrl,
             fechaNacimiento: usuario.fechaNacimiento?.substring(0, 10),
             subdivisionId: usuario.subdivisionId,
             email: usuario.email,
@@ -101,13 +101,28 @@ export class FormUsuarioComponent implements OnInit {
   }
 
   async subirImagenASupabase(file: File): Promise<string> {
+    // Mostrar el mensaje de espera
+    Swal.fire({
+      title: 'Subiendo imagen...',
+      text: 'Por favor espere mientras se sube la imagen.',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
     const supabase = this.supabaseService.getClient();
     const filePath = `usuarios/${Date.now()}-${file.name}`;
 
     const { data, error } = await supabase.storage.from('usuarios').upload(filePath, file);
-    if (error) throw new Error(error.message);
+    if (error) {
+      Swal.close();  // Cerrar el mensaje de carga
+      throw new Error(error.message);
+    }
 
     const { data: publicUrlData } = supabase.storage.from('usuarios').getPublicUrl(filePath);
+    Swal.close();  // Cerrar el mensaje de carga
     return publicUrlData?.publicUrl;
   }
 
@@ -156,15 +171,13 @@ export class FormUsuarioComponent implements OnInit {
           rolId: 2 // Emprendedor
         }
       ],
-
-        nombre: formValue.nombre,
-        apellidos: formValue.apellidos,
-        telefono: formValue.telefono,
-        direccion: formValue.direccion,
-        fotoPerfilUrl: fotoPerfilUrl,
-        fechaNacimiento: formValue.fechaNacimiento || null,
-        subdivisionId: Number(formValue.subdivisionId) || 0
-
+      nombre: formValue.nombre,
+      apellidos: formValue.apellidos,
+      telefono: formValue.telefono,
+      direccion: formValue.direccion,
+      fotoPerfilUrl: fotoPerfilUrl,
+      fechaNacimiento: formValue.fechaNacimiento || null,
+      subdivisionId: Number(formValue.subdivisionId) || 0
     };
   
     if (this.isEdit && this.usuarioIdEdit) {
@@ -172,7 +185,7 @@ export class FormUsuarioComponent implements OnInit {
         next: () => {
           Swal.fire('Actualizado', 'El usuario fue actualizado correctamente.', 'success');
           this.usuarioForm.reset();
-          this.router.navigate(['/usuarios']);
+          this.router.navigate(['/usuario']);
         },
         error: (err) => {
           console.error('Error al actualizar:', err);
@@ -184,7 +197,7 @@ export class FormUsuarioComponent implements OnInit {
         next: () => {
           Swal.fire('Registrado', 'El usuario fue registrado correctamente.', 'success');
           this.usuarioForm.reset();
-          this.router.navigate(['/usuarios']);
+          this.router.navigate(['/usuario']);
         },
         error: (err) => {
           console.error('Error al registrar:', err);
@@ -193,9 +206,8 @@ export class FormUsuarioComponent implements OnInit {
       });
     }
   }
-  
 
   cancelar() {
-    this.router.navigate(['/usuarios']);
+    this.router.navigate(['/usuario']);
   }
 }

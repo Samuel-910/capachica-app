@@ -121,5 +121,12 @@ export class AuthService {
     });
     return this.http.post(`${this.API_BASE_usuario}`, data, { headers });
   }
-
+  logout(): void {
+    // Eliminar el token de localStorage
+    localStorage.removeItem(this.tokenKey);
+  
+    // Redirigir al usuario al login (o a cualquier otra página)
+    this.router.navigate(['/']); // Ajusta la ruta de acuerdo a tu flujo de navegación
+  }
+  
 }

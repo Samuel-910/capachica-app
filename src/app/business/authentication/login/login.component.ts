@@ -19,7 +19,9 @@ export  class LoginComponent {
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  // Función para alternar la visibilidad de la contraseña
+  volverAlMenu() {
+    this.router.navigate(['/']); // Redirige a la ruta deseada, ajusta según tu estructura
+  }
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }

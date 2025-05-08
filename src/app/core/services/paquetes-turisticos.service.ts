@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 
@@ -115,4 +115,10 @@ export class PaqueteTuristicoService {
             })
         };
     }
+    buscarConFiltros(filtros: any): Observable<any[]> {
+        let params = new HttpParams();
+        if (filtros.lugar) params = params.set('lugar', filtros.lugar);
+        if (filtros.fecha) params = params.set('fecha', filtros.fecha);
+        return this.http.get<any[]>(this.API, { params });
+      }
 }

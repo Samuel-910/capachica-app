@@ -1,112 +1,142 @@
 <!-- NAVBAR FIJO -->
 <div class="fixed top-0 left-0 w-full z-50 bg-white shadow">
-  <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-
+  <div class="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
     <!-- Logo -->
-    <img src="assets/logo-capachica.png" alt="Logo" class="h-24 w-auto object-contain" />
+    <img src="assets/logo-capachica.png" class="h-24" />
 
-    <!-- Centro: nav o search superior animados -->
+    <!-- Animación nav ↔ search superior -->
     <div class="flex-1 relative h-12 flex justify-center items-center">
-      <!-- NAV PRINCIPAL (al inicio) -->
+      <!-- NAV PRINCIPAL -->
       <nav
-        class="absolute items-center top-0 left-1/2 -translate-x-1/2 flex gap-6 text-base font-medium text-gray-700 transition-all duration-500 ease-in-out"
+        class="absolute flex gap-6 font-medium text-gray-700 transition-all"
         [ngClass]="{
-          'opacity-100 translate-y-0 pointer-events-auto': !ocultarNav,
-          'opacity-0 -translate-y-4 pointer-events-none': ocultarNav
+          'opacity-100 translate-y-0': !ocultarNav,
+          'opacity-0 -translate-y-4': ocultarNav
         }"
       >
-        <a href="#" class="hover:text-black">Alojamientos</a>
-        <a href="#" class="hover:text-black">Experiencias</a>
-        <a href="#" class="hover:text-black">Paqeutes</a>
+      <div class="flex border rounded-full shadow overflow-hidden max-w-4xl mx-auto">
+        <!-- ¿Qué buscas? -->
+        <div class="w-1/3 px-6 py-3 border-r">
+          <label class="block text-sm mb-1">¿Qué buscas?</label>
+          <select [(ngModel)]="searchSelection" class="w-full border rounded px-3 py-2">
+            <optgroup label="Emprendimientos">
+              <option *ngFor="let n of emprendimientoNombres" [value]="n">{{ n }}</option>
+            </optgroup>
+            <optgroup label="Paquetes turísticos">
+              <option *ngFor="let p of paqueteNombres" [value]="p">{{ p }}</option>
+            </optgroup>
+            <optgroup label="Tipos de servicios">
+              <option *ngFor="let s of tiposServicios" [value]="s">{{ s }}</option>
+            </optgroup>
+          </select>
+        </div>
+        <!-- ¿Dónde? -->
+        <div class="w-1/3 px-6 py-3 border-r">
+          <label class="block text-sm mb-1">¿Dónde?</label>
+          <select [(ngModel)]="searchSelectionLugar" class="w-full border rounded px-3 py-2">
+            <option value="">Todos los lugares</option>
+            <option *ngFor="let loc of lugarOpciones" [value]="loc">{{ loc }}</option>
+          </select>
+        </div>
+        <!-- ¿Cuándo? -->
+        <div class="w-1/3 px-6 py-3 border-r">
+          <label class="block text-sm mb-1">¿Cuándo?</label>
+          <input type="date" [(ngModel)]="fechaInferior" class="w-full border rounded px-3 py-2" />
+        </div>
+        <!-- Botón Buscar -->
+        <div class="flex items-center px-4">
+          <button (click)="buscar()" class="px-4 py-2 bg-green-500 text-white rounded-full">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </div>
       </nav>
 
-      <!-- SEARCH SUPERIOR (al hacer scroll) -->
+      <!-- SEARCH SUPERIOR -->
       <div
-        class="absolute top-0 left-1/2 -translate-x-1/2 transition-all duration-500 ease-in-out w-full max-w-3xl"
+        class="absolute w-full max-w-3xl transition-all"
         [ngClass]="{
-          'opacity-100 translate-y-0 pointer-events-auto': ocultarNav,
-          'opacity-0 -translate-y-4 pointer-events-none': !ocultarNav
+          'opacity-100 translate-y-0': ocultarNav,
+          'opacity-0 -translate-y-4': !ocultarNav
         }"
       >
-        <div class="flex items-center bg-white border rounded-full shadow-md px-4 py-2">
-          <div class="px-2 text-sm border-r w-1/3">
-            <input type="text" placeholder="En cualquier lugar" class="w-full outline-none" />
-          </div>
-          <div class="px-2 text-sm border-r w-1/3">
-            <input type="text" placeholder="Cualquier semana" class="w-full outline-none" />
-          </div>
-          <div class="px-2 text-sm flex justify-between items-center w-1/3">
-            <input type="text" placeholder="¿Cuántos?" class="w-full outline-none" />
-            <button class="bg-green-500 text-white p-2 rounded-full ml-2">
-              <i class="fas fa-search"></i>
-            </button>
-          </div>
-        </div>
+      <div class="flex justify-center items-center gap-6 overflow-x-auto text-sm text-gray-600 p-4 bg-white flex-wrap">
+        <button routerLink="/" routerLinkActive="text-green-600" class="flex flex-col items-center">
+          <i class="fas fa-store"></i>
+          <span>Emprendimientos</span>
+        </button>
+        <button class="flex flex-col items-center">
+          <i class="fas fa-landmark"></i>
+          <span>Lugares Turísticos</span>
+        </button>
+        <button *ngFor="let tipo of tiposServicio" class="flex flex-col items-center">
+          <i class="fas fa-landmark"></i>
+          <p>{{ tipo.nombre }}</p>
+        </button>
+    
+      </div>
       </div>
     </div>
 
+    <!-- Login/Register -->
     <div class="flex gap-4">
-      <!-- Botón Ingresar -->
-      <button routerLink="/login" class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-xl text-gray-800 hover:bg-gray-100 transition">
-        <i class="fas fa-user"></i>
-        <span>Ingresar</span>
-      </button>
-    
-      <!-- Botón Registrarse -->
-      <button routerLink="/register" class="px-4 py-2 bg-green-500 text-white font-semibold rounded-xl hover:bg-green-600 transition">
-        Registrarse
-      </button>
+      <button routerLink="/login" class="px-4 py-2 border rounded-xl">Ingresar</button>
+      <button routerLink="/register" class="px-4 py-2 bg-green-500 text-white rounded-xl">Registrarse</button>
     </div>
-    
   </div>
 
-  <!-- SEARCH INFERIOR (al inicio) -->
-  <div *ngIf="!ocultarNav" class="flex justify-center transition-all duration-500 bg-white">
-    <div class="flex items-center bg-white border rounded-full shadow-md overflow-hidden w-full max-w-4xl">
-      <div class="px-6 py-3 text-sm border-r w-1/3">
-        <label class="block text-sm font-medium text-gray-700 mb-1">¿Qué buscas?</label>
-        <select class="w-full border rounded px-3 py-2">
-          <option>Alojamiento</option>
-          <option>Experiencia</option>
-        </select>
+
+<!-- Cards de Resultados -->
+<div *ngIf="resultados.length" class="mt-8 px-6">
+  <h2 class="text-2xl font-semibold mb-6">Resultados</h2>
+  <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+    <div
+      *ngFor="let item of resultados"
+      class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300"
+    >
+      <!-- Imagen (pon aquí item.imagen si la tienes) -->
+      <div class="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
+        <img
+          *ngIf="item.imagenUrl; else placeholder"
+          [src]="item.imagenUrl"
+          alt="{{ item.nombre }}"
+          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        />
+        <ng-template #placeholder>
+          <span class="text-gray-400">Sin imagen</span>
+        </ng-template>
       </div>
-      <div class="px-6 py-3 text-sm border-r w-1/3">
-        <label class="block text-sm font-medium text-gray-700 mb-1">¿Dónde?</label>
-        <input type="text" class="w-full border rounded px-3 py-2" placeholder="Cualquier lugar en Capachica" />
-      </div>
-      <div class="px-6 py-3 text-sm border-r w-1/3 flex flex-col items-start gap-2">
-        <label class="text-sm font-medium text-gray-700">¿Cuándo?</label>
-      
-        <div class="w-full">
-          <input type="date" class="w-full outline-none border rounded px-3 py-2" />
+      <div class="p-4 flex flex-col h-full">
+        <!-- Título y precio en línea -->
+        <div class="flex justify-between items-center mb-2">
+          <h3 class="text-lg font-bold text-gray-800 line-clamp-1">{{ item.nombre }}</h3>
+          <span
+            *ngIf="item.precio"
+            class="text-green-600 font-semibold"
+          >
+            S/{{ item.precio }}
+          </span>
         </div>
-      
+        <!-- Descripción breve -->
+        <p class="text-sm text-gray-600 mb-4 line-clamp-2">
+          {{ item.descripcion }}
+        </p>
+        <!-- Botón y rating abajo -->
+        <div class="mt-auto flex items-center justify-between">
+          <button
+            (click)="router.navigate([tipoBusqueda, item.id])"
+            class="px-4 py-2 bg-green-500 text-white rounded-full text-sm font-medium hover:bg-green-600 transition-colors"
+          >
+            Ver más
+          </button>
+          <!-- Ejemplo de rating, si lo tienes -->
+          <div *ngIf="item.rating" class="flex items-center text-yellow-500 text-sm">
+            <i class="fas fa-star mr-1"></i> {{ item.rating }}
+          </div>
+        </div>
       </div>
-      
     </div>
   </div>
+</div>
 
-  <!-- Filtros -->
-  <div class="flex justify-center items-center gap-6 overflow-x-auto text-sm text-gray-600 p-4 bg-white flex-wrap">
-    <button routerLink="/" routerLinkActive="text-green-600" class="flex flex-col items-center">
-      <i class="fas fa-store"></i>
-      <span>Emprendimientos</span>
-    </button>
-    <button class="flex flex-col items-center">
-      <i class="fas fa-landmark"></i>
-      <span>Lugares Turísticos</span>
-    </button>
-    <button *ngFor="let tipo of tiposServicio" class="flex flex-col items-center">
-      <i class="fas fa-landmark"></i>
-      <p>{{ tipo.nombre }}</p>
-    </button>
-  
-    <!-- Botón de filtros (centrado con los demás elementos) -->
-    <div class="flex flex-col items-center ml-28">
-      <button class="flex items-center gap-1 border rounded-full px-4 py-2 hover:shadow">
-        <i class="fas fa-sliders-h"></i> Filtros
-      </button>
-    </div>
-  </div>
-  
 </div>

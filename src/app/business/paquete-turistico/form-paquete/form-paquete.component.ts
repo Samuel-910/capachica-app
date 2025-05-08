@@ -1,193 +1,238 @@
 import { Component, OnInit } from '@angular/core';
 import { SidebarComponent } from "../../sidebar/sidebar.component";
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NavbarComponent } from '../../sidebar/navbar/navbar.component';
+import { PaqueteTuristicoService } from '../../../core/services/paquetes-turisticos.service';
+import { SupabaseService } from '../../../core/services/supabase.service';
+import Swal from 'sweetalert2';
+import { CommonModule } from '@angular/common';
+import { ServiciosService } from '../../../core/services/servicios.service';
+import { EmprendimientoService } from '../../../core/services/emprendimiento.service';
 
 @Component({
   selector: 'app-form-paquete',
   standalone: true,
-  imports: [SidebarComponent, NavbarComponent,ReactiveFormsModule],
+  imports: [SidebarComponent, NavbarComponent,ReactiveFormsModule, CommonModule,FormsModule],
   templateUrl: './form-paquete.component.html',
   styleUrl: './form-paquete.component.css'
 })
 export class FormPaqueteComponent implements OnInit{
-  paqueteForm: FormGroup;
+  selectedFile: File | null = null;
+  previewUrl: string | null = null;
+  servicios: any[] = [];
+  isLoading: boolean = true;
+  serviciosDisponibles: any[] = [];
+  emprendimiento: any[] = [];  // Array para almacenar los emprendimientos
+  paqueteForm!: FormGroup;
   isEdit: boolean = false;
-  currentPlato: any = null;
+  paqueteIdEdit: number | null = null;
+
   constructor(
-      private fb: FormBuilder,
-      private router: Router,
-      private route: ActivatedRoute,  // Inyectamos ActivatedRoute para acceder a los parámetros de la URL
-      // private platoService: PlatoService
-    ) {
-      this.paqueteForm = this.fb.group({
-        titulo: ['', Validators.required],
-        precio: ['', Validators.required],
-        lugares_visitar: ['', Validators.required],
-        servicios_adicionales: ['', Validators.required],
-        politicas_cancelacion: ['', Validators.required],
-        requisitos: ['', Validators.required]
-      });
-    }
+    private fb: FormBuilder,
+    private paqueteTuristicoService: PaqueteTuristicoService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private supabaseService: SupabaseService,
+    private serviciosService: ServiciosService,
+    private emprendimientoService: EmprendimientoService // Asegúrate de inyectar este servicio
+  ) {}
 
-    ngOnInit(): void {
-      this.paqueteForm = this.fb.group({
-        titulo: ['', Validators.required],
-        precio: ['', Validators.required],
-        lugares_visitar: ['', Validators.required],
-        servicios_adicionales: ['', Validators.required],
-        politicas_cancelacion: ['', Validators.required],
-        requisitos: ['', Validators.required]
-      });
-      this.cargarPaquetes();
-    }
-    cargarPaquetes(): void {
-      const simulatedData = {
-        paquetes: [
-          {
-            id: 1,
-            titulo: "Paquete Paramis",
-            icono: "fa-solid fa-bookmark",
-            logo: "https://img.icons8.com/ios-filled/50/wifi-logo.png",
-            precio: "s/ 132.50",
-            estrellas: 4,
-            lugares_visitar: [
-              "Centro Ceremonial Pachatata",
-              "Rechamama"
-            ],
-            servicios_adicionales: [
-              "Relacionado con servicios_id"
-            ],
-            incluye: [
-              "✅ Servicio a Habitación",
-              "✅ Paseos Guados"
-            ],
-            no_incluye: [
-              "❌ Altruarzos"
-            ],
-            politicas_cancelacion: "Cancelación de un servicio que más de 30 meses al día de participación a la fecha de juicio del paquete. Excambiado del 107% del paseo pagado.",
-            requisitos: [
-              "Buena Condición Física",
-              "Traer Artículo Valioso"
-            ]
-          },
-          {
-            id: 2,
-            titulo: "Paquete Andino",
-            icono: "fa-solid fa-mountain",
-            logo: "https://img.icons8.com/ios-filled/50/mountain.png",
-            precio: "s/ 200.00",
-            estrellas: 5,
-            lugares_visitar: [
-              "Machu Picchu",
-              "Sacsayhuamán",
-              "Valle Sagrado"
-            ],
-            servicios_adicionales: [
-              "Excursión guiada",
-              "Transporte privado"
-            ],
-            incluye: [
-              "✅ Alojamiento 3 noches",
-              "✅ Entradas a Machu Picchu",
-              "✅ Transporte a todos los lugares"
-            ],
-            no_incluye: [
-              "❌ Alimentos fuera del paquete"
-            ],
-            politicas_cancelacion: "Cancelación 100% reembolsable hasta 15 días antes de la fecha de inicio.",
-            requisitos: [
-              "Pasaporte válido",
-              "Ropa cómoda"
-            ]
-          },
-          {
-            id: 3,
-            titulo: "Paquete Amazonía",
-            icono: "fa-solid fa-leaf",
-            logo: "https://img.icons8.com/ios-filled/50/leaf.png",
-            precio: "s/ 250.00",
-            estrellas: 4,
-            lugares_visitar: [
-              "Reserva Nacional Pacaya Samiria",
-              "Río Amazonas"
-            ],
-            servicios_adicionales: [
-              "Guía naturalista",
-              "Transporte fluvial"
-            ],
-            incluye: [
-              "✅ Alojamiento en eco-lodge",
-              "✅ Excursión en bote",
-              "✅ Todas las comidas durante el tour"
-            ],
-            no_incluye: [
-              "❌ Bebidas alcohólicas"
-            ],
-            politicas_cancelacion: "Cancelación parcial, se reembolsará el 50% si se cancela con 7 días de antelación.",
-            requisitos: [
-              "Vacunas recomendadas",
-              "Traer repelente para mosquitos"
-            ]
-          },
-          {
-            id: 4,
-            titulo: "Paquete Cultural Lima",
-            icono: "fa-solid fa-city",
-            logo: "https://img.icons8.com/ios-filled/50/city.png",
-            precio: "s/ 180.00",
-            estrellas: 4,
-            lugares_visitar: [
-              "Plaza Mayor de Lima",
-              "Museo Larco",
-              "Barranco"
-            ],
-            servicios_adicionales: [
-              "Tour guiado",
-              "Transporte privado"
-            ],
-            incluye: [
-              "✅ Entradas a todos los museos",
-              "✅ Almuerzo tradicional",
-              "✅ Transporte durante el recorrido"
-            ],
-            no_incluye: [
-              "❌ Souvenirs"
-            ],
-            politicas_cancelacion: "No reembolsable si se cancela con menos de 72 horas de antelación.",
-            requisitos: [
-              "Cámara fotográfica",
-              "Ropa cómoda"
-            ]
-          }
-        ]
-      };
-      const id = this.route.snapshot.paramMap.get('id');
-      if (id) {
-        this.isEdit = true;  // Activamos el modo de edición si existe un id
+  ngOnInit() {
+    this.paqueteForm = this.fb.group({
+      nombre: ['', Validators.required],
+      descripcion: ['', Validators.required],
+      precio: ['', Validators.required],
+      estado: ['activo', Validators.required],
+      imagen: [''],
+      servicios: this.fb.array([]), // FormArray para los servicios
+      emprendimientoId: ['', Validators.required]  // Campo para seleccionar el emprendimiento
+    });
 
-        // Buscamos el plato correspondiente al 'id'
-        const paquetes = simulatedData.paquetes.find(p => p.id.toString() === id);
+    this.cargarEmprendimientos();
+    this.cargarServicios();
 
-        if (paquetes) {
-          this.currentPlato = paquetes;
-          this.paqueteForm.patchValue(paquetes);  // Rellenamos el formulario con los datos del plato
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.isEdit = true;
+      this.paqueteIdEdit = +id;
+
+      this.paqueteTuristicoService.obtenerPaqueteTuristico(this.paqueteIdEdit).subscribe({
+        next: (paquete) => {
+          this.paqueteForm.patchValue({
+            nombre: paquete.nombre,
+            descripcion: paquete.descripcion,
+            precio: paquete.precio,
+            estado: paquete.estado,
+            emprendimientoId: paquete.emprendimiento.id // Asignamos el emprendimiento seleccionado
+          });
+          this.cargarServiciosSeleccionados(paquete.servicios);
+        },
+        error: (err) => {
+          console.error('Error al cargar paquete:', err);
+          Swal.fire('Error', 'No se pudo cargar el paquete turístico.', 'error');
         }
-      } else {
-        // Si no hay id, mantenemos el modo de creación
-        this.isEdit = false;
+      });
+    }
+  }
+
+  cargarEmprendimientos(): void {
+    this.emprendimientoService.listarEmprendimientos().subscribe({
+      next: (data) => {
+        this.emprendimiento = data.emprendimientos;
+        console.log(data)
+      },
+      error: (err) => {
+        console.error('Error al cargar emprendimientos:', err);
       }
+    });
+  }
+
+  cargarServicios(): void {
+    this.serviciosService.listarServicios().subscribe({
+      next: (data) => {
+        this.isLoading = false;
+        this.serviciosDisponibles = data;  // Asignamos los servicios disponibles
+        this.addServiciosToForm();
+          // Agregamos los servicios al formulario
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Error al cargar servicios:', err);
+      }
+    });
+  }
+
+  addServiciosToForm(): void {
+    const serviciosControl = this.paqueteForm.get('servicios') as FormArray;
+    this.serviciosDisponibles.forEach(() => {
+      serviciosControl.push(this.fb.control(false));  // Inicializa el valor como "false"
+    });
+  }
+
+  cargarServiciosSeleccionados(serviciosSeleccionados: any[]): void {
+    const serviciosControl = this.paqueteForm.get('servicios') as FormArray;
+    serviciosSeleccionados.forEach(servicio => {
+      const index = this.serviciosDisponibles.findIndex(s => s.id === servicio.id);
+      if (index !== -1) {
+        serviciosControl.at(index).setValue(true); // Marcamos como seleccionado
+      }
+    });
+  }
+
+  onFileChange(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = () => (this.previewUrl = reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  }
+
+  async subirImagenASupabase(file: File): Promise<string> {
+    Swal.fire({
+      title: 'Subiendo imagen...',
+      text: 'Por favor espere mientras se sube la imagen.',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    const supabase = this.supabaseService.getClient();
+    const filePath = `paquetes-turisticos/${Date.now()}-${file.name}`;
+    const { data, error } = await supabase.storage.from('paquetes-turisticos').upload(filePath, file);
+    if (error) {
+      Swal.close();
+      throw new Error(error.message);
     }
 
-    guardarPaquete(): void {
-      if (this.paqueteForm.valid) {
-        const nuevoPlato = this.paqueteForm.value;
-        console.log('Plato guardado:', nuevoPlato);
-        // Aquí puedes hacer el envío de los datos al backend, si es necesario
+    const { data: publicUrlData } = supabase.storage.from('paquetes-turisticos').getPublicUrl(filePath);
+    Swal.close();
+    return publicUrlData?.publicUrl;
+  }
+
+  async guardarPaquete() {
+    if (this.paqueteForm.invalid) {
+      const camposInvalidos = Object.keys(this.paqueteForm.controls)
+        .filter(key => this.paqueteForm.get(key)?.invalid)
+        .map(key => key);
+      
+      Swal.fire({
+        icon: 'error',
+        title: 'Formulario incompleto',
+        html: `Por favor corrige o completa los siguientes campos:<br><b>${camposInvalidos.join(', ')}</b>`
+      });
+      return;
+    }
+  
+    const formValue = this.paqueteForm.getRawValue();
+    let imagenUrl = '';
+  
+    // Convertimos la ID del emprendimiento a número entero
+    const emprendimientoId = parseInt(formValue.emprendimientoId, 10); // Asegura que sea un entero
+  
+    if (isNaN(emprendimientoId)) {
+      Swal.fire('Error', 'La ID del emprendimiento debe ser un número válido.', 'error');
+      return;
+    }
+  
+    if (this.selectedFile) {
+      try {
+        imagenUrl = await this.subirImagenASupabase(this.selectedFile);
+      } catch (error) {
+        console.error('Error al subir imagen:', error);
+        Swal.fire('Error', 'No se pudo subir la imagen del paquete.', 'error');
+        return;
       }
     }
-    cancelar(): void {
-      this.router.navigate(['/paquetes']);
+  
+    const payload = {
+      nombre: formValue.nombre,
+      descripcion: formValue.descripcion,
+      precio: formValue.precio,
+      estado: formValue.estado,
+      imagenUrl: imagenUrl,
+      servicios: this.getServiciosSeleccionados(),  // Enviar las IDs de los servicios seleccionados
+      emprendimientoId: emprendimientoId  // Convertir la ID del emprendimiento a entero
+    };
+  
+    if (this.isEdit && this.paqueteIdEdit) {
+      this.paqueteTuristicoService.actualizarPaqueteTuristico(this.paqueteIdEdit, payload).subscribe({
+        next: () => {
+          Swal.fire('Actualizado', 'El paquete turístico fue actualizado correctamente.', 'success');
+          this.paqueteForm.reset();
+          this.router.navigate(['/paquetes']);
+        },
+        error: (err) => {
+          console.error('Error al actualizar paquete:', err);
+          Swal.fire('Error', 'No se pudo actualizar el paquete turístico.', 'error');
+        }
+      });
+    } else {
+      this.paqueteTuristicoService.crearPaqueteTuristico(payload).subscribe({
+        next: () => {
+          Swal.fire('Registrado', 'El paquete turístico fue registrado correctamente.', 'success');
+          this.paqueteForm.reset();
+          this.router.navigate(['/paquetes']);
+        },
+        error: (err) => {
+          console.error('Error al registrar paquete:', err);
+          Swal.fire('Error', 'No se pudo registrar el paquete turístico.', 'error');
+        }
+      });
     }
+  }
+  
+
+  getServiciosSeleccionados(): any[] {
+    const serviciosControl = this.paqueteForm.get('servicios') as FormArray;
+    return serviciosControl.controls
+      .map((control, index) => control.value ? this.serviciosDisponibles[index].id : null)
+      .filter(id => id !== null);  // Filtrar solo las IDs seleccionadas
+  }
+
+  cancelar() {
+    this.router.navigate(['/paquetes']);
+  }
 }

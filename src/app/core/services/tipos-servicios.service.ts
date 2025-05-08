@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 
@@ -35,5 +35,12 @@ export class TiposServicioService {
                 Authorization: `Bearer ${token}`
             })
         };
+    }
+    buscarConFiltros(filtros: { nombre?: string; lugar?: string; fecha?: string }): Observable<any[]> {
+        let params = new HttpParams();
+        if (filtros.nombre) { params = params.set('nombre', filtros.nombre); }
+        if (filtros.lugar)  { params = params.set('lugar', filtros.lugar); }
+        if (filtros.fecha)  { params = params.set('fecha', filtros.fecha); }
+        return this.http.get<any[]>(this.API, { params });
     }
 }

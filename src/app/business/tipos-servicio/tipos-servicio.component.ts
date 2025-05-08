@@ -3,40 +3,40 @@ import { SidebarComponent } from "../../business/sidebar/sidebar.component";
 import { NavbarComponent } from "../../business/sidebar/navbar/navbar.component";
 import Swal from 'sweetalert2';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TiposServicioService } from '../../core/services/tipos-servicios.service';
 
 @Component({
-  selector: 'app-usuario',
+  selector: 'app-tipos-servicio',
   standalone: true,
   imports: [SidebarComponent, NavbarComponent, CommonModule, RouterModule, FormsModule],
-  templateUrl: './usuario.component.html',
-  styleUrl: './usuario.component.css'
+  templateUrl: './tipos-servicio.component.html',
+  styleUrl: './tipos-servicio.component.css'
 })
-export class UsuarioComponent implements OnInit, DoCheck {
+export class TiposServicioComponent implements OnInit, DoCheck {
   filtroBusqueda: string = '';
-  columnaBusqueda: string = 'email';
+  columnaBusqueda: string = 'nombre';
   isLoading = true;
-  usuarios: any[] = [];
-  usuariosFiltrados: any[] = [];
+  tiposServicio: any[] = [];
+  tiposServicioFiltrados: any[] = [];
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, private tiposServicioService: TiposServicioService) {}
 
   ngOnInit(): void {
-    this.cargarUsuarios();
+    this.cargarTiposServicio();
   }
 
-  cargarUsuarios(): void {
-    this.authService.getUsuarios().subscribe({
+  cargarTiposServicio(): void {
+    this.tiposServicioService.listarTiposServicio().subscribe({
       next: (data) => {
-        this.usuarios = data;
+        this.tiposServicio = data;
         this.isLoading = false;
-        this.usuariosFiltrados = [...this.usuarios];
-        console.log('Usuarios cargados:', data);
+        this.tiposServicioFiltrados = [...this.tiposServicio];
+        console.log('Tipos de servicio cargados:', data);
       },
       error: (err) => {
-        console.error('Error al obtener usuarios:', err);
+        console.error('Error al obtener tipos de servicio:', err);
       }
     });
   }
@@ -44,20 +44,16 @@ export class UsuarioComponent implements OnInit, DoCheck {
   ngDoCheck(): void {
     const texto = this.filtroBusqueda.toLowerCase();
 
-    this.usuariosFiltrados = this.usuarios.filter((u) => {
+    this.tiposServicioFiltrados = this.tiposServicio.filter((t) => {
       if (!texto) return true;
 
       switch (this.columnaBusqueda) {
-        case 'email':
-          return u.email?.toLowerCase().includes(texto);
         case 'nombre':
-          return u.persona.nombre?.toLowerCase().includes(texto);
-        case 'apellidos':
-          return u.persona.apellidos?.toLowerCase().includes(texto);
-        case 'rol':
-          return u.usuariosRoles[0]?.rol?.nombre?.toLowerCase().includes(texto);
-        case 'telefono':
-          return u.persona.telefono?.toLowerCase().includes(texto);
+          return t.nombre?.toLowerCase().includes(texto);
+        case 'descripcion':
+          return t.descripcion?.toLowerCase().includes(texto);
+        case 'requiereCupo':
+          return t.requiereCupo.toString().toLowerCase().includes(texto);
         default:
           return false;
       }
@@ -65,10 +61,10 @@ export class UsuarioComponent implements OnInit, DoCheck {
   }
 
   editar(id: string): void {
-    this.router.navigate([`/editusuario/${id}`]);
+    this.router.navigate([`/edittiposervicio/${id}`]);
   }
 
-  eliminar(id: number): void {
+  eliminar(id: string): void {
     Swal.fire({
       title: '¿Estás seguro?',
       text: '¡Esta acción no se puede deshacer!',
@@ -79,21 +75,21 @@ export class UsuarioComponent implements OnInit, DoCheck {
       confirmButtonText: 'Sí, eliminar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.authService.eliminarUsuario(id).subscribe({
+        this.tiposServicioService.eliminarTipoServicio(id).subscribe({
           next: () => {
             Swal.fire({
               icon: 'success',
               title: '¡Eliminado!',
-              text: 'El usuario ha sido eliminado correctamente.'
+              text: 'El tipo de servicio ha sido eliminado correctamente.'
             });
-            this.cargarUsuarios();
+            this.cargarTiposServicio();
           },
           error: (error) => {
-            console.error('Error al eliminar usuario:', error);
+            console.error('Error al eliminar tipo de servicio:', error);
             Swal.fire({
               icon: 'error',
               title: 'Error',
-              text: 'No se pudo eliminar el usuario.'
+              text: 'No se pudo eliminar el tipo de servicio.'
             });
           }
         });

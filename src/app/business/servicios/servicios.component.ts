@@ -1,174 +1,107 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { Component, DoCheck, OnInit } from '@angular/core';
 import { ServiciosService } from '../../core/services/servicios.service';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '../sidebar/sidebar.component';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { NavbarComponent } from '../sidebar/navbar/navbar.component';
+import Swal from 'sweetalert2';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-servicio',
   standalone: true,
-  imports: [ReactiveFormsModule, FormsModule, CommonModule, SidebarComponent, RouterModule],
+  imports: [CommonModule, SidebarComponent, RouterModule, NavbarComponent,FormsModule],
   templateUrl: './servicios.component.html',
   styleUrls: ['./servicios.component.css']
 })
-export class ServicioComponent implements OnInit {
-  isLoading: boolean = false;
+export class ServicioComponent implements OnInit , DoCheck{
+  filtroBusqueda: string = '';
+  columnaBusqueda: string = 'nombre'; // Predeterminado a 'nombre'
+  isLoading = true;
   servicios: any[] = [];
   serviciosFiltrados: any[] = [];
-  formServicio: FormGroup;
-  emprendimientoId = 1; // Cambiar dinámicamente si es necesario
-  editando = false;
-  servicioEditandoId: number | null = null;
-  paginaActual = 1;
-  limitePorPagina = 10;
-  totalElementos = 0;
-  searchTerm = '';
 
   constructor(
-    private servicioService: ServiciosService,
-    private fb: FormBuilder
-  ) {
-    this.formServicio = this.fb.group({
-      tipoServicioId: [null, Validators.required],
-      nombre: ['', Validators.required],
-      descripcion: ['', Validators.required],
-      precioBase: [null, [Validators.required, Validators.min(0)]],
-      moneda: ['PEN', Validators.required],
-      estado: ['activo', Validators.required],
-      detallesServicio: this.fb.group({
-        idiomas: [''],
-        experiencia: [''],
-        incluye: ['']
-      }),
-      emprendimientoId: [this.emprendimientoId, Validators.required]
-    });
-  }
+    private router: Router,
+    private serviciosService: ServiciosService
+  ) {}
 
   ngOnInit(): void {
-    this.obtenerServicios();
+    this.cargarServicios();
   }
 
-  obtenerServicios(): void {
-    this.isLoading = true; // Indicamos que estamos cargando los datos
-    this.servicioService.listarServicios().subscribe(
-      (res: any) => {
-        this.servicios = Array.isArray(res) ? res : res.data || []; // Asignamos los servicios obtenidos
-        this.isLoading = false; // Terminamos de cargar los datos
-      },
-      (err) => {
-        console.error('Error en la solicitud', err);
+  cargarServicios(): void {
+    this.serviciosService.listarServicios().subscribe({
+      next: (data) => {
+        this.servicios = data;
         this.isLoading = false;
+        this.serviciosFiltrados = [...this.servicios];
+        console.log('Servicios cargados:', data);
+      },
+      error: (err) => {
+        console.error('Error al obtener servicios:', err);
       }
-    );
-  }
-
-  crearServicio(): void {
-    if (this.formServicio.invalid) {
-      this.formServicio.markAllAsTouched();
-      return;
-    }
-
-    const payload = this.buildPayload();
-
-    const request$ = this.editando && this.servicioEditandoId !== null
-      ? this.servicioService.actualizarServicio(this.servicioEditandoId, payload)
-      : this.servicioService.crearServicio(payload);
-
-    request$.subscribe(() => {
-      this.resetFormAndRefresh();
-    }, err => console.error('Error al guardar servicio', err));
-  }
-
-  private buildPayload(): any {
-    const fv = this.formServicio.value;
-    return {
-      tipoServicioId: Number(fv.tipoServicioId),
-      nombre: fv.nombre,
-      descripcion: fv.descripcion,
-      precioBase: Number(fv.precioBase),
-      moneda: fv.moneda,
-      estado: fv.estado,
-      detallesServicio: {
-        idiomas: fv.detallesServicio.idiomas,
-        experiencia: fv.detallesServicio.experiencia,
-        incluye: fv.detallesServicio.incluye
-      },
-      emprendimientoId: Number(fv.emprendimientoId)
-    };
-  }
-
-  private resetFormAndRefresh(): void {
-    this.editando = false;
-    this.servicioEditandoId = null;
-    this.obtenerServicios();
-    this.formServicio.reset({
-      tipoServicioId: null,
-      nombre: '',
-      descripcion: '',
-      precioBase: null,
-      moneda: 'PEN',
-      estado: 'activo',
-      detallesServicio: { idiomas: '', experiencia: '', incluye: '' },
-      emprendimientoId: this.emprendimientoId
     });
   }
 
-  editarServicio(servicio: any): void {
-    this.editando = true;
-    this.servicioEditandoId = servicio.id;
-    // Patch values matching form controls
-    this.formServicio.patchValue({
-      tipoServicioId: servicio.tipoServicioId,
-      nombre: servicio.nombre,
-      descripcion: servicio.descripcion,
-      precioBase: servicio.precioBase,
-      moneda: servicio.moneda,
-      estado: servicio.estado,
-      detallesServicio: {
-        idiomas: servicio.detallesServicio?.idiomas || '',
-        experiencia: servicio.detallesServicio?.experiencia || '',
-        incluye: servicio.detallesServicio?.incluye || ''
-      },
-      emprendimientoId: servicio.emprendimientoId
+  ngDoCheck(): void {
+    const texto = this.filtroBusqueda.toLowerCase();
+
+    this.serviciosFiltrados = this.servicios.filter((s) => {
+      if (!texto) return true;
+
+      switch (this.columnaBusqueda) {
+        case 'nombre':
+          return s.nombre?.toLowerCase().includes(texto);
+        case 'descripcion':
+          return s.descripcion?.toLowerCase().includes(texto);
+        case 'precioBase':
+          return s.precioBase?.toLowerCase().includes(texto);
+        case 'estado':
+          return s.estado?.toLowerCase().includes(texto);
+        case 'tipoServicio.nombre':
+          return s.tipoServicio?.nombre?.toLowerCase().includes(texto);
+        default:
+          return false;
+      }
     });
   }
 
-  eliminarServicio(id: number): void {
-    if (confirm('¿Estás seguro de eliminar este servicio?')) {
-      this.servicioService.eliminarServicio(id)
-        .subscribe(() => this.obtenerServicios());
-    }
-  }
-  cambiarEstado(id: number, estado: string): void {
-    this.servicioService.actualizarEstadoServicio(id, { estado })  // Pasar el estado a través del cuerpo de la solicitud
-      .subscribe(
-        (res) => {
-          console.log('Estado actualizado exitosamente:', res);
-          this.obtenerServicios();  // Recargar la lista de servicios luego de actualizar el estado
-        },
-        (error) => {
-          console.error('Error al actualizar el estado:', error);
-        }
-      );
+  editar(id: string): void {
+    this.router.navigate([`/editservicio/${id}`]);
   }
 
-  get totalPaginas(): number {
-    return Math.ceil(this.totalElementos / this.limitePorPagina);
-  }
-
-  paginaAnterior(): void {
-    if (this.paginaActual > 1) {
-      this.paginaActual--;
-      this.obtenerServicios();
-    }
-  }
-
-  paginaSiguiente(): void {
-    if (this.paginaActual < this.totalPaginas) {
-      this.paginaActual++;
-      this.obtenerServicios();
-    }
+  eliminar(id: string): void {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: '¡Esta acción no se puede deshacer!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.serviciosService.eliminarServicio(id).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Eliminado!',
+              text: 'El servicio ha sido eliminado correctamente.'
+            });
+            this.cargarServicios();
+          },
+          error: (error) => {
+            console.error('Error al eliminar servicio:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'No se pudo eliminar el servicio.'
+            });
+          }
+        });
+      }
+    });
   }
 }
 

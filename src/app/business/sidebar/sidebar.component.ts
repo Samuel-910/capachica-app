@@ -13,17 +13,8 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class SidebarComponent {
     constructor(private authService : AuthService, private router: Router) {}
-  logout(): void {
-    // this.authService.logout().subscribe(
-    //   (response) => {
-    //     console.log('Cierre de sesión exitoso');
-    //     localStorage.removeItem('authToken'); // Elimina el token de localStorage
-    //     this.router.navigate(['/']); // Redirige al login
-    //   },
-    //   (error) => {
-    //     console.error('Error al cerrar sesión', error);
-    //   }
-    // );
-  }
+    logout(): void {
+      this.authService.logout();  // Llamar al método logout() del servicio
+    }
 
 }

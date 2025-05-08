@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, switchMap, tap } from 'rxjs';
@@ -65,4 +65,10 @@ export class EmprendimientoService {
     return this.http.get<any>(this.PENDING_LIST_URL, { withCredentials: true });
   }
 
+  buscarConFiltros(filtros: any): Observable<any[]> {
+    let params = new HttpParams();
+    if (filtros.lugar) params = params.set('lugar', filtros.lugar);
+    if (filtros.fecha) params = params.set('fecha', filtros.fecha);
+    return this.http.get<any[]>(this.LIST_URL, { params });
+  }
 }
