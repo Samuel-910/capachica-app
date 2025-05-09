@@ -7,7 +7,7 @@ import { initFlowbite } from 'flowbite';
 
 import { EmprendimientoService } from '../../core/services/emprendimiento.service';
 import { PaqueteTuristicoService } from '../../core/services/paquetes-turisticos.service';
-import { LugaresService } from '../../core/services/lugar-service';
+import { LugaresService } from '../../core/services/lugar.service';
 import { TiposServicioService } from '../../core/services/tipos-servicios.service';
 
 @Component({
@@ -68,6 +68,12 @@ export class NavbarComponent implements OnInit {
       error: (err) => {
         console.error('Error al cargar tipos de servicio:', err);
       }
+    });
+  }
+
+  refreshData(tipoId: string): void {
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate([`/prinservicios`, tipoId]);
     });
   }
 

@@ -3,7 +3,7 @@ import { SidebarComponent } from '../../sidebar/sidebar.component';
 import { NavbarComponent } from '../../sidebar/navbar/navbar.component';
 import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { LugaresService } from '../../../core/services/lugar-service';
+import { LugaresService } from '../../../core/services/lugar.service';
 import { CommonModule } from '@angular/common';
 
 @Component({

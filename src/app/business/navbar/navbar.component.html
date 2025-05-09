@@ -106,19 +106,24 @@
     </div>
   </div>
   <div *ngIf="!ocultarNav" class="flex justify-center items-center gap-6 overflow-x-auto text-sm text-gray-600 p-4 bg-white flex-wrap">
-    <button routerLink="/" routerLinkActive="text-green-600" class="flex flex-col items-center">
+    <button routerLink="/prinemprendimiento" routerLinkActive="text-green-600" class="flex flex-col items-center">
       <i class="fas fa-store"></i>
       <span>Emprendimientos</span>
     </button>
-    <button class="flex flex-col items-center">
+    <button routerLink="/prinlugares" routerLinkActive="text-green-600" class="flex flex-col items-center">
       <i class="fas fa-landmark"></i>
       <span>Lugares Turísticos</span>
     </button>
-    <button *ngFor="let tipo of tiposServicio" class="flex flex-col items-center">
-      <i class="fas fa-landmark"></i>
-      <p>{{ tipo.nombre }}</p>
-    </button>
-
+    <button 
+    [routerLink]="['/prinservicios', tipo.id]" 
+    routerLinkActive="text-green-600" 
+    *ngFor="let tipo of tiposServicio" 
+    (click)="refreshData(tipo.id)"
+    class="flex flex-col items-center">
+    <i class="fas fa-landmark"></i>
+    <p>{{ tipo.nombre }}</p>
+  </button>
+  
   </div>
 <!-- Cards de Resultados -->
 <div *ngIf="resultados.length" class="mt-8 px-6">
@@ -163,7 +168,7 @@
           >
             Ver más
           </button>
-          <!-- Ejemplo de rating, si lo tienes -->
+
           <div *ngIf="item.rating" class="flex items-center text-yellow-500 text-sm">
             <i class="fas fa-star mr-1"></i> {{ item.rating }}
           </div>

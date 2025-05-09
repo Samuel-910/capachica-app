@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LugaresService } from '../../core/services/lugar-service';
+import { LugaresService } from '../../core/services/lugar.service';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { NavbarComponent } from '../sidebar/navbar/navbar.component';
 import { CommonModule } from '@angular/common';

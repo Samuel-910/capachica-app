@@ -212,7 +212,23 @@ export const routes: Routes = [
         path: 'editdisponibilidad/:id', // Ruta para editar una disponibilidad existente
         loadComponent: () =>
           import('./business/disponibilidad/form-disponibilidad/form-disponibilidad.component').then(m => m.FormDisponibilidadComponent),
-      }
+      },
+      {
+        path: 'prinemprendimiento', // Ruta para ver todas las disponibilidades
+        loadComponent: () =>
+          import('./business/prinemprendimiento/prinemprendimiento.component').then(m => m.PrinemprendimientoComponent),
+      },
+      
+      {
+        path: 'prinlugares', // Ruta para ver todas las disponibilidades
+        loadComponent: () =>
+          import('./business/prinlugares/prinlugares.component').then(m => m.PrinlugaresComponent),
+      },
+      {
+        path: 'prinservicios/:id', // Ruta para ver todas las disponibilidades
+        loadComponent: () =>
+          import('./business/prinservicios/prinservicios.component').then(m => m.PrinserviciosComponent),
+      },
       
       
       

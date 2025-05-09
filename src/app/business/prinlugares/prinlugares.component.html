@@ -1,0 +1,29 @@
+<app-navbar></app-navbar>
+    <!-- Sección con fondo verde -->
+    <section class="bg-green-500 text-white py-8 px-6 w-full mt-40">
+        <h2 class="text-4xl mb-4">Turismo Local</h2>
+        <p class="text-lg">Descubre los encantos de Capachica. Explora destinos turísticos únicos, actividades locales y la rica cultura que ofrece esta hermosa región.</p>
+    </section>
+<div class="flex justify-center items-start gap-8  px-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
+        <div *ngFor="let lugar of lugares" class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform transform hover:translate-y-1">
+          <!-- Imagen de la tarjeta, puedes agregar una imagen si tienes alguna URL, sino, poner una imagen predeterminada -->
+          <img src="https://example.com/images/emprendedor2.jpg" alt="Imagen del emprendimiento" class="w-full h-48 object-cover" />
+          
+          <div class="p-4">
+            <!-- Título de la tarjeta -->
+            <h3 class="text-xl font-semibold text-gray-800 mb-3">{{ lugar.nombre }}</h3>
+            
+            <!-- Descripción de la tarjeta -->
+            <p class="text-gray-600 mb-4">
+              {{ lugar.descripcion }}
+            </p>
+            <p class="text-gray-600 mb-4">
+                {{ lugar.direccion }}
+              </p>
+          </div>
+        </div>
+      </div>
+      
+</div>
+
