@@ -17,7 +17,6 @@ export interface LugarTuristico {
   estado: string;
   imagenes: {
     url: string;
-    descripcion: string;
   }[];
 }
 

@@ -138,15 +138,15 @@ async guardarLugar() {
   }
 
   const formValue = this.lugarForm.getRawValue();
-  let imagenes: { url: string; descripcion: string }[] = []; // Aseguramos que imagenes sea un arreglo con 'url' y 'descripcion'
+  let imagenes: { url: string }[] = [];  // Ahora solo será un arreglo con la propiedad 'url'
 
   // Subir la imagen solo si hay un archivo seleccionado
   if (this.selectedFile) {
     try {
       // Aquí se sube la imagen a Supabase y obtenemos la URL
       const imagenUrl = await this.subirImagenASupabase(this.selectedFile);
-      // Aquí asignamos la URL junto con la descripción
-      imagenes.push({ url: imagenUrl, descripcion: 'Imagen de perfil' }); // Se manda una descripcion por imagen
+      // Solo agregamos el objeto con 'url'
+      imagenes.push({ url: imagenUrl });
     } catch (error) {
       console.error('Error al subir imagen:', error);
       Swal.fire('Error', 'No se pudo subir la imagen del lugar.', 'error');
@@ -166,7 +166,7 @@ async guardarLugar() {
     restricciones: formValue.restricciones || null,
     esDestacado: formValue.esDestacado,
     estado: formValue.estado,
-    imagenes: imagenes.length > 0 ? imagenes : []  // Aquí se incluye la URL y descripción de la imagen
+    imagenes: imagenes.length > 0 ? imagenes : []  // Ahora solo mandamos la URL
   };
 
   if (this.isEdit && this.lugarIdEdit) {
@@ -195,6 +195,7 @@ async guardarLugar() {
     });
   }
 }
+
 
 
 

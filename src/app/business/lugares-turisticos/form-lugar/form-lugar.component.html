@@ -3,57 +3,63 @@
   <div class="flex-1 ml-[260px]">
     <app-navbar class="fixed top-0 left-[260px] right-0 h-[64px] z-10 bg-white border-b"></app-navbar>
 
-    <div class="m-[80px] ">
+    <div class="m-[80px]">
       <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
         <h2 class="text-2xl font-bold mb-4 text-gray-800">
-          {{ isEdit ? 'Editar Lugar Turístico' : 'Registrar Lugar Turístico' }}
+          {{ isEdit ? "Editar Lugar Turístico" : "Registrar Lugar Turístico" }}
         </h2>
         <form [formGroup]="lugarForm" (ngSubmit)="guardarLugar()" enctype="multipart/form-data">
           <div class="space-y-6">
             <div class="grid md:grid-cols-2 gap-6">
               <div>
                 <label class="block font-medium text-gray-700">Nombre</label>
-                <input type="text" formControlName="nombre" placeholder="Nombre del lugar" class="border p-3 rounded w-full" required />
+                <input type="text" formControlName="nombre" placeholder="Nombre del lugar"
+                  class="border p-3 rounded w-full" required />
               </div>
               <div>
                 <label class="block font-medium text-gray-700">Descripción</label>
-                <input type="text" formControlName="descripcion" placeholder="Descripción del lugar" class="border p-3 rounded w-full" required />
+                <input type="text" formControlName="descripcion" placeholder="Descripción del lugar"
+                  class="border p-3 rounded w-full" required />
               </div>
 
               <div>
                 <label class="block font-medium text-gray-700">Dirección</label>
-                <input type="text" formControlName="direccion" placeholder="Dirección del lugar" class="border p-3 rounded w-full" required />
+                <input type="text" formControlName="direccion" placeholder="Dirección del lugar"
+                  class="border p-3 rounded w-full" required />
               </div>
 
               <div>
                 <label class="block font-medium text-gray-700">Coordenadas</label>
-                <input type="text" formControlName="coordenadas" placeholder="Coordenadas (Ej: -15.6000,-69.9000)" class="border p-3 rounded w-full" required />
+                <input type="text" formControlName="coordenadas" placeholder="Coordenadas (Ej: -15.6000,-69.9000)"
+                  class="border p-3 rounded w-full" required />
               </div>
 
-<div>
-  <label class="block font-medium text-gray-700">Horario de Apertura</label>
-  <input type="date" formControlName="horarioApertura" class="border p-3 rounded w-full" />
-</div>
+              <div>
+                <label class="block font-medium text-gray-700">Horario de Apertura</label>
+                <input type="date" formControlName="horarioApertura" class="border p-3 rounded w-full" />
+              </div>
 
-<div>
-  <label class="block font-medium text-gray-700">Horario de Cierre</label>
-  <input type="date" formControlName="horarioCierre" class="border p-3 rounded w-full" />
-</div>
-
+              <div>
+                <label class="block font-medium text-gray-700">Horario de Cierre</label>
+                <input type="date" formControlName="horarioCierre" class="border p-3 rounded w-full" />
+              </div>
 
               <div>
                 <label class="block font-medium text-gray-700">Costo de Entrada</label>
-                <input type="number" formControlName="costoEntrada" placeholder="Costo de entrada" class="border p-3 rounded w-full" />
+                <input type="number" formControlName="costoEntrada" placeholder="Costo de entrada"
+                  class="border p-3 rounded w-full" />
               </div>
 
               <div>
                 <label class="block font-medium text-gray-700">Recomendaciones</label>
-                <input type="text" formControlName="recomendaciones" placeholder="Recomendaciones del lugar" class="border p-3 rounded w-full" />
+                <input type="text" formControlName="recomendaciones" placeholder="Recomendaciones del lugar"
+                  class="border p-3 rounded w-full" />
               </div>
 
               <div>
                 <label class="block font-medium text-gray-700">Restricciones</label>
-                <input type="text" formControlName="restricciones" placeholder="Restricciones del lugar" class="border p-3 rounded w-full" />
+                <input type="text" formControlName="restricciones" placeholder="Restricciones del lugar"
+                  class="border p-3 rounded w-full" />
               </div>
 
               <div>
@@ -72,21 +78,22 @@
               <!-- Imagenes -->
               <div>
                 <label class="block font-medium text-gray-700">Imagenes del Lugar</label>
-                <input type="file" accept="image/*" (change)="onFileChange($event)" multiple class="border p-3 rounded w-full" />
+                <input type="file" accept="image/*" (change)="onFileChange($event)" multiple
+                  class="border p-3 rounded w-full" />
                 <div *ngIf="previewUrl" class="mt-2">
                   <div class="flex gap-2">
                     <img [src]="previewUrl" alt="Vista previa" class="w-32 h-32 object-cover rounded border shadow" />
                   </div>
                 </div>
               </div>
-
             </div>
 
             <div class="flex justify-end gap-6 mt-6">
               <button type="submit" class="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700">
-                {{ isEdit ? 'Actualizar' : 'Guardar' }}
+                {{ isEdit ? "Actualizar" : "Guardar" }}
               </button>
-              <button type="button" class="bg-gray-300 text-gray-800 px-8 py-3 rounded hover:bg-gray-400" (click)="cancelar()">
+              <button type="button" class="bg-gray-300 text-gray-800 px-8 py-3 rounded hover:bg-gray-400"
+                (click)="cancelar()">
                 Cancelar
               </button>
             </div>
