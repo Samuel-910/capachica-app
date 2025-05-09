@@ -50,7 +50,7 @@
             <div class="flex gap-4">
               <button
                 routerLink="/alojamientos"
-                class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition"
+                class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-semibold transition"
               >
                 Explorar alojamientos
               </button>
@@ -121,8 +121,8 @@
       opciones para conectar con la cultura andina.
     </p>
     <a
-      href="/alojamientos"
-      class="inline-block text-red-600 text-lg font-semibold hover:text-red-700"
+      href="/prinservicios/3"
+      class="inline-block text-green-600 text-lg font-semibold hover:text-red-700"
     >
       Ver todos los alojamientos
       <span class="ml-2">→</span>
@@ -142,7 +142,7 @@
     *ngFor="let servicio of serviciosAlojamiento"
     class="flex-shrink-0 bg-white shadow rounded-xl cursor-pointer hover:shadow-lg transition mt-5 mb-5"
   >
-    <div class="w-full h-[400px]">
+    <div class="w-full h-[400px]" (click)="verDetallesServicios(servicio.id)">
       <div class="relative w-full h-[250px]"> <!-- Establecemos una altura fija para las imágenes -->
         <img
           [src]="servicio.imagenes.length > 0 ? 'https://twsevdzjdnwjhdysvecm.supabase.co/storage/v1/object/public/servicios/' + servicio.imagenes[0]?.url : 'img/fam1.png'"
@@ -206,8 +206,8 @@
       Vive experiencias auténticas de la mano de anfitriones locales. Conoce la cultura viva, gastronomía y tradiciones.
     </p>
     <a
-      href="/alojamientos"
-      class="inline-block text-red-600 text-lg font-semibold hover:text-red-700"
+      href="/prinservicios/8"
+      class="inline-block text-green-600 text-lg font-semibold hover:text-green-700"
     >
     Explorar todas las experiencias
       <span class="ml-2">→</span>
@@ -227,7 +227,7 @@
   *ngFor="let servicio of serviciosExperiencia"
   class="flex-shrink-0 bg-white shadow rounded-xl cursor-pointer hover:shadow-lg transition mt-5 mb-5"
 >
-  <div class="w-full h-[400px]">
+  <div class="w-full h-[400px]" (click)="verDetallesServicios(servicio.id)">
     <div class="relative w-full h-[250px]">
       <img
       [src]="servicio.imagenes.length > 0 ? 'https://twsevdzjdnwjhdysvecm.supabase.co/storage/v1/object/public/servicios/' + servicio.imagenes[0]?.url : 'img/fam1.png'"
@@ -262,7 +262,7 @@
     </p>
     <a
       href="/alojamientos"
-      class="inline-block text-red-600 text-lg font-semibold hover:text-red-700"
+      class="inline-block text-green-600 text-lg font-semibold hover:text-green-700"
     >
     Ver todos los paquetes
       <span class="ml-2">→</span>
@@ -288,11 +288,11 @@
   >
     <button class="w-full h-[400px]" (click)="verDetallesPaquete(servicio.id)">
       <div class="relative w-full h-[250px]">
-        <img
-          [src]="servicio.imagenes.length > 0 ? servicio.imagenes[0] : 'img/fam1.png'"
-          alt="{{ servicio.nombre }}"
-          class="rounded-t-xl w-full h-[250px] object-cover"
-        />
+      <img
+      [src]="servicio.imagenes.length > 0 ? 'https://twsevdzjdnwjhdysvecm.supabase.co/storage/v1/object/public/paquetes-turisticos/' + servicio.imagenes[0]?.url : 'img/fam1.png'"
+      alt="Imagen del slider"
+      class="rounded-t-xl w-full h-full object-cover"
+    />
         <button
           class="absolute top-2 right-2 bg-white px-2 rounded-full shadow hover:bg-gray-100"
         >

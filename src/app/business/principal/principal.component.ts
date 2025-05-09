@@ -122,5 +122,8 @@ export class PrincipalComponent implements OnInit {
   verDetallesPaquete(id: number): void {
     this.router.navigate([`/paquetesdetalle/${id}`]); 
   }
+    verDetallesServicios(id: number): void {
+    this.router.navigate([`/serviciosdetalle/${id}`]); 
+  }
 
 }

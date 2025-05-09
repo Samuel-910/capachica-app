@@ -149,11 +149,11 @@ export const routes: Routes = [
         loadComponent: () => import('./business/lugares-turisticos/lugares-turisticos.component').then(m => m.LugaresTuristicosComponent),
       },
       {
-        path: 'lugares-turisticos/new',
+        path: 'newlugar',
         loadComponent: () => import('./business/lugares-turisticos/form-lugar/form-lugar.component').then(m => m.FormLugarComponent),
       },
       {
-        path: 'lugares-turisticos/edit/:id',
+        path: 'editlugar/:id',
         loadComponent: () => import('./business/lugares-turisticos/form-lugar/form-lugar.component').then(m => m.FormLugarComponent),
       },
       {
@@ -228,6 +228,11 @@ export const routes: Routes = [
         path: 'prinservicios/:id', // Ruta para ver todas las disponibilidades
         loadComponent: () =>
           import('./business/prinservicios/prinservicios.component').then(m => m.PrinserviciosComponent),
+      },
+      {
+        path: 'serviciosdetalle/:id',
+        loadComponent: () =>
+          import('./business/prinservicios/detprinservicios/detprinservicios.component').then(m => m.DetprinserviciosComponent),
       },
       
       

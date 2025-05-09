@@ -6,8 +6,8 @@
     </section>
     
     <div class="flex justify-center items-start gap-8  px-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
-            <div *ngFor="let servicio of servicios" class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform transform hover:translate-y-1 h-[400px]">
+        <button class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
+            <div (click)="verDetallesServicios(servicio.id)" *ngFor="let servicio of servicios" class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform transform hover:translate-y-1 h-[400px]">
             <!-- Imagen de la tarjeta, puedes agregar una imagen si tienes alguna URL, sino, poner una imagen predeterminada -->
             <img
             [src]="servicio.imagenes.length > 0 ? 'https://twsevdzjdnwjhdysvecm.supabase.co/storage/v1/object/public/servicios/' + servicio.imagenes[0]?.url : 'img/fam1.png'"
@@ -28,6 +28,6 @@
                 
             </div>
             </div>
-        </div>
+        </button>
     </div>
 

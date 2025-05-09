@@ -1,103 +1,49 @@
 <!-- NAVBAR FIJO -->
 <div class="fixed top-0 left-0 w-full z-50 bg-white shadow">
-  <div class="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
+  <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
     <!-- Logo -->
     <img src="assets/logo-capachica.png" class="h-24" />
-
-    <!-- Animación nav ↔ search superior -->
-    <div class="flex-1 relative h-12 flex justify-center items-center">
-      <!-- NAV PRINCIPAL -->
-      <nav
-        class="absolute flex gap-6 font-medium text-gray-700 transition-all"
-        [ngClass]="{
-          'opacity-100 translate-y-0': !ocultarNav,
-          'opacity-0 -translate-y-4': ocultarNav
-        }"
-      >
-        <div class="flex border rounded-full shadow overflow-hidden max-w-4xl mx-auto">
-          <!-- ¿Qué buscas? -->
-          <div class="w-1/3 px-6 py-3 border-r">
-            <label class="block text-sm mb-1">¿Qué buscas?</label>
-            <select [(ngModel)]="searchSelection" class="w-full border rounded px-3 py-2">
-              <optgroup label="Emprendimientos">
-                <option *ngFor="let n of emprendimientoNombres" [value]="n">{{ n }}</option>
-              </optgroup>
-              <optgroup label="Paquetes turísticos">
-                <option *ngFor="let p of paqueteNombres" [value]="p">{{ p }}</option>
-              </optgroup>
-              <optgroup label="Tipos de servicios">
-                <option *ngFor="let s of tiposServicios" [value]="s">{{ s }}</option>
-              </optgroup>
-            </select>
-          </div>
-          <!-- ¿Dónde? -->
-          <div class="w-1/3 px-6 py-3 border-r">
-            <label class="block text-sm mb-1">¿Dónde?</label>
-            <select [(ngModel)]="searchSelectionLugar" class="w-full border rounded px-3 py-2">
-              <option value="">Todos los lugares</option>
-              <option *ngFor="let loc of lugarOpciones" [value]="loc">{{ loc }}</option>
-            </select>
-          </div>
-          <!-- ¿Cuándo? -->
-          <div class="w-1/3 px-6 py-3 border-r">
-            <label class="block text-sm mb-1">¿Cuándo?</label>
-            <input type="date" [(ngModel)]="fechaInferior" class="w-full border rounded px-3 py-2" />
-          </div>
-          <!-- Botón Buscar -->
-          <div class="flex items-center px-4">
-            <button (click)="buscar()" class="px-4 py-2 bg-green-500 text-white rounded-full">
-              <i class="fas fa-search"></i>
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      <!-- SEARCH SUPERIOR -->
-      <div
-        class="absolute w-full max-w-3xl transition-all"
-        [ngClass]="{
-          'opacity-100 translate-y-0': ocultarNav,
-          'opacity-0 -translate-y-4': !ocultarNav
-        }"
-      >
-      <div class="flex border rounded-full shadow overflow-hidden max-w-4xl mx-auto">
-        <!-- ¿Qué buscas? -->
-        <div class="w-1/3 px-6 py-3 border-r">
-          <label class="block text-sm mb-1">¿Qué buscas?</label>
-          <select [(ngModel)]="searchSelection" class="w-full border rounded px-3 py-2">
-            <optgroup label="Emprendimientos">
-              <option *ngFor="let n of emprendimientoNombres" [value]="n">{{ n }}</option>
-            </optgroup>
-            <optgroup label="Paquetes turísticos">
-              <option *ngFor="let p of paqueteNombres" [value]="p">{{ p }}</option>
-            </optgroup>
-            <optgroup label="Tipos de servicios">
-              <option *ngFor="let s of tiposServicios" [value]="s">{{ s }}</option>
-            </optgroup>
-          </select>
-        </div>
-        <!-- ¿Dónde? -->
-        <div class="w-1/3 px-6 py-3 border-r">
-          <label class="block text-sm mb-1">¿Dónde?</label>
-          <select [(ngModel)]="searchSelectionLugar" class="w-full border rounded px-3 py-2">
-            <option value="">Todos los lugares</option>
-            <option *ngFor="let loc of lugarOpciones" [value]="loc">{{ loc }}</option>
-          </select>
-        </div>
-        <!-- ¿Cuándo? -->
-        <div class="w-1/3 px-6 py-3 border-r">
-          <label class="block text-sm mb-1">¿Cuándo?</label>
-          <input type="date" [(ngModel)]="fechaInferior" class="w-full border rounded px-3 py-2" />
-        </div>
-        <!-- Botón Buscar -->
-        <div class="flex items-center px-4">
-          <button (click)="buscar()" class="px-4 py-2 bg-green-500 text-white rounded-full">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
+<div class="flex-1 relative h-12 flex justify-center items-center">
+  <nav class="absolute flex gap-4 font-medium text-gray-700 transition-all w-full">
+    <div class="flex border rounded-full shadow h-16 overflow-hidden max-w-4xl mx-auto">
+      <!-- ¿Qué buscas? -->
+      <div class="w-1/3 px-4 py-3 border-r">
+        <select [(ngModel)]="searchSelection" class="w-full border rounded px-3 py-2" placeholder="¿Qué buscas?">
+          <option value="" disabled selected>¿Qué buscas?</option>
+          <optgroup label="Emprendimientos">
+            <option *ngFor="let n of emprendimientoNombres" [value]="n">{{ n }}</option>
+          </optgroup>
+          <optgroup label="Paquetes turísticos">
+            <option *ngFor="let p of paqueteNombres" [value]="p">{{ p }}</option>
+          </optgroup>
+          <optgroup label="Tipos de servicios">
+            <option *ngFor="let s of tiposServicios" [value]="s">{{ s }}</option>
+          </optgroup>
+        </select>
       </div>
+      <!-- ¿Dónde? -->
+      <div class="w-1/3 px-4 py-3 border-r">
+        <select [(ngModel)]="searchSelectionLugar" class="w-full border rounded px-3 py-2" placeholder="¿Dónde?">
+          <option value="" disabled selected>¿Dónde?</option>
+          <option value="">Todos los lugares</option>
+          <option *ngFor="let loc of lugarOpciones" [value]="loc">{{ loc }}</option>
+        </select>
+      </div>
+      <!-- ¿Cuándo? -->
+      <div class="w-1/3 px-4 py-3">
+        <input type="date" [(ngModel)]="fechaInferior" class="w-full border rounded px-3 py-2" placeholder="¿Cuándo?" />
+      </div>
+      <!-- Botón Buscar -->
+      <div class="flex items-center px-4">
+        <button (click)="buscar()" class="px-4 py-2 bg-green-500 text-white rounded-full">
+          <i class="fas fa-search"></i>
+        </button>
       </div>
     </div>
+  </nav>
+</div>
+
+
 
     <!-- Login/Register -->
     <div class="flex gap-4">

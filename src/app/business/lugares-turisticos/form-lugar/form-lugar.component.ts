@@ -5,6 +5,8 @@ import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } fr
 import { ActivatedRoute, Router } from '@angular/router';
 import { LugaresService } from '../../../core/services/lugar.service';
 import { CommonModule } from '@angular/common';
+import { SupabaseService } from '../../../core/services/supabase.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-form-lugar',
@@ -14,136 +16,189 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./form-lugar.component.css']
 })
 export class FormLugarComponent implements OnInit {
+   selectedFile: File | null = null;
+  previewUrl: string | null = null;
   lugarForm!: FormGroup;
-  isEdit = false;
-  lugarId: string | null = null;
-  isLoading = false;
+  isEdit: boolean = false;
+  lugarIdEdit: string | null = null;
 
   constructor(
     private fb: FormBuilder,
     private lugaresService: LugaresService,
+    private router: Router,
     private route: ActivatedRoute,
-    public router: Router
+    private supabaseService: SupabaseService
   ) {}
 
-  ngOnInit(): void {
-    // Inicializar el formulario
+  ngOnInit() {
     this.lugarForm = this.fb.group({
       nombre: ['', Validators.required],
       descripcion: ['', Validators.required],
       direccion: ['', Validators.required],
       coordenadas: ['', Validators.required],
-      horarioApertura: ['null', Validators.required],
-      horarioCierre: ['null', Validators.required],
-      costoEntrada: [0, [Validators.required, Validators.min(0)]],
-      recomendaciones: ['', Validators.required],
-      restricciones: ['', Validators.required],
+      horarioApertura: [''],
+      horarioCierre: [''],
+      costoEntrada: [null],
+      recomendaciones: [''],
+      restricciones: [''],
       esDestacado: [false],
       estado: ['activo', Validators.required],
-      imagenes: this.fb.array([])  // Inicializar el array de imágenes
+      imagenes: ['']
     });
 
-    // Verificar si es edición o creación
-    this.lugarId = this.route.snapshot.paramMap.get('id');
-    if (this.lugarId) {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
       this.isEdit = true;
-      this.loadLugar(this.lugarId);
-    } else {
-      this.addImagen();  // Añadir imagen por defecto
+      this.lugarIdEdit = id;
+      this.cargarLugar(id);
     }
   }
 
-  private createImagenGroup(): FormGroup {
-    return this.fb.group({
-      url: [''],            // opcional
-      descripcion: ['']     // opcional
-    });
-  }
-
-  get imagenesFormArray(): FormArray {
-    return this.lugarForm.get('imagenes') as FormArray;
-  }
-
-  get imagenesControls() {
-    return this.imagenesFormArray.controls;
-  }
-
-  addImagen(): void {
-    this.imagenesFormArray.push(this.createImagenGroup());
-  }
-
-  removeImagen(index: number): void {
-    this.imagenesFormArray.removeAt(index);
-  }
-
-  loadLugar(id: string): void {
-    this.isLoading = true;
+  cargarLugar(id: string): void {
     this.lugaresService.getLugar(id).subscribe({
-      next: lugar => {
-        this.lugarForm.patchValue(lugar);
-
-        // Convertir los horarios a instancias de Date
-        if (lugar.horarioApertura) {
-          this.lugarForm.patchValue({
-            horarioApertura: new Date(lugar.horarioApertura).toISOString().substring(11, 16)
-          });
-        }
-        if (lugar.horarioCierre) {
-          this.lugarForm.patchValue({
-            horarioCierre: new Date(lugar.horarioCierre).toISOString().substring(11, 16)
-          });
-        }
-
-        // Cargar las imágenes
-        if (lugar.imagenes?.length) {
-          this.imagenesFormArray.clear();
-          lugar.imagenes.forEach((img: any) => {
-            this.imagenesFormArray.push(this.fb.group(img));
-          });
-        }
-
-        this.isLoading = false;
+      next: (lugar) => {
+        this.lugarForm.patchValue({
+          nombre: lugar.nombre,
+          descripcion: lugar.descripcion,
+          direccion: lugar.direccion,
+          coordenadas: lugar.coordenadas,
+          horarioApertura: lugar.horarioApertura,
+          horarioCierre: lugar.horarioCierre,
+          costoEntrada: lugar.costoEntrada,
+          recomendaciones: lugar.recomendaciones,
+          restricciones: lugar.restricciones,
+          esDestacado: lugar.esDestacado,
+          estado: lugar.estado
+        });
+        this.previewUrl = lugar.imagenes.length ? lugar.imagenes[0].url : null;
       },
-      error: err => {
+      error: (err) => {
         console.error('Error al cargar lugar:', err);
-        this.isLoading = false;
+        Swal.fire('Error', 'No se pudo cargar el lugar.', 'error');
       }
     });
   }
 
-  convertToDate(time: string): Date {
-    const [hours, minutes] = time.split(':');
-    const date = new Date();
-    date.setHours(Number(hours), Number(minutes), 0, 0);
-    return date;
+  onFileChange(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = () => (this.previewUrl = reader.result as string);
+      reader.readAsDataURL(file);
+    }
   }
 
-  onSubmit(): void {
-    // Convertir los horarios a Date antes de enviar
-    const data = this.lugarForm.value;
-    data.horarioApertura = this.convertToDate(data.horarioApertura);
-    data.horarioCierre = this.convertToDate(data.horarioCierre);
+  async subirImagenASupabase(file: File): Promise<string> {
+    Swal.fire({
+      title: 'Subiendo imagen...',
+      text: 'Por favor espere mientras se sube la imagen.',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
 
-    if (this.lugarForm.invalid) {
-      this.lugarForm.markAllAsTouched();
+    const supabase = this.supabaseService.getClient();
+    const filePath = `lugares-turisticos/${Date.now()}-${file.name}`;
+
+    const { data, error } = await supabase.storage.from('lugares-turisticos').upload(filePath, file);
+    if (error) {
+      Swal.close();
+      throw new Error(error.message);
+    }
+
+    const { data: publicUrlData } = supabase.storage.from('lugares-turisticos').getPublicUrl(filePath);
+    Swal.close();
+    return publicUrlData?.publicUrl;
+  }
+
+async guardarLugar() {
+  if (this.lugarForm.invalid) {
+    const camposInvalidos = Object.keys(this.lugarForm.controls)
+      .filter(key => this.lugarForm.get(key)?.invalid)
+      .map(key => {
+        switch (key) {
+          case 'nombre': return 'Nombre';
+          case 'descripcion': return 'Descripción';
+          case 'direccion': return 'Dirección';
+          case 'coordenadas': return 'Coordenadas';
+          case 'estado': return 'Estado';
+          default: return key;
+        }
+      });
+
+    Swal.fire({
+      icon: 'error',
+      title: 'Formulario incompleto',
+      html: `Por favor corrige o completa los siguientes campos:<br><b>${camposInvalidos.join(', ')}</b>`
+    });
+    return;
+  }
+
+  const formValue = this.lugarForm.getRawValue();
+  let imagenes: { url: string; descripcion: string }[] = []; // Aseguramos que imagenes sea un arreglo con 'url' y 'descripcion'
+
+  // Subir la imagen solo si hay un archivo seleccionado
+  if (this.selectedFile) {
+    try {
+      // Aquí se sube la imagen a Supabase y obtenemos la URL
+      const imagenUrl = await this.subirImagenASupabase(this.selectedFile);
+      // Aquí asignamos la URL junto con la descripción
+      imagenes.push({ url: imagenUrl, descripcion: 'Imagen de perfil' }); // Se manda una descripcion por imagen
+    } catch (error) {
+      console.error('Error al subir imagen:', error);
+      Swal.fire('Error', 'No se pudo subir la imagen del lugar.', 'error');
       return;
     }
+  }
 
-    this.isLoading = true;
-    const request$ = this.isEdit
-      ? this.lugaresService.updateLugar(this.lugarId!, data)
-      : this.lugaresService.crearLugar(data);
+  const payload = {
+    nombre: formValue.nombre,
+    descripcion: formValue.descripcion,
+    direccion: formValue.direccion,
+    coordenadas: formValue.coordenadas,
+    horarioApertura: formValue.horarioApertura || null,
+    horarioCierre: formValue.horarioCierre || null,
+    costoEntrada: formValue.costoEntrada || null,
+    recomendaciones: formValue.recomendaciones || null,
+    restricciones: formValue.restricciones || null,
+    esDestacado: formValue.esDestacado,
+    estado: formValue.estado,
+    imagenes: imagenes.length > 0 ? imagenes : []  // Aquí se incluye la URL y descripción de la imagen
+  };
 
-    request$.subscribe({
-      next: () => this.router.navigate(['/lugares-turisticos']),
-      error: err => {
-        console.error(this.isEdit ? 'Error al actualizar:' : 'Error al crear:', err);
-        this.isLoading = false;
+  if (this.isEdit && this.lugarIdEdit) {
+    this.lugaresService.updateLugar(this.lugarIdEdit, payload).subscribe({
+      next: () => {
+        Swal.fire('Actualizado', 'El lugar fue actualizado correctamente.', 'success');
+        this.lugarForm.reset();
+        this.router.navigate(['/lugares-turisticos']);
+      },
+      error: (err) => {
+        console.error('Error al actualizar:', err);
+        Swal.fire('Error', 'No se pudo actualizar el lugar.', 'error');
+      }
+    });
+  } else {
+    this.lugaresService.crearLugar(payload).subscribe({
+      next: () => {
+        Swal.fire('Registrado', 'El lugar fue registrado correctamente.', 'success');
+        this.lugarForm.reset();
+        this.router.navigate(['/lugares-turisticos']);
+      },
+      error: (err) => {
+        console.error('Error al registrar:', err);
+        Swal.fire('Error', 'No se pudo registrar el lugar.', 'error');
       }
     });
   }
+}
 
-  cancelar(): void {
+
+
+  cancelar() {
     this.router.navigate(['/lugares-turisticos']);
   }
 }

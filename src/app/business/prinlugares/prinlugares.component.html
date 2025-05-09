@@ -8,8 +8,11 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
         <div *ngFor="let lugar of lugares" class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform transform hover:translate-y-1">
           <!-- Imagen de la tarjeta, puedes agregar una imagen si tienes alguna URL, sino, poner una imagen predeterminada -->
-          <img src="https://example.com/images/emprendedor2.jpg" alt="Imagen del emprendimiento" class="w-full h-48 object-cover" />
-          
+            <img
+            [src]="lugar.imagenes.length > 0 ? 'https://twsevdzjdnwjhdysvecm.supabase.co/storage/v1/object/public/lugares-turisticos/' + lugar.imagenes[0]?.url : 'img/fam1.png'"
+            alt="Imagen del slider"
+            class="rounded-t-xl w-full h-1/2 object-cover"
+            />
           <div class="p-4">
             <!-- Título de la tarjeta -->
             <h3 class="text-xl font-semibold text-gray-800 mb-3">{{ lugar.nombre }}</h3>

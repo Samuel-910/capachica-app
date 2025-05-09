@@ -50,5 +50,7 @@ export class PrinserviciosComponent implements OnInit{
       this.isLoading = false;
     });
   }
-
+  verDetallesServicios(id: number): void {
+    this.router.navigate([`/serviciosdetalle/${id}`]); 
+  }
 }

@@ -21,6 +21,9 @@ export class ResenaService {
       tap(res => console.log('Reseña obtenida:', res))
     );
   }
+  obtenerReseñasPorServicio(servicioId: number | string): Observable<any> {
+    return this.http.get(`${this.API}/servicio/${servicioId}`, this.getAuthHeaders());
+  }
 
   // Obtener el promedio de calificación por servicio (GET /resenas/promedio/{servicioId})
   obtenerPromedioDeCalificacion(servicioId: number | string): Observable<any> {
