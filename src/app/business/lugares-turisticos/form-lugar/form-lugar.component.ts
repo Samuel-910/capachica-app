@@ -1,13 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  AfterViewInit,
+  ViewChild,
+  ElementRef
+} from '@angular/core';
 import { SidebarComponent } from '../../sidebar/sidebar.component';
 import { NavbarComponent } from '../../sidebar/navbar/navbar.component';
-import { FormBuilder, FormGroup, FormArray, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LugaresService } from '../../../core/services/lugar.service';
 import { CommonModule } from '@angular/common';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import Swal from 'sweetalert2';
-
+declare let L: any;
 @Component({
   selector: 'app-form-lugar',
   standalone: true,
@@ -16,34 +22,40 @@ import Swal from 'sweetalert2';
   styleUrls: ['./form-lugar.component.css']
 })
 export class FormLugarComponent implements OnInit {
-   selectedFile: File | null = null;
+     @ViewChild('mapContainer', { static: false })
+  mapContainer!: ElementRef<HTMLDivElement>;
+
+  map!: any;
+  marker!: any;
+
+  selectedFile: File | null = null;
   previewUrl: string | null = null;
   lugarForm!: FormGroup;
-  isEdit: boolean = false;
+  isEdit = false;
   lugarIdEdit: string | null = null;
 
   constructor(
     private fb: FormBuilder,
     private lugaresService: LugaresService,
-    private router: Router,
+    private supabaseService: SupabaseService,
     private route: ActivatedRoute,
-    private supabaseService: SupabaseService
+    private router: Router
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.lugarForm = this.fb.group({
-      nombre: ['', Validators.required],
-      descripcion: ['', Validators.required],
-      direccion: ['', Validators.required],
-      coordenadas: ['', Validators.required],
+      nombre:          ['', Validators.required],
+      descripcion:     ['', Validators.required],
+      direccion:       ['', Validators.required],
+      latitud:         [null, Validators.required],
+      longitud:        [null, Validators.required],
       horarioApertura: [''],
-      horarioCierre: [''],
-      costoEntrada: [null],
+      horarioCierre:   [''],
+      costoEntrada:    [null],
       recomendaciones: [''],
-      restricciones: [''],
-      esDestacado: [false],
-      estado: ['activo', Validators.required],
-      imagenes: ['']
+      restricciones:   [''],
+      esDestacado:     [false],
+      estado:          ['activo', Validators.required]
     });
 
     const id = this.route.snapshot.paramMap.get('id');
@@ -54,25 +66,66 @@ export class FormLugarComponent implements OnInit {
     }
   }
 
-  cargarLugar(id: string): void {
+  ngAfterViewInit(): void {
+    const center = { lat: -15.6000, lng: -69.9000 };
+    this.map = L.map(this.mapContainer.nativeElement).setView(
+      [center.lat, center.lng],
+      12
+    );
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+    }).addTo(this.map);
+
+    this.map.on('click', (e: any) => this.onMapClick(e));
+
+    // Si ya vino en edición, colocamos marker
+    const lat = this.lugarForm.get('latitud')?.value;
+    const lng = this.lugarForm.get('longitud')?.value;
+    if (lat != null && lng != null) {
+      this.placeMarker(lat, lng);
+    }
+  }
+
+  private onMapClick(e: any): void {
+    const { lat, lng } = e.latlng;
+    if (this.marker) {
+      this.map.removeLayer(this.marker);
+    }
+    this.placeMarker(lat, lng);
+    this.lugarForm.patchValue({ latitud: lat, longitud: lng });
+  }
+
+  private placeMarker(lat: number, lng: number): void {
+    this.marker = L.marker([lat, lng]).addTo(this.map);
+    this.map.setView([lat, lng], 13);
+  }
+
+  private cargarLugar(id: string): void {
     this.lugaresService.getLugar(id).subscribe({
-      next: (lugar) => {
+      next: lugar => {
         this.lugarForm.patchValue({
-          nombre: lugar.nombre,
-          descripcion: lugar.descripcion,
-          direccion: lugar.direccion,
-          coordenadas: lugar.coordenadas,
+          nombre:          lugar.nombre,
+          descripcion:     lugar.descripcion,
+          direccion:       lugar.direccion,
+          latitud:         lugar.latitud,
+          longitud:        lugar.longitud,
           horarioApertura: lugar.horarioApertura,
-          horarioCierre: lugar.horarioCierre,
-          costoEntrada: lugar.costoEntrada,
+          horarioCierre:   lugar.horarioCierre,
+          costoEntrada:    lugar.costoEntrada,
           recomendaciones: lugar.recomendaciones,
-          restricciones: lugar.restricciones,
-          esDestacado: lugar.esDestacado,
-          estado: lugar.estado
+          restricciones:   lugar.restricciones,
+          esDestacado:     lugar.esDestacado,
+          estado:          lugar.estado
         });
-        this.previewUrl = lugar.imagenes.length ? lugar.imagenes[0].url : null;
+        this.previewUrl = lugar.imagenes.length
+          ? lugar.imagenes[0].url
+          : null;
+        if (this.map && lugar.latitud != null && lugar.longitud != null) {
+          this.placeMarker(lugar.latitud, lugar.longitud);
+        }
       },
-      error: (err) => {
+      error: err => {
         console.error('Error al cargar lugar:', err);
         Swal.fire('Error', 'No se pudo cargar el lugar.', 'error');
       }
@@ -81,125 +134,105 @@ export class FormLugarComponent implements OnInit {
 
   onFileChange(event: any): void {
     const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
-      const reader = new FileReader();
-      reader.onload = () => (this.previewUrl = reader.result as string);
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+    this.selectedFile = file;
+    const reader = new FileReader();
+    reader.onload = () => (this.previewUrl = reader.result as string);
+    reader.readAsDataURL(file);
   }
 
-  async subirImagenASupabase(file: File): Promise<string> {
+  private async subirImagenASupabase(file: File): Promise<string> {
     Swal.fire({
       title: 'Subiendo imagen...',
-      text: 'Por favor espere mientras se sube la imagen.',
       allowOutsideClick: false,
       showConfirmButton: false,
-      didOpen: () => {
-        Swal.showLoading();
-      }
+      didOpen: () => Swal.showLoading()
     });
-
     const supabase = this.supabaseService.getClient();
-    const filePath = `lugares-turisticos/${Date.now()}-${file.name}`;
-
-    const { data, error } = await supabase.storage.from('lugares-turisticos').upload(filePath, file);
+    const path = `lugares-turisticos/${Date.now()}-${file.name}`;
+    const { error } = await supabase.storage.from('lugares-turisticos').upload(path, file);
     if (error) {
       Swal.close();
       throw new Error(error.message);
     }
-
-    const { data: publicUrlData } = supabase.storage.from('lugares-turisticos').getPublicUrl(filePath);
+    const { data } = supabase.storage.from('lugares-turisticos').getPublicUrl(path);
     Swal.close();
-    return publicUrlData?.publicUrl;
+    return data.publicUrl;
   }
 
-async guardarLugar() {
-  if (this.lugarForm.invalid) {
-    const camposInvalidos = Object.keys(this.lugarForm.controls)
-      .filter(key => this.lugarForm.get(key)?.invalid)
-      .map(key => {
-        switch (key) {
-          case 'nombre': return 'Nombre';
-          case 'descripcion': return 'Descripción';
-          case 'direccion': return 'Dirección';
-          case 'coordenadas': return 'Coordenadas';
-          case 'estado': return 'Estado';
-          default: return key;
-        }
+  async guardarLugar(): Promise<void> {
+    if (this.lugarForm.invalid) {
+      const invalidos = Object.keys(this.lugarForm.controls)
+        .filter(k => this.lugarForm.get(k)?.invalid);
+      Swal.fire({
+        icon: 'error',
+        title: 'Formulario incompleto',
+        html: `Por favor completa: <b>${invalidos.join(', ')}</b>`
       });
-
-    Swal.fire({
-      icon: 'error',
-      title: 'Formulario incompleto',
-      html: `Por favor corrige o completa los siguientes campos:<br><b>${camposInvalidos.join(', ')}</b>`
-    });
-    return;
-  }
-
-  const formValue = this.lugarForm.getRawValue();
-  let imagenes: { url: string }[] = [];  // Ahora solo será un arreglo con la propiedad 'url'
-
-  // Subir la imagen solo si hay un archivo seleccionado
-  if (this.selectedFile) {
-    try {
-      // Aquí se sube la imagen a Supabase y obtenemos la URL
-      const imagenUrl = await this.subirImagenASupabase(this.selectedFile);
-      // Solo agregamos el objeto con 'url'
-      imagenes.push({ url: imagenUrl });
-    } catch (error) {
-      console.error('Error al subir imagen:', error);
-      Swal.fire('Error', 'No se pudo subir la imagen del lugar.', 'error');
       return;
     }
-  }
 
-  const payload = {
-    nombre: formValue.nombre,
-    descripcion: formValue.descripcion,
-    direccion: formValue.direccion,
-    coordenadas: formValue.coordenadas,
-    horarioApertura: formValue.horarioApertura || null,
-    horarioCierre: formValue.horarioCierre || null,
-    costoEntrada: formValue.costoEntrada || null,
-    recomendaciones: formValue.recomendaciones || null,
-    restricciones: formValue.restricciones || null,
-    esDestacado: formValue.esDestacado,
-    estado: formValue.estado,
-    imagenes: imagenes.length > 0 ? imagenes : []  // Ahora solo mandamos la URL
-  };
+    Swal.fire({
+      title: 'Guardando lugar...',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => Swal.showLoading()
+    });
 
-  if (this.isEdit && this.lugarIdEdit) {
-    this.lugaresService.updateLugar(this.lugarIdEdit, payload).subscribe({
+    let imagenes: { url: string }[] = [];
+    if (this.selectedFile) {
+      try {
+        const url = await this.subirImagenASupabase(this.selectedFile);
+        imagenes.push({ url });
+      } catch (err) {
+        Swal.close();
+        console.error(err);
+        await Swal.fire('Error', 'No se pudo subir la imagen.', 'error');
+        return;
+      }
+    }
+
+    const fv = this.lugarForm.getRawValue();
+    const payload = {
+      nombre:          fv.nombre,
+      descripcion:     fv.descripcion,
+      direccion:       fv.direccion,
+      latitud:         fv.latitud,
+      longitud:        fv.longitud,
+      horarioApertura: fv.horarioApertura || null,
+      horarioCierre:   fv.horarioCierre   || null,
+      costoEntrada:    fv.costoEntrada    || null,
+      recomendaciones: fv.recomendaciones || null,
+      restricciones:   fv.restricciones   || null,
+      esDestacado:     fv.esDestacado,
+      estado:          fv.estado,
+      imagenes
+    };
+
+    const req$ = this.isEdit && this.lugarIdEdit
+      ? this.lugaresService.updateLugar(this.lugarIdEdit, payload)
+      : this.lugaresService.crearLugar(payload);
+
+    req$.subscribe({
       next: () => {
-        Swal.fire('Actualizado', 'El lugar fue actualizado correctamente.', 'success');
+        Swal.close();
+        Swal.fire(
+          this.isEdit ? 'Actualizado' : 'Registrado',
+          'El lugar fue guardado correctamente.',
+          'success'
+        );
         this.lugarForm.reset();
         this.router.navigate(['/lugares-turisticos']);
       },
-      error: (err) => {
-        console.error('Error al actualizar:', err);
-        Swal.fire('Error', 'No se pudo actualizar el lugar.', 'error');
-      }
-    });
-  } else {
-    this.lugaresService.crearLugar(payload).subscribe({
-      next: () => {
-        Swal.fire('Registrado', 'El lugar fue registrado correctamente.', 'success');
-        this.lugarForm.reset();
-        this.router.navigate(['/lugares-turisticos']);
-      },
-      error: (err) => {
-        console.error('Error al registrar:', err);
-        Swal.fire('Error', 'No se pudo registrar el lugar.', 'error');
+      error: err => {
+        Swal.close();
+        console.error(err);
+        Swal.fire('Error', 'No se pudo guardar el lugar.', 'error');
       }
     });
   }
-}
 
-
-
-
-  cancelar() {
+  cancelar(): void {
     this.router.navigate(['/lugares-turisticos']);
   }
 }

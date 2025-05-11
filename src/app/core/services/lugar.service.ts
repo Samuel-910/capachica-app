@@ -7,7 +7,8 @@ export interface LugarTuristico {
   nombre: string;
   descripcion: string;
   direccion: string;
-  coordenadas: string;
+  latitud: number;
+  longitud: number;
   horarioApertura: string;
   horarioCierre: string;
   costoEntrada: number;
@@ -16,7 +17,7 @@ export interface LugarTuristico {
   esDestacado: boolean;
   estado: string;
   imagenes: {
-    url: string;
+    url: string;  
   }[];
 }
 

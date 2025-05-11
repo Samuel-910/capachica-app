@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SidebarComponent } from '../../sidebar/sidebar.component';
 import { NavbarComponent } from '../../sidebar/navbar/navbar.component';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ServiciosService } from '../../../core/services/servicios.service';
 import { CommonModule } from '@angular/common';
@@ -17,75 +17,74 @@ import { TiposServicioService } from '../../../core/services/tipos-servicios.ser
     NavbarComponent,
     ReactiveFormsModule,
     RouterModule,
-    CommonModule
+    CommonModule,
+    FormsModule
   ],
   templateUrl: './form-servicios.component.html',
   styleUrls: ['./form-servicios.component.css']
 })
 export class FormServiciosComponent implements OnInit {
-  selectedFile: File | null = null;
-  previewUrl: string | null = null;
+ selectedFiles: File[] = [];
+  previewUrls: string[] = [];
   servicioForm!: FormGroup;
-  tiposServicio: any[] = [];  // Lista de tipos de servicio
-  isEdit: boolean = false;
+  tiposServicio: any[] = [];
+  isEdit = false;
   servicioIdEdit: number | null = null;
 
   constructor(
     private fb: FormBuilder,
     private serviciosService: ServiciosService,
-    private tiposServicioService: TiposServicioService, // Nuevo servicio para obtener los tipos
-    private router: Router,
+    private tiposServicioService: TiposServicioService,
+    private supabaseService: SupabaseService,
     private route: ActivatedRoute,
-    private supabaseService: SupabaseService
+    private router: Router
   ) {}
 
   ngOnInit(): void {
-    // Inicializar el formulario
+    // Inicializar el form con sub‐group dinámico para detallesServicio
     this.servicioForm = this.fb.group({
-      nombre: ['', Validators.required],
-      descripcion: ['', Validators.required],
-      precioBase: [0, Validators.required],
-      moneda: ['', Validators.required],
-      estado: ['activo', Validators.required],
-      tipoServicioId: [0, Validators.required],  // Tipo de servicio
-      duracion: [''],
-      capacidad: [''],
-      incluye: [''],
-      requisitos: ['']
+      nombre:         ['', Validators.required],
+      descripcion:    ['', Validators.required],
+      precioBase:     [0,  Validators.required],
+      moneda:         ['', Validators.required],
+      estado:         ['activo', Validators.required],
+      tipoServicioId: [0,  Validators.required],
+      detallesServicio: this.fb.group({})    // formGroup dinámico
     });
 
     // Cargar tipos de servicio
     this.tiposServicioService.listarTiposServicio().subscribe({
-      next: (data) => {
-        this.tiposServicio = data; // Guardamos los tipos de servicio
-      },
-      error: (err) => {
+      next: data => this.tiposServicio = data,
+      error: err => {
         console.error('Error al cargar tipos de servicio:', err);
         Swal.fire('Error', 'No se pudieron cargar los tipos de servicio.', 'error');
       }
     });
 
+    // Si hay ID en ruta, cargar para edición
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.isEdit = true;
       this.servicioIdEdit = +id;
-
       this.serviciosService.obtenerServicio(this.servicioIdEdit).subscribe({
-        next: (servicio) => {
+        next: servicio => {
+          // Patch de los campos básicos
           this.servicioForm.patchValue({
-            nombre: servicio.nombre,
-            descripcion: servicio.descripcion,
-            precioBase: servicio.precioBase,
-            moneda: servicio.moneda,
-            estado: servicio.estado,
-            tipoServicioId: servicio.tipoServicio?.id, // Asignamos el tipo de servicio
-            duracion: servicio.detallesServicio?.duracion,
-            capacidad: servicio.detallesServicio?.capacidad,
-            incluye: servicio.detallesServicio?.incluye,
-            requisitos: servicio.detallesServicio?.requisitos
+            nombre:         servicio.nombre,
+            descripcion:    servicio.descripcion,
+            precioBase:     servicio.precioBase,
+            moneda:         servicio.moneda,
+            estado:         servicio.estado,
+            tipoServicioId: servicio.tipoServicio?.id
+          });
+          // Crear controles dinámicos para cada clave en detallesServicio
+          const detalles = servicio.detallesServicio || {};
+          const grp = this.detallesServicioGroup;
+          Object.entries(detalles).forEach(([key, val]) => {
+            grp.addControl(key, this.fb.control(val));
           });
         },
-        error: (err) => {
+        error: err => {
           console.error('Error al cargar servicio:', err);
           Swal.fire('Error', 'No se pudo cargar el servicio.', 'error');
         }
@@ -93,151 +92,178 @@ export class FormServiciosComponent implements OnInit {
     }
   }
 
-  onFileChange(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedFile = file;
-      const reader = new FileReader();
-      reader.onload = () => (this.previewUrl = reader.result as string);
-      reader.readAsDataURL(file);
-    }
+  /** Getter seguro para el FormGroup dinámico */
+  get detallesServicioGroup(): FormGroup {
+    return this.servicioForm.get('detallesServicio') as FormGroup;
   }
 
+  /** Lista de claves para iterar en la plantilla */
+  get detalleKeys(): string[] {
+    return Object.keys(this.detallesServicioGroup.controls);
+  }
+
+  /** Añadir un nuevo campo dinámico */
+  async addDetalle(): Promise<void> {
+    const { value: key } = await Swal.fire<string>({
+      title: 'Nuevo detalle',
+      input: 'text',
+      inputLabel: 'Nombre del campo',
+      inputPlaceholder: 'ej. incluye, requisitos, idiomas...',
+      showCancelButton: true,
+      inputValidator: v => !v ? 'Debes escribir algo' : null
+    });
+    if (!key) return;
+
+    const grp = this.detallesServicioGroup;
+    if (grp.contains(key)) {
+      await Swal.fire('Error', 'Ya existe un campo con ese nombre.', 'error');
+      return;
+    }
+    grp.addControl(key, this.fb.control(''));
+  }
+
+  /** Eliminar una imagen de la selección */
+  removeImage(index: number): void {
+    this.selectedFiles.splice(index, 1);
+    this.previewUrls.splice(index, 1);
+  }
+
+  /** Manejar selección múltiple de archivos y generar previews */
+  onFileChange(event: any): void {
+    const files: FileList = event.target.files;
+    if (!files.length) return;
+    Array.from(files).forEach(file => {
+      this.selectedFiles.push(file);
+      const reader = new FileReader();
+      reader.onload = () => this.previewUrls.push(reader.result as string);
+      reader.readAsDataURL(file);
+    });
+    // Reset para permitir re-selección del mismo archivo
+    event.target.value = '';
+  }
+
+  /** Subir un archivo a Supabase y devolver la URL pública */
   async subirImagenASupabase(file: File): Promise<string> {
     Swal.fire({
       title: 'Subiendo imagen...',
-      text: 'Por favor espere mientras se sube la imagen.',
       allowOutsideClick: false,
       showConfirmButton: false,
-      didOpen: () => {
-        Swal.showLoading();
-      }
+      didOpen: () => Swal.showLoading()
     });
-
     const supabase = this.supabaseService.getClient();
-    const filePath = `servicios/${Date.now()}-${file.name}`;
-
-    const { data, error } = await supabase.storage.from('servicios').upload(filePath, file);
+    const path = `servicios/${Date.now()}-${file.name}`;
+    const { error } = await supabase.storage.from('servicios').upload(path, file);
     if (error) {
       Swal.close();
       throw new Error(error.message);
     }
-
-    const { data: publicUrlData } = supabase.storage.from('servicios').getPublicUrl(filePath);
+    const { data } = supabase.storage.from('servicios').getPublicUrl(path);
     Swal.close();
-    return publicUrlData?.publicUrl;
+    return data.publicUrl;
   }
 
-  async guardarServicio() {
+  /** Guardar servicio: validaciones, subida de imágenes, transformación de detalles */
+  async guardarServicio(): Promise<void> {
+    // Validar formulario
     if (this.servicioForm.invalid) {
-      const camposInvalidos = Object.keys(this.servicioForm.controls)
-        .filter(key => this.servicioForm.get(key)?.invalid)
-        .map(key => key);
-  
+      const invalidos = Object.keys(this.servicioForm.controls)
+        .filter(k => this.servicioForm.get(k)?.invalid);
       Swal.fire({
         icon: 'error',
         title: 'Formulario incompleto',
-        html: `Por favor corrige o completa los siguientes campos:<br><b>${camposInvalidos.join(', ')}</b>`
+        html: `Por favor completa: <b>${invalidos.join(', ')}</b>`
       });
       return;
     }
-  
-    const formValue = this.servicioForm.getRawValue();
-    let imagenUrl = '';
-  
-    // Aseguramos que precioBase sea un número entero
-    const precioBase = Number(formValue.precioBase); // O puedes usar parseInt(formValue.precioBase, 10);
-  
-    // Validación para asegurarnos que precioBase es un número
-    if (isNaN(precioBase) || precioBase <= 0) {
-      Swal.fire('Error', 'El precio base debe ser un número válido mayor que cero.', 'error');
+
+    const fv = this.servicioForm.getRawValue();
+    const precio = Number(fv.precioBase);
+    const tipoId = Number(fv.tipoServicioId);
+
+    if (isNaN(precio) || precio <= 0) {
+      await Swal.fire('Error', 'El precio debe ser un número mayor que cero.', 'error');
       return;
     }
-  
-    // Aseguramos que tipoServicioId sea un número entero
-    const tipoServicioId = Number(formValue.tipoServicioId);
-  
-    // Validación para asegurarnos que tipoServicioId es un número válido
-    if (isNaN(tipoServicioId) || tipoServicioId <= 0) {
-      Swal.fire('Error', 'El tipo de servicio debe ser un número válido mayor que cero.', 'error');
+    if (isNaN(tipoId) || tipoId <= 0) {
+      await Swal.fire('Error', 'Selecciona un tipo de servicio válido.', 'error');
       return;
     }
-  
-    // Validación de "incluye" y "requisitos" para asegurar que sean cadenas y no vacías
-    const incluye = typeof formValue.incluye === 'string' ? formValue.incluye.split(',') : [];
-    const requisitos = typeof formValue.requisitos === 'string' ? formValue.requisitos.split(',') : [];
-  
-    // Mostrar mensaje de carga mientras se sube la imagen
+
     Swal.fire({
-      title: 'Subiendo imagen...',
-      text: 'Por favor espere mientras se sube la imagen y se guarda el servicio.',
+      title: 'Guardando servicio...',
       allowOutsideClick: false,
       showConfirmButton: false,
-      didOpen: () => {
-        Swal.showLoading(); // Inicia el "loading"
-      }
+      didOpen: () => Swal.showLoading()
     });
-  
-    // Subir la imagen a Supabase
-    if (this.selectedFile) {
+
+    // Subir imágenes
+    const imagenUrls: string[] = [];
+    for (const file of this.selectedFiles) {
       try {
-        imagenUrl = await this.subirImagenASupabase(this.selectedFile);
-      } catch (error) {
-        console.error('Error al subir imagen:', error);
-        Swal.close(); // Cierra el mensaje de carga
-        Swal.fire('Error', 'No se pudo subir la imagen de servicio.', 'error');
+        imagenUrls.push(await this.subirImagenASupabase(file));
+      } catch (err) {
+        Swal.close();
+        await Swal.fire('Error', 'No se pudieron subir todas las imágenes.', 'error');
         return;
       }
     }
-  
-    const payload = {
-      nombre: formValue.nombre,
-      descripcion: formValue.descripcion,
-      precioBase: precioBase, // Asignamos el precio como número
-      moneda: formValue.moneda,
-      estado: formValue.estado,
-      tipoServicioId: tipoServicioId, // Asignamos el tipo de servicio como número
-      detallesServicio: {
-        duracion: formValue.duracion,
-        capacidad: formValue.capacidad,
-        incluye: incluye, // Se asigna el arreglo ya dividido
-        requisitos: requisitos // Se asigna el arreglo ya dividido
-      },
-      imagenes: imagenUrl ? [{ url: imagenUrl }] : []
+
+    // Procesar todos los campos dinámicos: si es string con comas, lo partimos en array
+    const detallesRaw = this.detallesServicioGroup.value as Record<string, any>;
+    const detallesProcesados: Record<string, any> = {};
+    Object.entries(detallesRaw).forEach(([key, val]) => {
+      if (typeof val === 'string' && val.includes(',')) {
+        detallesProcesados[key] = val
+          .split(',')
+          .map(s => s.trim())
+          .filter(s => s.length > 0);
+      } else {
+        detallesProcesados[key] = val;
+      }
+    });
+
+    // Armar payload
+    const payload: any = {
+      nombre:           fv.nombre,
+      descripcion:      fv.descripcion,
+      precioBase:       precio,
+      moneda:           fv.moneda,
+      estado:           fv.estado,
+      tipoServicioId:   tipoId,
+      detallesServicio: detallesProcesados,
+      imagenes:         imagenUrls.map(u => ({ url: u }))
     };
-  
-    if (this.isEdit && this.servicioIdEdit) {
-      this.serviciosService.actualizarServicio(this.servicioIdEdit, payload).subscribe({
-        next: () => {
-          Swal.close(); // Cierra el mensaje de carga
-          Swal.fire('Actualizado', 'El servicio fue actualizado correctamente.', 'success');
-          this.router.navigate(['/servicios']);
-        },
-        error: (err) => {
-          console.error('Error al actualizar:', err);
-          Swal.close(); // Cierra el mensaje de carga
-          Swal.fire('Error', 'No se pudo actualizar el servicio.', 'error');
-        }
-      });
-    } else {
-      this.serviciosService.crearServicio(payload).subscribe({
-        next: () => {
-          Swal.close(); // Cierra el mensaje de carga
-          Swal.fire('Registrado', 'El servicio fue registrado correctamente.', 'success');
-          this.router.navigate(['/servicios']);
-        },
-        error: (err) => {
-          console.error('Error al registrar:', err);
-          Swal.close(); // Cierra el mensaje de carga
-          Swal.fire('Error', 'No se pudo registrar el servicio.', 'error');
-        }
-      });
-    }
+
+    // Enviar al backend
+    const request$ = this.isEdit && this.servicioIdEdit
+      ? this.serviciosService.actualizarServicio(this.servicioIdEdit, payload)
+      : this.serviciosService.crearServicio(payload);
+
+    request$.subscribe({
+      next: () => {
+        Swal.close();
+        Swal.fire(
+          this.isEdit ? 'Actualizado' : 'Registrado',
+          'El servicio se guardó correctamente.',
+          'success'
+        );
+        this.router.navigate(['/servicios']);
+      },
+      error: err => {
+        Swal.close();
+        Swal.fire('Error', 'No se pudo guardar el servicio.', 'error');
+        console.error(err);
+      }
+    });
   }
-  
-  
-  
-  
+  /** Elimina un campo dinámico de detallesServicio */
+removeDetalle(key: string): void {
+  const grp = this.detallesServicioGroup;
+  if (grp.contains(key)) {
+    grp.removeControl(key);
+  }
+}
+
 
   cancelar(): void {
     this.router.navigate(['/servicios']);

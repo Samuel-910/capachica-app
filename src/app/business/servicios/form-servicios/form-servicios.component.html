@@ -14,25 +14,29 @@
               <!-- Nombre del Servicio -->
               <div>
                 <label class="block font-medium text-gray-700">Nombre</label>
-                <input type="text" formControlName="nombre" placeholder="Nombre del servicio" class="border p-3 rounded w-full" required />
+                <input type="text" formControlName="nombre" placeholder="Nombre del servicio"
+                  class="border p-3 rounded w-full" required />
               </div>
 
               <!-- Descripción del Servicio -->
               <div>
                 <label class="block font-medium text-gray-700">Descripción</label>
-                <input type="text" formControlName="descripcion" placeholder="Descripción del servicio" class="border p-3 rounded w-full" required />
+                <input type="text" formControlName="descripcion" placeholder="Descripción del servicio"
+                  class="border p-3 rounded w-full" required />
               </div>
 
               <!-- Precio Base -->
               <div>
                 <label class="block font-medium text-gray-700">Precio Base</label>
-                <input type="number" formControlName="precioBase" placeholder="Precio base" class="border p-3 rounded w-full" required />
+                <input type="number" formControlName="precioBase" placeholder="Precio base"
+                  class="border p-3 rounded w-full" required />
               </div>
 
               <!-- Moneda -->
               <div>
                 <label class="block font-medium text-gray-700">Moneda</label>
-                <input type="text" formControlName="moneda" placeholder="Moneda (ej. PEN)" class="border p-3 rounded w-full" required />
+                <input type="text" formControlName="moneda" placeholder="Moneda (ej. PEN)"
+                  class="border p-3 rounded w-full" required />
               </div>
 
               <!-- Estado -->
@@ -43,48 +47,72 @@
                   <option value="inactivo">Inactivo</option>
                 </select>
               </div>
+              <!-- tipo -->
               <div>
                 <label class="block font-medium text-gray-700">Tipo de Servicio</label>
                 <select formControlName="tipoServicioId" class="border p-3 rounded w-full" required>
                   <option *ngFor="let tipo of tiposServicio" [value]="tipo.id">{{ tipo.nombre }}</option>
                 </select>
               </div>
-              <!-- Detalles del Servicio -->
-              <div>
-                <label class="block font-medium text-gray-700">Duración</label>
-                <input type="text" formControlName="duracion" placeholder="Duración (ej. 2 horas)" class="border p-3 rounded w-full" />
-              </div>
+            </div>
+<div class="flex items-center justify-between mb-4">
+  <h1 class="text-xl font-bold">Detalles del servicio</h1>
+  <button
+    type="button"
+    class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+    (click)="addDetalle()"
+  >
+    Agregar
+  </button>
+</div>
 
-              <div>
-                <label class="block font-medium text-gray-700">Capacidad</label>
-                <input type="number" formControlName="capacidad" placeholder="Capacidad" class="border p-3 rounded w-full" />
-              </div>
+<div [formGroup]="detallesServicioGroup" class="grid md:grid-cols-2 gap-6">
+  <ng-container *ngFor="let key of detalleKeys">
+    <div class="relative border p-3 rounded">
+      <!-- Botón para eliminar el control -->
+      <button
+        type="button"
+        class="absolute top-1 right-1 text-gray-600 hover:text-red-600"
+        (click)="removeDetalle(key)"
+      >
+        &times;
+      </button>
 
-              <div>
-                <label class="block font-medium text-gray-700">Incluye</label>
-                <input type="text" formControlName="incluye" placeholder="Ej. Guía local, Transporte" class="border p-3 rounded w-full" />
-              </div>
+      <label class="block font-medium text-gray-700">{{ key | titlecase }}</label>
+      <input
+        [type]=" key === 'capacidad' ? 'number' : 'text' "
+        [formControlName]="key"
+        [placeholder]=" key | titlecase "
+        class="mt-1 border p-2 rounded w-full"
+      />
+    </div>
+  </ng-container>
+</div>
 
-              <div>
-                <label class="block font-medium text-gray-700">Requisitos</label>
-                <input type="text" formControlName="requisitos" placeholder="Ej. Ropa cómoda, Zapatillas" class="border p-3 rounded w-full" />
-              </div>
+            <!-- Imagen del Servicio -->
+            <div>
+              <label class="block font-medium text-gray-700">Imágenes del Servicio</label>
 
-              <!-- Imagen del Servicio -->
-              <div>
-                <label class="block font-medium text-gray-700">Imagen del Servicio</label>
-                <input type="file" accept="image/*" (change)="onFileChange($event)" class="border p-3 rounded w-full" />
-                <div *ngIf="previewUrl" class="mt-2">
-                  <img [src]="previewUrl" alt="Vista previa" class="w-32 h-32 object-cover rounded border shadow" />
+              <input type="file" accept="image/*" multiple (change)="onFileChange($event)"
+                class="border p-3 rounded w-full" />
+
+              <div *ngIf="previewUrls.length" class="grid grid-cols-3 md:grid-cols-4 gap-2 mt-2">
+                <div *ngFor="let src of previewUrls; let i = index" class="relative">
+                  <!-- Botón para eliminar -->
+                  <button type="button" (click)="removeImage(i)"
+                    class="absolute top-1 right-1 bg-white rounded-full p-1 text-gray-600 hover:text-red-600 shadow">
+                    &times;
+                  </button>
+                  <img [src]="src" alt="Preview" class="w-full h-24 object-cover rounded border" />
                 </div>
               </div>
             </div>
-
             <div class="flex justify-end gap-6 mt-6">
               <button type="submit" class="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700">
                 {{ isEdit ? 'Actualizar' : 'Guardar' }}
               </button>
-              <button type="button" class="bg-gray-300 text-gray-800 px-8 py-3 rounded hover:bg-gray-400" (click)="cancelar()">
+              <button type="button" class="bg-gray-300 text-gray-800 px-8 py-3 rounded hover:bg-gray-400"
+                (click)="cancelar()">
                 Cancelar
               </button>
             </div>

@@ -47,7 +47,10 @@
                 <td class="p-3 font-medium text-gray-800">{{ lugar.nombre }}</td>
                 <td class="p-3 text-gray-700">{{ lugar.descripcion }}</td>
                 <td class="p-3 text-gray-700">{{ lugar.direccion }}</td>
-                <td class="p-3 text-gray-600">{{ lugar.coordenadas }}</td>
+                <td class="p-3 text-gray-600">
+                  Latitud:{{ lugar.latitud }}
+                  Longitud:{{ lugar.longitud }}
+                </td>
                 <td class="p-3 text-gray-600">{{ lugar.estado === 'activo' ? 'Activo' : 'Inactivo' }}</td>
                 <td class="p-3">
                   <div class="flex gap-2">
