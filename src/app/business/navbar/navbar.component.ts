@@ -9,6 +9,7 @@ import { EmprendimientoService } from '../../core/services/emprendimiento.servic
 import { PaqueteTuristicoService } from '../../core/services/paquetes-turisticos.service';
 import { LugaresService } from '../../core/services/lugar.service';
 import { TiposServicioService } from '../../core/services/tipos-servicios.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-navbar',
@@ -156,5 +157,23 @@ export class NavbarComponent implements OnInit {
     console.log('🔍 ítems para renderizar:', items);
     this.resultados = items;
     this.resultadosBusqueda.emit(items);
+  }
+
+    isLoggedIn(): boolean {
+    return !!localStorage.getItem('token'); // Devuelve true si hay un token
+  }
+
+  // Cierra la sesión
+  logout(): void {
+    localStorage.removeItem('token');  // Elimina el token del localStorage
+    localStorage.removeItem('usuario'); // Elimina el usuario del localStorage
+    Swal.fire({
+      icon: 'success',
+      title: 'Sesión cerrada',
+      text: 'Has cerrado sesión correctamente.',
+      confirmButtonText: 'Aceptar'
+    });
+    // Redirigir al login o home
+    this.router.navigate(['/login']);
   }
 }

@@ -3,6 +3,7 @@ import { EmprendimientoService } from '../../core/services/emprendimiento.servic
 import { NavbarComponent } from "../navbar/navbar.component";
 import { CommonModule } from '@angular/common';
 import { LugaresService } from '../../core/services/lugar.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-prinlugares',
@@ -14,12 +15,15 @@ import { LugaresService } from '../../core/services/lugar.service';
 export class PrinlugaresComponent implements OnInit{
   lugares: any[] = [];
 
-  constructor(private lugaresService: LugaresService) {}
+  constructor(private lugaresService: LugaresService, private router: Router) {}
 
   ngOnInit(): void {
     this.lugaresService.listarLugares().subscribe(data => {
       this.lugares = data;
       console.log(data)
     });
+  }
+    verDetallesLugares(id: number): void {
+    this.router.navigate([`/setprinlugares/${id}`]); 
   }
 }

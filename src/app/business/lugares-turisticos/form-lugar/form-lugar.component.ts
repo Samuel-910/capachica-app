@@ -22,14 +22,13 @@ declare let L: any;
   styleUrls: ['./form-lugar.component.css']
 })
 export class FormLugarComponent implements OnInit {
-     @ViewChild('mapContainer', { static: false })
+  @ViewChild('mapContainer', { static: false })
   mapContainer!: ElementRef<HTMLDivElement>;
 
   map!: any;
   marker!: any;
-
-  selectedFile: File | null = null;
-  previewUrl: string | null = null;
+  selectedFile: File[] = [];
+  previewUrl: string[] = [];
   lugarForm!: FormGroup;
   isEdit = false;
   lugarIdEdit: string | null = null;
@@ -40,22 +39,22 @@ export class FormLugarComponent implements OnInit {
     private supabaseService: SupabaseService,
     private route: ActivatedRoute,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.lugarForm = this.fb.group({
-      nombre:          ['', Validators.required],
-      descripcion:     ['', Validators.required],
-      direccion:       ['', Validators.required],
-      latitud:         [null, Validators.required],
-      longitud:        [null, Validators.required],
+      nombre: ['', Validators.required],
+      descripcion: ['', Validators.required],
+      direccion: ['', Validators.required],
+      latitud: [null, Validators.required],
+      longitud: [null, Validators.required],
       horarioApertura: [''],
-      horarioCierre:   [''],
-      costoEntrada:    [null],
+      horarioCierre: [''],
+      costoEntrada: [null],
       recomendaciones: [''],
-      restricciones:   [''],
-      esDestacado:     [false],
-      estado:          ['activo', Validators.required]
+      restricciones: [''],
+      esDestacado: [false],
+      estado: ['activo', Validators.required]
     });
 
     const id = this.route.snapshot.paramMap.get('id');
@@ -65,7 +64,11 @@ export class FormLugarComponent implements OnInit {
       this.cargarLugar(id);
     }
   }
-
+  /** Eliminar una imagen de la selección */
+  removeImage(index: number): void {
+    this.selectedFile.splice(index, 1);
+    this.previewUrl.splice(index, 1);
+  }
   ngAfterViewInit(): void {
     const center = { lat: -15.6000, lng: -69.9000 };
     this.map = L.map(this.mapContainer.nativeElement).setView(
@@ -101,9 +104,10 @@ export class FormLugarComponent implements OnInit {
     this.map.setView([lat, lng], 13);
   }
 
-  private cargarLugar(id: string): void {
+private cargarLugar(id: string): void {
     this.lugaresService.getLugar(id).subscribe({
       next: lugar => {
+        // patch de los campos
         this.lugarForm.patchValue({
           nombre:          lugar.nombre,
           descripcion:     lugar.descripcion,
@@ -118,9 +122,10 @@ export class FormLugarComponent implements OnInit {
           esDestacado:     lugar.esDestacado,
           estado:          lugar.estado
         });
-        this.previewUrl = lugar.imagenes.length
-          ? lugar.imagenes[0].url
-          : null;
+        // previews de imágenes existentes
+        this.previewUrl = lugar.imagenes.map(img => img.url);
+
+        // marcamos en el mapa si ya hay coords
         if (this.map && lugar.latitud != null && lugar.longitud != null) {
           this.placeMarker(lugar.latitud, lugar.longitud);
         }
@@ -133,32 +138,35 @@ export class FormLugarComponent implements OnInit {
   }
 
   onFileChange(event: any): void {
-    const file = event.target.files[0];
-    if (!file) return;
-    this.selectedFile = file;
-    const reader = new FileReader();
-    reader.onload = () => (this.previewUrl = reader.result as string);
-    reader.readAsDataURL(file);
-  }
-
-  private async subirImagenASupabase(file: File): Promise<string> {
-    Swal.fire({
-      title: 'Subiendo imagen...',
-      allowOutsideClick: false,
-      showConfirmButton: false,
-      didOpen: () => Swal.showLoading()
+    const files: FileList = event.target.files;
+    if (!files.length) return;
+    Array.from(files).forEach(file => {
+      this.selectedFile.push(file);
+      const reader = new FileReader();
+      reader.onload = () => this.previewUrl.push(reader.result as string);
+      reader.readAsDataURL(file);
     });
-    const supabase = this.supabaseService.getClient();
-    const path = `lugares-turisticos/${Date.now()}-${file.name}`;
-    const { error } = await supabase.storage.from('lugares-turisticos').upload(path, file);
-    if (error) {
-      Swal.close();
-      throw new Error(error.message);
-    }
-    const { data } = supabase.storage.from('lugares-turisticos').getPublicUrl(path);
-    Swal.close();
-    return data.publicUrl;
+    // Reset para permitir re-selección del mismo archivo
+    event.target.value = '';
   }
+    async subirImagenASupabase(file: File): Promise<string> {
+      Swal.fire({
+        title: 'Subiendo imagen...',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => Swal.showLoading()
+      });
+      const supabase = this.supabaseService.getClient();
+      const path = `lugares-turisticos/${Date.now()}-${file.name}`;
+      const { error } = await supabase.storage.from('lugares-turisticos').upload(path, file);
+      if (error) {
+        Swal.close();
+        throw new Error(error.message);
+      }
+      const { data } = supabase.storage.from('lugares-turisticos').getPublicUrl(path);
+      Swal.close();
+      return data.publicUrl;
+    }
 
   async guardarLugar(): Promise<void> {
     if (this.lugarForm.invalid) {
@@ -179,34 +187,33 @@ export class FormLugarComponent implements OnInit {
       didOpen: () => Swal.showLoading()
     });
 
-    let imagenes: { url: string }[] = [];
-    if (this.selectedFile) {
+    // Subir imágenes
+    const imagenUrls: string[] = [];
+    for (const file of this.selectedFile) {
       try {
-        const url = await this.subirImagenASupabase(this.selectedFile);
-        imagenes.push({ url });
+        imagenUrls.push(await this.subirImagenASupabase(file));
       } catch (err) {
         Swal.close();
-        console.error(err);
-        await Swal.fire('Error', 'No se pudo subir la imagen.', 'error');
+        await Swal.fire('Error', 'No se pudieron subir todas las imágenes.', 'error');
         return;
       }
     }
 
     const fv = this.lugarForm.getRawValue();
     const payload = {
-      nombre:          fv.nombre,
-      descripcion:     fv.descripcion,
-      direccion:       fv.direccion,
-      latitud:         fv.latitud,
-      longitud:        fv.longitud,
+      nombre: fv.nombre,
+      descripcion: fv.descripcion,
+      direccion: fv.direccion,
+      latitud: fv.latitud,
+      longitud: fv.longitud,
       horarioApertura: fv.horarioApertura || null,
-      horarioCierre:   fv.horarioCierre   || null,
-      costoEntrada:    fv.costoEntrada    || null,
+      horarioCierre: fv.horarioCierre || null,
+      costoEntrada: fv.costoEntrada || null,
       recomendaciones: fv.recomendaciones || null,
-      restricciones:   fv.restricciones   || null,
-      esDestacado:     fv.esDestacado,
-      estado:          fv.estado,
-      imagenes
+      restricciones: fv.restricciones || null,
+      esDestacado: fv.esDestacado,
+      estado: fv.estado,
+      imagenes:         imagenUrls.map(u => ({ url: u }))
     };
 
     const req$ = this.isEdit && this.lugarIdEdit

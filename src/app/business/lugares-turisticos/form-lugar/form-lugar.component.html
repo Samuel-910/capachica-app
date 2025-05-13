@@ -164,26 +164,24 @@
                 </select>
               </div>
 
-              <!-- Imágenes -->
-              <div class="md:col-span-2">
-                <label class="block font-medium text-gray-700">
-                  Imágenes del Lugar
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  (change)="onFileChange($event)"
-                  multiple
-                  class="border p-3 rounded w-full"
-                />
-                <div *ngIf="previewUrl" class="mt-2 flex gap-2">
-                  <img
-                    [src]="previewUrl"
-                    alt="Vista previa"
-                    class="w-32 h-32 object-cover rounded border shadow"
-                  />
+            <!-- Imagen -->
+            <div>
+              <label class="block font-medium text-gray-700">Imágenes del Lugar</label>
+
+              <input type="file" accept="image/*" multiple (change)="onFileChange($event)"
+                class="border p-3 rounded w-full" />
+
+              <div *ngIf="previewUrl.length" class="grid grid-cols-3 md:grid-cols-4 gap-2 mt-2">
+                <div *ngFor="let src of previewUrl; let i = index" class="relative">
+                  <!-- Botón para eliminar -->
+                  <button type="button" (click)="removeImage(i)"
+                    class="absolute top-1 right-1 bg-white rounded-full p-1 text-gray-600 hover:text-red-600 shadow">
+                    &times;
+                  </button>
+                  <img [src]="src" alt="Preview" class="w-full h-24 object-cover rounded border" />
                 </div>
               </div>
+            </div>
             </div>
 
             <!-- Botones -->
@@ -204,7 +202,6 @@
             </div>
           </div>
         </form>
-        <!-- Form cerrado correctamente aquí -->
       </div>
     </div>
   </div>

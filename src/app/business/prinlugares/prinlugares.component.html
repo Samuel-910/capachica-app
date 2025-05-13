@@ -6,7 +6,7 @@
     </section>
 <div class="flex justify-center items-start gap-8  px-4">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
-        <div *ngFor="let lugar of lugares" class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform transform hover:translate-y-1">
+        <div (click)="verDetallesLugares(lugar.id)" *ngFor="let lugar of lugares" class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform transform hover:translate-y-1">
           <!-- Imagen de la tarjeta, puedes agregar una imagen si tienes alguna URL, sino, poner una imagen predeterminada -->
             <img
             [src]="lugar.imagenes.length > 0 ? 'https://twsevdzjdnwjhdysvecm.supabase.co/storage/v1/object/public/lugares-turisticos/' + lugar.imagenes[0]?.url : 'img/fam1.png'"

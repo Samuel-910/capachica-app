@@ -218,7 +218,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./business/prinemprendimiento/prinemprendimiento.component').then(m => m.PrinemprendimientoComponent),
       },
-      
+
       {
         path: 'prinlugares', // Ruta para ver todas las disponibilidades
         loadComponent: () =>
@@ -234,9 +234,18 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./business/prinservicios/detprinservicios/detprinservicios.component').then(m => m.DetprinserviciosComponent),
       },
-      
-      
-      
+      {
+        path: 'setprinlugares/:id',
+        loadComponent: () =>
+          import('./business/prinlugares/detprinlugares/detprinlugares.component').then(m => m.DetprinlugaresComponent),
+      },
+      {
+        path: 'carrito',
+        loadComponent: () =>
+          import('./business/cart/cart.component').then(m => m.CartComponent),
+      }
+
+
 
     ],
   },

@@ -33,11 +33,15 @@
               </div>
 
               <!-- Moneda -->
-              <div>
-                <label class="block font-medium text-gray-700">Moneda</label>
-                <input type="text" formControlName="moneda" placeholder="Moneda (ej. PEN)"
-                  class="border p-3 rounded w-full" required />
-              </div>
+<div>
+  <label class="block font-medium text-gray-700">Moneda</label>
+  <select formControlName="moneda" class="border p-3 rounded w-full" required>
+    <option value="" disabled>Selecciona la moneda</option>
+    <option value="PEN">PEN</option>
+    <option value="USD">USD</option>
+  </select>
+</div>
+
 
               <!-- Estado -->
               <div>
@@ -47,6 +51,7 @@
                   <option value="inactivo">Inactivo</option>
                 </select>
               </div>
+
               <!-- tipo -->
               <div>
                 <label class="block font-medium text-gray-700">Tipo de Servicio</label>
@@ -54,40 +59,54 @@
                   <option *ngFor="let tipo of tiposServicio" [value]="tipo.id">{{ tipo.nombre }}</option>
                 </select>
               </div>
+              <!-- Mapa Leaflet -->
+              <div class="mb-4 md:col-span-2">
+                <label class="block font-medium text-gray-700 mb-2">Selecciona ubicación (click en el mapa)</label>
+                <div #mapContainer class="w-full h-64 rounded border" style="height: 300px;"></div>
+                <div class="mt-2 flex gap-4">
+                  <small class="text-gray-600">
+                    Latitud: {{ servicioForm.get('latitud')?.value }}
+                  </small>
+                  <small class="text-gray-600">
+                    Longitud: {{ servicioForm.get('longitud')?.value }}
+                  </small>
+                </div>
+              </div>
             </div>
-<div class="flex items-center justify-between mb-4">
-  <h1 class="text-xl font-bold">Detalles del servicio</h1>
-  <button
-    type="button"
-    class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-    (click)="addDetalle()"
-  >
-    Agregar
-  </button>
-</div>
+            <!-- Emprendedor -->
+            <div>
+              <label class="block font-medium text-gray-700">Emprendedor</label>
+              <select formControlName="emprendimientoId" class="border p-3 rounded w-full" required>
+                <option value="" disabled>-- Selecciona emprendedor --</option>
+                <option *ngFor="let emp of emprendimientos" [value]="emp.id">
+                  {{ emp.nombre }}
+                </option>
+              </select>
+            </div>
 
-<div [formGroup]="detallesServicioGroup" class="grid md:grid-cols-2 gap-6">
-  <ng-container *ngFor="let key of detalleKeys">
-    <div class="relative border p-3 rounded">
-      <!-- Botón para eliminar el control -->
-      <button
-        type="button"
-        class="absolute top-1 right-1 text-gray-600 hover:text-red-600"
-        (click)="removeDetalle(key)"
-      >
-        &times;
-      </button>
+            <div class="flex items-center justify-between mb-4">
+              <h1 class="text-xl font-bold">Detalles del servicio</h1>
+              <button type="button" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                (click)="addDetalle()">
+                Agregar
+              </button>
+            </div>
 
-      <label class="block font-medium text-gray-700">{{ key | titlecase }}</label>
-      <input
-        [type]=" key === 'capacidad' ? 'number' : 'text' "
-        [formControlName]="key"
-        [placeholder]=" key | titlecase "
-        class="mt-1 border p-2 rounded w-full"
-      />
-    </div>
-  </ng-container>
-</div>
+            <div [formGroup]="detallesServicioGroup" class="grid md:grid-cols-2 gap-6">
+              <ng-container *ngFor="let key of detalleKeys">
+                <div class="relative border p-3 rounded">
+                  <!-- Botón para eliminar el control -->
+                  <button type="button" class="absolute top-1 right-1 text-gray-600 hover:text-red-600"
+                    (click)="removeDetalle(key)">
+                    &times;
+                  </button>
+
+                  <label class="block font-medium text-gray-700">{{ key | titlecase }}</label>
+                  <input [type]=" key === 'capacidad' ? 'number' : 'text' " [formControlName]="key"
+                    [placeholder]=" key | titlecase " class="mt-1 border p-2 rounded w-full" />
+                </div>
+              </ng-container>
+            </div>
 
             <!-- Imagen del Servicio -->
             <div>

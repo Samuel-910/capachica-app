@@ -5,7 +5,7 @@ import { Observable, switchMap, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class EmprendimientoService {
-  private readonly API_EMPRENDIMIENTOS = 'https://capachica-tours-backend.vercel.app/api/emprendimientos';
+  private readonly API_EMPRENDIMIENTOS = 'https://capachica-app-back-production.up.railway.app/emprendimientos';
 
   private readonly LIST_URL            = `${this.API_EMPRENDIMIENTOS}`;
   private readonly DETAIL_URL          = (id: number | string) => `${this.API_EMPRENDIMIENTOS}/${id}`;

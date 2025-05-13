@@ -3,55 +3,63 @@
   <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
     <!-- Logo -->
     <img src="assets/logo-capachica.png" class="h-24" />
-<div class="flex-1 relative h-12 flex justify-center items-center">
-  <nav class="absolute flex gap-4 font-medium text-gray-700 transition-all w-full">
-    <div class="flex border rounded-full shadow h-16 overflow-hidden max-w-4xl mx-auto">
-      <!-- ¿Qué buscas? -->
-      <div class="w-1/3 px-4 py-3 border-r">
-        <select [(ngModel)]="searchSelection" class="w-full border rounded px-3 py-2" placeholder="¿Qué buscas?">
-          <option value="" disabled selected>¿Qué buscas?</option>
-          <optgroup label="Emprendimientos">
-            <option *ngFor="let n of emprendimientoNombres" [value]="n">{{ n }}</option>
-          </optgroup>
-          <optgroup label="Paquetes turísticos">
-            <option *ngFor="let p of paqueteNombres" [value]="p">{{ p }}</option>
-          </optgroup>
-          <optgroup label="Tipos de servicios">
-            <option *ngFor="let s of tiposServicios" [value]="s">{{ s }}</option>
-          </optgroup>
-        </select>
-      </div>
-      <!-- ¿Dónde? -->
-      <div class="w-1/3 px-4 py-3 border-r">
-        <select [(ngModel)]="searchSelectionLugar" class="w-full border rounded px-3 py-2" placeholder="¿Dónde?">
-          <option value="" disabled selected>¿Dónde?</option>
-          <option value="">Todos los lugares</option>
-          <option *ngFor="let loc of lugarOpciones" [value]="loc">{{ loc }}</option>
-        </select>
-      </div>
-      <!-- ¿Cuándo? -->
-      <div class="w-1/3 px-4 py-3">
-        <input type="date" [(ngModel)]="fechaInferior" class="w-full border rounded px-3 py-2" placeholder="¿Cuándo?" />
-      </div>
-      <!-- Botón Buscar -->
-      <div class="flex items-center px-4">
-        <button (click)="buscar()" class="px-4 py-2 bg-green-500 text-white rounded-full">
-          <i class="fas fa-search"></i>
-        </button>
-      </div>
+    <div class="flex-1 relative h-12 flex justify-center items-center">
+      <nav class="absolute flex gap-4 font-medium text-gray-700 transition-all w-full">
+        <div class="flex border rounded-full shadow h-16 overflow-hidden max-w-4xl mx-auto">
+          <!-- ¿Qué buscas? -->
+          <div class="w-1/3 px-4 py-3 border-r">
+            <select [(ngModel)]="searchSelection" class="w-full border rounded px-3 py-2" placeholder="¿Qué buscas?">
+              <option value="" disabled selected>¿Qué buscas?</option>
+              <optgroup label="Emprendimientos">
+                <option *ngFor="let n of emprendimientoNombres" [value]="n">{{ n }}</option>
+              </optgroup>
+              <optgroup label="Paquetes turísticos">
+                <option *ngFor="let p of paqueteNombres" [value]="p">{{ p }}</option>
+              </optgroup>
+              <optgroup label="Tipos de servicios">
+                <option *ngFor="let s of tiposServicios" [value]="s">{{ s }}</option>
+              </optgroup>
+            </select>
+          </div>
+          <!-- ¿Dónde? -->
+          <div class="w-1/3 px-4 py-3 border-r">
+            <select [(ngModel)]="searchSelectionLugar" class="w-full border rounded px-3 py-2" placeholder="¿Dónde?">
+              <option value="" disabled selected>¿Dónde?</option>
+              <option value="">Todos los lugares</option>
+              <option *ngFor="let loc of lugarOpciones" [value]="loc">{{ loc }}</option>
+            </select>
+          </div>
+          <!-- ¿Cuándo? -->
+          <div class="w-1/3 px-4 py-3">
+            <input type="date" [(ngModel)]="fechaInferior" class="w-full border rounded px-3 py-2"
+              placeholder="¿Cuándo?" />
+          </div>
+          <!-- Botón Buscar -->
+          <div class="flex items-center px-4">
+            <button (click)="buscar()" class="px-4 py-2 bg-green-500 text-white rounded-full">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+      </nav>
     </div>
-  </nav>
-</div>
 
 
 
     <!-- Login/Register -->
-    <div class="flex gap-4">
+    <div class="flex gap-4" *ngIf="!isLoggedIn()">
       <button routerLink="/login" class="px-4 py-2 border rounded-xl">Ingresar</button>
       <button routerLink="/register" class="px-4 py-2 bg-green-500 text-white rounded-xl">Registrarse</button>
     </div>
+
+    <div class="flex gap-4" *ngIf="isLoggedIn()">
+      <button routerLink="/carrito" class="px-4 py-2 bg-green-500 text-white rounded-xl">Reservar</button>
+      <button (click)="logout()" class="px-4 py-2 bg-red-500 text-white rounded-xl">Cerrar sesión</button>
+    </div>
+
   </div>
-  <div *ngIf="!ocultarNav" class="flex justify-center items-center gap-6 overflow-x-auto text-sm text-gray-600 p-4 bg-white flex-wrap">
+  <div *ngIf="!ocultarNav"
+    class="flex justify-center items-center gap-6 overflow-x-auto text-sm text-gray-600 p-4 bg-white flex-wrap">
     <button routerLink="/prinemprendimiento" routerLinkActive="text-green-600" class="flex flex-col items-center">
       <i class="fas fa-store"></i>
       <span>Emprendimientos</span>
@@ -60,68 +68,53 @@
       <i class="fas fa-landmark"></i>
       <span>Lugares Turísticos</span>
     </button>
-    <button 
-    [routerLink]="['/prinservicios', tipo.id]" 
-    routerLinkActive="text-green-600" 
-    *ngFor="let tipo of tiposServicio" 
-    (click)="refreshData(tipo.id)"
-    class="flex flex-col items-center">
-    <i class="fas fa-landmark"></i>
-    <p>{{ tipo.nombre }}</p>
-  </button>
-  
-  </div>
-<!-- Cards de Resultados -->
-<div *ngIf="resultados.length" class="mt-8 px-6">
-  <h2 class="text-2xl font-semibold mb-6">Resultados</h2>
-  <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-    <div
-      *ngFor="let item of resultados"
-      class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300"
-    >
-      <!-- Imagen (pon aquí item.imagen si la tienes) -->
-      <div class="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
-        <img
-          *ngIf="item.imagenUrl; else placeholder"
-          [src]="item.imagenUrl"
-          alt="{{ item.nombre }}"
-          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-        />
-        <ng-template #placeholder>
-          <span class="text-gray-400">Sin imagen</span>
-        </ng-template>
-      </div>
-      <div class="p-4 flex flex-col h-full">
-        <!-- Título y precio en línea -->
-        <div class="flex justify-between items-center mb-2">
-          <h3 class="text-lg font-bold text-gray-800 line-clamp-1">{{ item.nombre }}</h3>
-          <span
-            *ngIf="item.precio"
-            class="text-green-600 font-semibold"
-          >
-            S/{{ item.precio }}
-          </span>
-        </div>
-        <!-- Descripción breve -->
-        <p class="text-sm text-gray-600 mb-4 line-clamp-2">
-          {{ item.descripcion }}
-        </p>
-        <!-- Botón y rating abajo -->
-        <div class="mt-auto flex items-center justify-between">
-          <button
-            (click)="router.navigate([tipoBusqueda, item.id])"
-            class="px-4 py-2 bg-green-500 text-white rounded-full text-sm font-medium hover:bg-green-600 transition-colors"
-          >
-            Ver más
-          </button>
+    <button [routerLink]="['/prinservicios', tipo.id]" routerLinkActive="text-green-600"
+      *ngFor="let tipo of tiposServicio" (click)="refreshData(tipo.id)" class="flex flex-col items-center">
+      <i class="fas fa-landmark"></i>
+      <p>{{ tipo.nombre }}</p>
+    </button>
 
-          <div *ngIf="item.rating" class="flex items-center text-yellow-500 text-sm">
-            <i class="fas fa-star mr-1"></i> {{ item.rating }}
+  </div>
+  <!-- Cards de Resultados -->
+  <div *ngIf="resultados.length" class="mt-8 px-6">
+    <h2 class="text-2xl font-semibold mb-6">Resultados</h2>
+    <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+      <div *ngFor="let item of resultados"
+        class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
+        <!-- Imagen (pon aquí item.imagen si la tienes) -->
+        <div class="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
+          <img *ngIf="item.imagenUrl; else placeholder" [src]="item.imagenUrl" alt="{{ item.nombre }}"
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <ng-template #placeholder>
+            <span class="text-gray-400">Sin imagen</span>
+          </ng-template>
+        </div>
+        <div class="p-4 flex flex-col h-full">
+          <!-- Título y precio en línea -->
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-lg font-bold text-gray-800 line-clamp-1">{{ item.nombre }}</h3>
+            <span *ngIf="item.precio" class="text-green-600 font-semibold">
+              S/{{ item.precio }}
+            </span>
+          </div>
+          <!-- Descripción breve -->
+          <p class="text-sm text-gray-600 mb-4 line-clamp-2">
+            {{ item.descripcion }}
+          </p>
+          <!-- Botón y rating abajo -->
+          <div class="mt-auto flex items-center justify-between">
+            <button (click)="router.navigate([tipoBusqueda, item.id])"
+              class="px-4 py-2 bg-green-500 text-white rounded-full text-sm font-medium hover:bg-green-600 transition-colors">
+              Ver más
+            </button>
+
+            <div *ngIf="item.rating" class="flex items-center text-yellow-500 text-sm">
+              <i class="fas fa-star mr-1"></i> {{ item.rating }}
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
 </div>

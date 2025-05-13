@@ -120,121 +120,121 @@ export class FormPaqueteComponent implements OnInit{
     });
   }
 
-onFileChange(event: any): void {
-  const files = event.target.files;
-  if (files.length > 0) {
-    this.selectedFile = Array.from(files);  // Convertir los archivos seleccionados a un arreglo
-    // Si necesitas previsualizar las imágenes (solo la primera por ejemplo):
-    const reader = new FileReader();
-    reader.onload = () => (this.previewUrl = reader.result as string);
-    reader.readAsDataURL(files[0]);  // Mostrar solo la vista previa de la primera imagen
-  }
-}
-
-// Al subir las imágenes
-async subirImagenesASupabase(files: File[]): Promise<string[]> {
-  Swal.fire({
-    title: 'Subiendo imágenes...',
-    text: 'Por favor espere mientras se suben las imágenes.',
-    allowOutsideClick: false,
-    showConfirmButton: false,
-    didOpen: () => Swal.showLoading()
-  });
-
-  const supabase = this.supabaseService.getClient();
-  const urls: string[] = [];
-
-  for (const file of files) {
-    const filePath = `paquetes-turisticos/${Date.now()}-${file.name}`;
-    const { data, error } = await supabase.storage.from('paquetes-turisticos').upload(filePath, file);
-
-    if (error) {
-      Swal.close();
-      throw new Error(error.message);
-    }
-
-    const { data: publicUrlData } = supabase.storage.from('paquetes-turisticos').getPublicUrl(filePath);
-    if (publicUrlData?.publicUrl) {
-      urls.push(publicUrlData.publicUrl);
+  onFileChange(event: any): void {
+    const files = event.target.files;
+    if (files.length > 0) {
+      this.selectedFile = Array.from(files);  // Convertir los archivos seleccionados a un arreglo
+      // Si necesitas previsualizar las imágenes (solo la primera por ejemplo):
+      const reader = new FileReader();
+      reader.onload = () => (this.previewUrl = reader.result as string);
+      reader.readAsDataURL(files[0]);  // Mostrar solo la vista previa de la primera imagen
     }
   }
 
-  Swal.close();
-  return urls;
-}
+  // Al subir las imágenes
+  async subirImagenesASupabase(files: File[]): Promise<string[]> {
+    Swal.fire({
+      title: 'Subiendo imágenes...',
+      text: 'Por favor espere mientras se suben las imágenes.',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => Swal.showLoading()
+    });
 
-async guardarPaquete() {
-    if (this.paqueteForm.invalid) {
-        const camposInvalidos = Object.keys(this.paqueteForm.controls)
-            .filter(key => this.paqueteForm.get(key)?.invalid)
-            .map(key => key);
+    const supabase = this.supabaseService.getClient();
+    const urls: string[] = [];
 
-        Swal.fire({
-            icon: 'error',
-            title: 'Formulario incompleto',
-            html: `Por favor corrige o completa los siguientes campos:<br><b>${camposInvalidos.join(', ')}</b>`
-        });
-        return;
+    for (const file of files) {
+      const filePath = `paquetes-turisticos/${Date.now()}-${file.name}`;
+      const { data, error } = await supabase.storage.from('paquetes-turisticos').upload(filePath, file);
+
+      if (error) {
+        Swal.close();
+        throw new Error(error.message);
+      }
+
+      const { data: publicUrlData } = supabase.storage.from('paquetes-turisticos').getPublicUrl(filePath);
+      if (publicUrlData?.publicUrl) {
+        urls.push(publicUrlData.publicUrl);
+      }
     }
 
-    const formValue = this.paqueteForm.getRawValue();
-    let imagenes: string[] = [];
+    Swal.close();
+    return urls;
+  }
 
-    // Convertimos la ID del emprendimiento a número entero
-    const emprendimientoId = parseInt(formValue.emprendimientoId, 10); // Asegura que sea un entero
+  async guardarPaquete() {
+      if (this.paqueteForm.invalid) {
+          const camposInvalidos = Object.keys(this.paqueteForm.controls)
+              .filter(key => this.paqueteForm.get(key)?.invalid)
+              .map(key => key);
 
-    if (isNaN(emprendimientoId)) {
-        Swal.fire('Error', 'La ID del emprendimiento debe ser un número válido.', 'error');
-        return;
-    }
+          Swal.fire({
+              icon: 'error',
+              title: 'Formulario incompleto',
+              html: `Por favor corrige o completa los siguientes campos:<br><b>${camposInvalidos.join(', ')}</b>`
+          });
+          return;
+      }
 
-    if (this.selectedFile && Array.isArray(this.selectedFile)) {
-        try {
-            // Subir varias imágenes
-            imagenes = await this.subirImagenesASupabase(this.selectedFile);
-        } catch (error) {
-            console.error('Error al subir imagenes:', error);
-            Swal.fire('Error', 'No se pudo subir las imágenes del paquete.', 'error');
-            return;
-        }
-    }
+      const formValue = this.paqueteForm.getRawValue();
+      let imagenes: string[] = [];
 
-    const payload = {
-        nombre: formValue.nombre,
-        descripcion: formValue.descripcion,
-        precio: formValue.precio,
-        estado: formValue.estado,
-        imagenes: imagenes,  // Arreglo con las URLs de las imágenes subidas
-        servicios: this.getServiciosSeleccionados(),
-        emprendimientoId: emprendimientoId  // Convertir la ID del emprendimiento a entero
-    };
+      // Convertimos la ID del emprendimiento a número entero
+      const emprendimientoId = parseInt(formValue.emprendimientoId, 10); // Asegura que sea un entero
 
-    if (this.isEdit && this.paqueteIdEdit) {
-        this.paqueteTuristicoService.actualizarPaqueteTuristico(this.paqueteIdEdit, payload).subscribe({
-            next: () => {
-                Swal.fire('Actualizado', 'El paquete turístico fue actualizado correctamente.', 'success');
-                this.paqueteForm.reset();
-                this.router.navigate(['/paquetes']);
-            },
-            error: (err) => {
-                console.error('Error al actualizar paquete:', err);
-                Swal.fire('Error', 'No se pudo actualizar el paquete turístico.', 'error');
-            }
-        });
-    } else {
-        this.paqueteTuristicoService.crearPaqueteTuristico(payload).subscribe({
-            next: () => {
-                Swal.fire('Registrado', 'El paquete turístico fue registrado correctamente.', 'success');
-                this.paqueteForm.reset();
-                this.router.navigate(['/paquetes']);
-            },
-            error: (err) => {
-                console.error('Error al registrar paquete:', err);
-                Swal.fire('Error', 'No se pudo registrar el paquete turístico.', 'error');
-            }
-        });
-    }
-}
+      if (isNaN(emprendimientoId)) {
+          Swal.fire('Error', 'La ID del emprendimiento debe ser un número válido.', 'error');
+          return;
+      }
+
+      if (this.selectedFile && Array.isArray(this.selectedFile)) {
+          try {
+              // Subir varias imágenes
+              imagenes = await this.subirImagenesASupabase(this.selectedFile);
+          } catch (error) {
+              console.error('Error al subir imagenes:', error);
+              Swal.fire('Error', 'No se pudo subir las imágenes del paquete.', 'error');
+              return;
+          }
+      }
+
+      const payload = {
+          nombre: formValue.nombre,
+          descripcion: formValue.descripcion,
+          precio: formValue.precio,
+          estado: formValue.estado,
+          imagenes: imagenes,  // Arreglo con las URLs de las imágenes subidas
+          servicios: this.getServiciosSeleccionados(),
+          emprendimientoId: emprendimientoId  // Convertir la ID del emprendimiento a entero
+      };
+
+      if (this.isEdit && this.paqueteIdEdit) {
+          this.paqueteTuristicoService.actualizarPaqueteTuristico(this.paqueteIdEdit, payload).subscribe({
+              next: () => {
+                  Swal.fire('Actualizado', 'El paquete turístico fue actualizado correctamente.', 'success');
+                  this.paqueteForm.reset();
+                  this.router.navigate(['/paquetes']);
+              },
+              error: (err) => {
+                  console.error('Error al actualizar paquete:', err);
+                  Swal.fire('Error', 'No se pudo actualizar el paquete turístico.', 'error');
+              }
+          });
+      } else {
+          this.paqueteTuristicoService.crearPaqueteTuristico(payload).subscribe({
+              next: () => {
+                  Swal.fire('Registrado', 'El paquete turístico fue registrado correctamente.', 'success');
+                  this.paqueteForm.reset();
+                  this.router.navigate(['/paquetes']);
+              },
+              error: (err) => {
+                  console.error('Error al registrar paquete:', err);
+                  Swal.fire('Error', 'No se pudo registrar el paquete turístico.', 'error');
+              }
+          });
+      }
+  }
 
   getServiciosSeleccionados(): any[] {
     const serviciosControl = this.paqueteForm.get('servicios') as FormArray;
