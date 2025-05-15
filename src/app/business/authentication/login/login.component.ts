@@ -55,7 +55,7 @@ login(): void {
           confirmButtonText: 'Aceptar'
         });
       } else {
-        this.router.navigate(['/dashboard']);
+        this.router.navigate(['/']);
         Swal.fire({
           icon: 'success',
           title: '¡Bienvenido!',
