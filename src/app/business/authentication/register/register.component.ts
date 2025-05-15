@@ -21,7 +21,6 @@ export class RegisterComponent {
   direccion = '';
   fotoPerfilUrl = '';
   fechaNacimiento = '';
-  subdivisionId: number = 0;
   email = '';
   password = '';
   confirmPassword = '';
@@ -44,9 +43,7 @@ export class RegisterComponent {
       telefono: this.telefono,
       direccion: this.direccion,
       fechaNacimiento: this.fechaNacimiento,
-      subdivisionId: this.subdivisionId,
-      preferencias: {},
-      usuariosRoles: []
+      subdivisionId: 1
     };
   
     this.authService.register(usuario).subscribe({

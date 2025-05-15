@@ -5,7 +5,7 @@ import { CommonModule } from '@angular/common';
 import { ReservasService } from '../../core/services/reservas.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ItinerarioService } from '../../core/services/itinerario.service';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { initFlowbite } from 'flowbite';
 
 @Component({
@@ -18,7 +18,12 @@ import { initFlowbite } from 'flowbite';
 export class CartComponent implements OnInit {
   cartItems: any[] = [];
 
-  constructor(private reservaService: ReservasService, private authService: AuthService,private itinerarioService:ItinerarioService) { }
+  constructor(
+    private reservaService: ReservasService, 
+    private authService: AuthService,
+    private itinerarioService:ItinerarioService,
+    private router:Router 
+  ) { }
 
 
   ngOnInit(): void {
@@ -58,73 +63,87 @@ loadCart(): void {
     }, 0);
   }
 
-  reserve(): void {
-    if (this.cartItems.length === 0) {
+reserve(): void {
+  const token = localStorage.getItem('token');
+  console.log(token);
+  if (!token) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'No estás logueado',
+      text: 'Por favor, inicia sesión para continuar con la reserva.',
+      confirmButtonText: 'Ir al login'
+    }).then(result => {
+      if (result.isConfirmed) {
+        this.router.navigate(['/login']);
+      }
+    });
+    return;
+  }
+
+  if (this.cartItems.length === 0) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Tu carrito está vacío.',
+      confirmButtonText: 'Aceptar'
+    });
+    return;
+  }
+
+  const usuarioId = this.authService.getUsuarioId();
+  const tipoReserva = 'tiporeserva';
+  const estado = 'pendiente';
+  const moneda = 'PEN';
+  const fechaActual = new Date().toISOString().split('T')[0];
+  const total = this.getTotalPrice();
+  const cantidadPersonas = Math.max(...this.cartItems.map(item => item.numeroPersonas));
+
+  const fechaInicio = this.cartItems
+    .map(item => new Date(item.startDate))
+    .reduce((min, curr) => (curr < min ? curr : min)).toISOString();
+
+  const fechaFin = this.cartItems
+    .map(item => new Date(item.endDate))
+    .reduce((max, curr) => (curr > max ? curr : max)).toISOString();
+
+  const reservaData = {
+    usuarioId: usuarioId,
+    tipoReserva: tipoReserva,
+    estado: estado,
+    moneda: moneda,
+    precioTotal: total,
+    cantidadPersonas: cantidadPersonas,
+    fechaInicio: fechaInicio,
+    fechaFin: fechaFin,
+    fechaReserva: fechaActual,
+    notas: 'asdasd',
+  };
+
+  this.reservaService.crearReserva(reservaData).subscribe({
+    next: (res) => {
+      console.log('Reserva creada:', res);
+      this.crearItinerarios(res.id);
+      Swal.fire({
+        icon: 'success',
+        title: 'Reserva Exitosa',
+        text: 'Tu reserva ha sido realizada.',
+        confirmButtonText: 'Aceptar'
+      });
+
+      this.cartItems = [];     // Vaciar carrito
+      this.saveCart();         // Guardar carrito vacío
+    },
+    error: (err) => {
+      console.error('Error al crear la reserva:', err);
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Tu carrito está vacío.',
+        text: 'No se pudo completar la reserva.',
         confirmButtonText: 'Aceptar'
       });
-      return;
     }
-
-
-    const usuarioId = this.authService.getUsuarioId();
-    const tipoReserva = 'tiporeserva';
-    const estado = 'pendiente';
-    const moneda = 'PEN';
-    const fechaActual = new Date().toISOString().split('T')[0];
-    const total = this.getTotalPrice();
-    const cantidadPersonas = Math.max(...this.cartItems.map(item => item.numeroPersonas));
-    const fechaInicio = this.cartItems
-      .map(item => new Date(item.startDate))
-      .reduce((min, curr) => (curr < min ? curr : min)).toISOString();
-
-    // Obtener fechaFin más reciente
-    const fechaFin = this.cartItems
-      .map(item => new Date(item.endDate))
-      .reduce((max, curr) => (curr > max ? curr : max)).toISOString();
-    const reservaData = {
-      usuarioId: usuarioId,
-      tipoReserva: tipoReserva,
-      estado: estado,
-      moneda: moneda,
-      precioTotal: total,
-      cantidadPersonas: cantidadPersonas,
-      fechaInicio: fechaInicio,
-      fechaFin: fechaFin,
-      fechaReserva: fechaActual,
-      notas: 'asdasd',
-      motivoCancelacion: 'asdas',
-      fechaCancelacion: '2025-05-27T21:21'
-    };
-
-    this.reservaService.crearReserva(reservaData).subscribe({
-      next: (res) => {
-        console.log('Reserva creada:', res);
-        this.crearItinerarios(res.id);
-        Swal.fire({
-          icon: 'success',
-          title: 'Reserva Exitosa',
-          text: 'Tu reserva ha sido realizada.',
-          confirmButtonText: 'Aceptar'
-        });
-
-        this.cartItems = [];     // Vaciar carrito
-        this.saveCart();         // Guardar carrito vacío
-      },
-      error: (err) => {
-        console.error('Error al crear la reserva:', err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No se pudo completar la reserva.',
-          confirmButtonText: 'Aceptar'
-        });
-      }
-    });
-  }
+  });
+}
 
 crearItinerarios(reservaId: number): void {
   const itinerarios = this.cartItems.map(item => ({

@@ -14,8 +14,6 @@ export class AuthService {
   private readonly RESET_PASSWORD_URL = `${this.API_BASE_usuario}/reset-password`;
   private readonly RESET_PASSWORD_ADMIN_URL = `${this.API_BASE_usuario}/reset-password`;
 
-  private readonly tokenKey = 'authToken';
-
   constructor(private http: HttpClient, private router: Router) { }
 
   resetPassword(token: string, newPassword: string): Observable<any> {
@@ -45,19 +43,13 @@ export class AuthService {
         tap(response => {
           if (response.access_token) {
             console.log('Access Token:', response.access_token);
-            this.setToken(response.access_token);
             this.router.navigate(['/dashboard']);
           }
         })
       );
   }
-  private setToken(token: string): void {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(this.tokenKey, token);
-    }
-  }
   getUsuarios(): Observable<any[]> {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`
     });
@@ -125,7 +117,6 @@ export class AuthService {
     return this.http.post(`${this.API_BASE_usuario}`, data, { headers });
   }
   logout(): void {
-    localStorage.removeItem(this.tokenKey);
     this.router.navigate(['/']);
   }
 
