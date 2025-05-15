@@ -5,18 +5,18 @@ import { Observable, switchMap, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private readonly API_BASE_login         = 'https://capachica-app-back-production.up.railway.app/auth';
-  private readonly API_BASE_usuario       = 'https://capachica-app-back-production.up.railway.app/users';
-  
-  private readonly LOGIN_URL              = `${this.API_BASE_login}/login`;
-  private readonly REGISTER_URL           = `${this.API_BASE_usuario}/register`;
-  private readonly REQUEST_PASSWORD_URL   = `${this.API_BASE_usuario}/request-password-reset`;
-  private readonly RESET_PASSWORD_URL     = `${this.API_BASE_usuario}/reset-password`;
+  private readonly API_BASE_login = 'https://capachica-app-back-production.up.railway.app/auth';
+  private readonly API_BASE_usuario = 'https://capachica-app-back-production.up.railway.app/users';
+
+  private readonly LOGIN_URL = `${this.API_BASE_login}/login`;
+  private readonly REGISTER_URL = `${this.API_BASE_usuario}/register`;
+  private readonly REQUEST_PASSWORD_URL = `${this.API_BASE_usuario}/request-password-reset`;
+  private readonly RESET_PASSWORD_URL = `${this.API_BASE_usuario}/reset-password`;
   private readonly RESET_PASSWORD_ADMIN_URL = `${this.API_BASE_usuario}/reset-password`;
 
-  private readonly tokenKey               = 'authToken';
+  private readonly tokenKey = 'authToken';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) { }
 
   resetPassword(token: string, newPassword: string): Observable<any> {
     const resetData = { token, newPassword };  // Preparar los datos para el POST
@@ -38,10 +38,6 @@ export class AuthService {
       tap(response => console.log('Respuesta del servidor:', response))
     );
   }
-  
-  
-  
-
   login(email: string, password: string): Observable<any> {
     return this.http
       .post<any>(this.LOGIN_URL, { email, password }, { withCredentials: true })
@@ -55,13 +51,11 @@ export class AuthService {
         })
       );
   }
-
   private setToken(token: string): void {
     if (typeof window !== 'undefined') {
       localStorage.setItem(this.tokenKey, token);
     }
   }
-
   getUsuarios(): Observable<any[]> {
     const token = localStorage.getItem('authToken');
     const headers = new HttpHeaders({
@@ -69,7 +63,6 @@ export class AuthService {
     });
     return this.http.get<any[]>(`${this.API_BASE_usuario}`, { headers });
   }
-
   getUsuarioById(id: number): Observable<any> {
     const token = localStorage.getItem('authToken');
     const headers = new HttpHeaders({
@@ -80,6 +73,16 @@ export class AuthService {
         console.log('Usuario obtenido desde la API:', usuario);
       })
     );
+  }
+  getUsuarioId(): number {
+    const user = JSON.parse(localStorage.getItem('usuario') || '{}');
+    console.log("obtenido para reserva", user)
+    return user.id;
+  }
+  getUsuarioRol(): string[] {
+    const user = JSON.parse(localStorage.getItem('usuario') || '{}');
+    console.log("obtenido para rol", user.roles)
+    return user.roles || [];
   }
 
   actualizarUsuario(id: number, datos: any): Observable<any> {
@@ -122,11 +125,8 @@ export class AuthService {
     return this.http.post(`${this.API_BASE_usuario}`, data, { headers });
   }
   logout(): void {
-    // Eliminar el token de localStorage
     localStorage.removeItem(this.tokenKey);
-  
-    // Redirigir al usuario al login (o a cualquier otra página)
-    this.router.navigate(['/']); // Ajusta la ruta de acuerdo a tu flujo de navegación
+    this.router.navigate(['/']);
   }
-  
+
 }

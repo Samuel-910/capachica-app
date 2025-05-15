@@ -53,28 +53,74 @@
     </div>
 
     <div class="flex gap-4" *ngIf="isLoggedIn()">
-      <button routerLink="/carrito" class="px-4 py-2 bg-green-500 text-white rounded-xl">Reservar</button>
-      <button (click)="logout()" class="px-4 py-2 bg-red-500 text-white rounded-xl">Cerrar sesión</button>
+      <button routerLink="/carrito" class="px-4 py-2 bg-green-500 text-white rounded-xl"><i
+          class="fa-solid fa-cart-shopping"></i></button>
+
+      <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown23"
+        class="text-white bg-green-500 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
+        type="button">
+        <i class="fa-solid fa-user"></i> 
+        <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="m1 1 4 4 4-4" />
+        </svg>
+      </button>
+
+      <!-- Dropdown menu -->
+      <div id="dropdown23"
+        class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 ">
+        <ul class="py-2 text-sm text-gray-700 " aria-labelledby="dropdownDefaultButton">
+          <li>
+            <button routerLink="/misreservas"
+              class="block px-4 w-full py-2 hover:bg-gray-100">Mis reservas</button>
+          </li>
+                    <li>
+            <button (click)="logout()"
+              class="block px-4 w-full py-2 hover:bg-gray-100">Pagos pendientes</button>
+          </li>
+                    <li>
+            <button (click)="logout()"
+              class="block px-4 w-full py-2 hover:bg-gray-100">Pagos realizados</button>
+          </li>
+          <li>
+            <button (click)="logout()"
+              class="block px-4 w-full py-2 hover:bg-gray-100"><i class="fa-solid fa-right-from-bracket"></i> Cerrar secion</button>
+          </li>
+        </ul>
+      </div>
+
     </div>
 
   </div>
   <div *ngIf="!ocultarNav"
-    class="flex justify-center items-center gap-6 overflow-x-auto text-sm text-gray-600 p-4 bg-white flex-wrap">
-    <button routerLink="/prinemprendimiento" routerLinkActive="text-green-600" class="flex flex-col items-center">
+    class="flex gap-6 overflow-x-auto whitespace-nowrap text-sm text-gray-600 pl-10 pr-10 pt-4 pb-4 bg-white ">
+
+    <button routerLink="" routerLinkActive="text-green-600" class="flex flex-col items-center flex-shrink-0">
+      <i class="fas fa-store"></i>
+      <span>Principal</span>
+    </button>
+
+    <button routerLink="/prinemprendimiento" routerLinkActive="text-green-600"
+      class="flex flex-col items-center flex-shrink-0">
       <i class="fas fa-store"></i>
       <span>Emprendimientos</span>
     </button>
-    <button routerLink="/prinlugares" routerLinkActive="text-green-600" class="flex flex-col items-center">
+
+    <button routerLink="/prinlugares" routerLinkActive="text-green-600"
+      class="flex flex-col items-center flex-shrink-0">
       <i class="fas fa-landmark"></i>
       <span>Lugares Turísticos</span>
     </button>
-    <button [routerLink]="['/prinservicios', tipo.id]" routerLinkActive="text-green-600"
-      *ngFor="let tipo of tiposServicio" (click)="refreshData(tipo.id)" class="flex flex-col items-center">
+
+    <button *ngFor="let tipo of tiposServicio" [routerLink]="['/prinservicios', tipo.id]"
+      routerLinkActive="text-green-600" (click)="refreshData(tipo.id)" class="flex flex-col items-center flex-shrink-0">
       <i class="fas fa-landmark"></i>
       <p>{{ tipo.nombre }}</p>
     </button>
-
   </div>
+
+
   <!-- Cards de Resultados -->
   <div *ngIf="resultados.length" class="mt-8 px-6">
     <h2 class="text-2xl font-semibold mb-6">Resultados</h2>

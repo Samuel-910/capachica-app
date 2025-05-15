@@ -6,44 +6,85 @@ import { Router, RouterModule } from '@angular/router';
 import { NavbarComponent } from '../sidebar/navbar/navbar.component';
 import Swal from 'sweetalert2';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../core/services/auth.service';
+import { EmprendimientoService } from '../../core/services/emprendimiento.service';
 
 @Component({
   selector: 'app-servicio',
   standalone: true,
-  imports: [CommonModule, SidebarComponent, RouterModule, NavbarComponent,FormsModule],
+  imports: [CommonModule, SidebarComponent, RouterModule, NavbarComponent, FormsModule],
   templateUrl: './servicios.component.html',
   styleUrls: ['./servicios.component.css']
 })
-export class ServicioComponent implements OnInit , DoCheck{
+export class ServicioComponent implements OnInit, DoCheck {
   filtroBusqueda: string = '';
   columnaBusqueda: string = 'nombre'; // Predeterminado a 'nombre'
   isLoading = true;
   servicios: any[] = [];
   serviciosFiltrados: any[] = [];
-
+  roles: string[] = [];
   constructor(
     private router: Router,
-    private serviciosService: ServiciosService
-  ) {}
+    private serviciosService: ServiciosService,
+    private authService: AuthService,
+    private emprendimientoService: EmprendimientoService
+  ) { }
 
   ngOnInit(): void {
     this.cargarServicios();
   }
 
   cargarServicios(): void {
-    this.serviciosService.listarServicios().subscribe({
-      next: (data) => {
-        this.servicios = data;
-        this.isLoading = false;
-        this.serviciosFiltrados = [...this.servicios];
-        console.log('Servicios cargados:', data);
-      },
-      error: (err) => {
-        console.error('Error al obtener servicios:', err);
-      }
-    });
-  }
+    const usuarioId = this.authService.getUsuarioId();  // Obtener el ID del usuario logueado
+    this.roles = this.authService.getUsuarioRol();  // Obtener los roles del usuario
 
+    // Si el rol es SuperAdmin, no se aplica ningún filtro
+    if (this.roles.includes('SuperAdmin')) {
+      this.serviciosService.listarServicios().subscribe({
+        next: (servicios) => {
+          this.servicios = servicios;  // Cargar todos los servicios
+          this.isLoading = false;
+          this.serviciosFiltrados = [...this.servicios];
+          console.log('Servicios cargados para SuperAdmin:', this.servicios);
+        },
+        error: (err) => {
+          console.error('Error al obtener servicios:', err);
+        }
+      });
+    } else if (this.roles.includes('Emprendedor')) {
+      // Si el rol es Emprendedor, se filtran los servicios asociados al usuario
+      this.emprendimientoService.listarEmprendimientosPorUsuario(usuarioId).subscribe({
+        next: (emprendimientos) => {
+          const emprendimientoIds = emprendimientos.map((e: any) => e.id);  // Obtener los IDs de los emprendimientos del usuario
+          this.serviciosService.listarServicios().subscribe({
+            next: (servicios) => {
+              // Filtrar los servicios cuyo emprendimientoId esté en la lista de emprendimientoIds
+              this.servicios = servicios.filter((servicio: any) =>
+                servicio.serviciosEmprendedores?.some((emp: any) =>
+                  emprendimientoIds.includes(emp.emprendimientoId)
+                )
+              );
+
+              this.isLoading = false;
+              this.serviciosFiltrados = [...this.servicios];
+              console.log('Servicios filtrados para Emprendedor:', this.servicios);
+            },
+            error: (err) => {
+              console.error('Error al obtener servicios:', err);
+            }
+          });
+        },
+        error: (err) => {
+          console.error('Error al obtener emprendimientos:', err);
+          Swal.fire('Error', 'No se pudieron cargar los emprendimientos', 'error');
+        }
+      });
+    } else {
+      // Si no es ni SuperAdmin ni Emprendedor, puedes manejar otro tipo de lógica si es necesario
+      console.log('Usuario con rol no identificado');
+    }
+  }
+  
   ngDoCheck(): void {
     const texto = this.filtroBusqueda.toLowerCase();
 

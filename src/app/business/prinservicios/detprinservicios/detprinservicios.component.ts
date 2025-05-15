@@ -41,15 +41,14 @@ export class DetprinserviciosComponent implements OnInit {
       startDate: [''],
       endDate: [''],
       numeroPersonas: [1], // Campo para número de personas
-      singleDate: [''] // Agregar singleDate al FormGroup
     });
 
     // Observamos cambios en las fechas seleccionadas y número de personas
-// Observamos cambios tanto en las fechas como en el número de personas
-this.dateForm.valueChanges.subscribe(values => {
-  // Llamar a la función de cálculo con ambos valores
-  this.calculatePrice(values.startDate, values.endDate, values.numeroPersonas);
-});
+    // Observamos cambios tanto en las fechas como en el número de personas
+    this.dateForm.valueChanges.subscribe(values => {
+      // Llamar a la función de cálculo con ambos valores
+      this.calculatePrice(values.startDate, values.endDate, values.numeroPersonas);
+    });
 
   }
 
@@ -57,32 +56,32 @@ this.dateForm.valueChanges.subscribe(values => {
     initFlowbite();
     this.obtenerServicio();
     this.obtenerReseñasPorServicio();
+    // Sincronizar numeroPersonas con el formControl
+    this.dateForm.get('numeroPersonas')?.valueChanges.subscribe(value => {
+      this.numeroPersonas = value;
+    });
   }
 
-  // Método para calcular el precio final:
-// Método para calcular el precio final:
-calculatePrice(startDate: string, endDate: string, numeroPersonas: number): void {
-  if (numeroPersonas > 0) {
-    if (this.servicios.tipoServicioId === 3 && startDate && endDate) {
-      // Si tipoServicioId es 3, calculamos las noches y luego el precio
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      const differenceInTime = end.getTime() - start.getTime();
-      const nights = differenceInTime / (1000 * 3600 * 24);  // Cálculo de noches
+  calculatePrice(startDate: string, endDate: string, numeroPersonas: number): void {
+    if (numeroPersonas > 0) {
+      if (this.servicios.tipoServicioId === 3 && startDate && endDate) {
+        // Si tipoServicioId es 3, calculamos las noches y luego el precio
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const differenceInTime = end.getTime() - start.getTime();
+        const nights = differenceInTime / (1000 * 3600 * 24);  // Cálculo de noches
 
-      // Precio final para tipoServicioId === 3
-      this.totalPrice = (nights * this.servicios.precioBase * numeroPersonas);
+        // Precio final para tipoServicioId === 3
+        this.totalPrice = (nights * this.servicios.precioBase * numeroPersonas);
+      } else {
+        // Para otros tipos de servicio, solo se multiplica por el precio base y el número de personas
+        this.totalPrice = (this.servicios.precioBase * numeroPersonas);
+      }
+      console.log(this.totalPrice);
     } else {
-      // Para otros tipos de servicio, solo se multiplica por el precio base y el número de personas
-      this.totalPrice = (this.servicios.precioBase * numeroPersonas);
+      this.totalPrice = null;
     }
-    console.log(this.totalPrice);
-  } else {
-    this.totalPrice = null;
   }
-}
-
-
 
   obtenerServicio(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -145,9 +144,6 @@ calculatePrice(startDate: string, endDate: string, numeroPersonas: number): void
     }
   }
 
-
-
-  // Método para agregar al carrito
   addToCart(): void {
     let cart: CartItem[] = JSON.parse(localStorage.getItem('cart') || '[]');
 
@@ -161,14 +157,31 @@ calculatePrice(startDate: string, endDate: string, numeroPersonas: number): void
         confirmButtonText: 'Aceptar'
       });
     } else {
+      // Obtener startDate y endDate del formulario
+      let startDate = this.dateForm.value.startDate;
+      let endDate = this.dateForm.value.endDate;
+
+      // Si tipoServicioId === 3, asignar endDate = startDate
+      if (this.servicios.tipoServicioId !== 3) {
+        endDate = startDate;
+      }
+
       const cartItem: CartItem = {
         id: this.servicios.id,
         nombre: this.servicios.nombre,
+        lugarEncuentro: `${this.servicios.latitud},${this.servicios.longitud}`,
         precio: this.servicios.precioBase,
-        startDate: this.dateForm.value.startDate,
-        endDate: this.dateForm.value.endDate
+        moneda: this.servicios.moneda,
+        observaciones: this.servicios.detallesServicio?.Observaciones || 'Sin observaciones',
+        tipoEvento: this.servicios.tipoServicio.nombre,
+        descripcion: this.servicios.descripcion,
+        imagen: this.servicios.imagenes?.[0]?.url || 'default.jpg',
+        startDate: startDate,
+        endDate: endDate,
+        numeroPersonas: this.numeroPersonas,
+        totalPrice: this.totalPrice
       };
-
+      console.log("carrito:", cartItem)
       cart.push(cartItem);
       localStorage.setItem('cart', JSON.stringify(cart));
 
@@ -180,6 +193,7 @@ calculatePrice(startDate: string, endDate: string, numeroPersonas: number): void
       });
     }
   }
+
 
   currentSlide = 0;
 
@@ -210,6 +224,14 @@ interface CartItem {
   id: number;
   nombre: string;
   precio: number;
+  lugarEncuentro: string;
   startDate: string;
+  imagen: string;
+  observaciones: string | null;
+  descripcion: string;
+  moneda: string;
+  tipoEvento: string;
   endDate: string;
+  numeroPersonas: number;
+  totalPrice: number | null;
 }

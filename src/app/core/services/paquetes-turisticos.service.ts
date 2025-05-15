@@ -17,9 +17,7 @@ export class PaqueteTuristicoService {
 
     // Obtener todos los paquetes turísticos (GET /paquetes-turisticos)
     listarPaquetesTuristicos(): Observable<any> {
-        return this.http.get(this.API, this.getAuthHeaders()).pipe(
-            tap(res => console.log('Lista de paquetes turísticos:', res))
-        );
+        return this.http.get(this.API, this.getAuthHeaders());
     }
 
     // Obtener un paquete turístico por ID (GET /paquetes-turisticos/{id})

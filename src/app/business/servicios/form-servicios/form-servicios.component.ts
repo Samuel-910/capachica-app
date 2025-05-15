@@ -16,6 +16,7 @@ import { ServiciosService } from '../../../core/services/servicios.service';
 import { SupabaseService } from '../../../core/services/supabase.service';
 import { TiposServicioService } from '../../../core/services/tipos-servicios.service';
 import { EmprendimientoService } from '../../../core/services/emprendimiento.service';
+import { AuthService } from '../../../core/services/auth.service';
 declare let L: any;
 @Component({
   selector: 'app-form-servicios',
@@ -40,7 +41,7 @@ export class FormServiciosComponent implements OnInit {
 
   selectedFiles: File[] = [];
   previewUrls: string[] = [];
-
+  roles: string[] = [];
   servicioForm!: FormGroup;
   tiposServicio: any[] = [];
   emprendimientos: any[] = [];
@@ -55,27 +56,30 @@ export class FormServiciosComponent implements OnInit {
     private emprendimientoService: EmprendimientoService,
     private supabaseService: SupabaseService,
     private route: ActivatedRoute,
-    private router: Router
-  ) {}
+    private router: Router,
+    private authService:AuthService
+  ) { }
 
   ngOnInit(): void {
+    this.roles = this.authService.getUsuarioRol();
     this.servicioForm = this.fb.group({
-      nombre:            ['', Validators.required],
-      descripcion:       ['', Validators.required],
-      precioBase:        [0,  Validators.required],
-      moneda:            ['', Validators.required],
-      estado:            ['activo', Validators.required],
-      tipoServicioId:    [0, Validators.required],
-      emprendimientoId:  [null, Validators.required],
-      latitud:           [null, Validators.required],
-      longitud:          [null, Validators.required],
-      detallesServicio:  this.fb.group({})
+      nombre: ['', Validators.required],
+      descripcion: ['', Validators.required],
+      precioBase: [0, Validators.required],
+      moneda: ['', Validators.required],
+      estado: ['activo', Validators.required],
+      tipoServicioId: [0, Validators.required],
+      emprendimientoId: [null, Validators.required],
+      latitud: [null, Validators.required],
+      longitud: [null, Validators.required],
+      detallesServicio: this.fb.group({}),
+      imagenes: this.fb.array([])  // Este array almacenará las URLs de las imágenes
     });
 
     // cargar tipos
     this.tiposServicioService.listarTiposServicio().subscribe({
       next: data => this.tiposServicio = data,
-      error: err => Swal.fire('Error', 'No se pudieron cargar tipos', 'error')
+      error: err => Swal.fire('Error', 'No se pudieron cargar tipos', err)
     });
 
     // cargar emprendimientos
@@ -92,25 +96,48 @@ export class FormServiciosComponent implements OnInit {
         .subscribe({
           next: srv => {
             this.servicioForm.patchValue({
-              nombre:           srv.nombre,
-              descripcion:      srv.descripcion,
-              precioBase:       srv.precioBase,
-              moneda:           srv.moneda,
-              estado:           srv.estado,
-              tipoServicioId:   srv.tipoServicio?.id,
-              emprendimientoId: srv.emprendimientoId,
-              latitud:          srv.latitud,
-              longitud:         srv.longitud
+              nombre: srv.nombre,
+              descripcion: srv.descripcion,
+              precioBase: srv.precioBase,
+              moneda: srv.moneda,
+              estado: srv.estado,
+              tipoServicioId: srv.tipoServicio?.id,
+              latitud: srv.latitud,
+              longitud: srv.longitud
             });
+
+            // Extraer el emprendimientoId desde serviciosEmprendedores
+            const emprendimientoId = srv.serviciosEmprendedores?.[0]?.emprendimientoId;
+            if (emprendimientoId) {
+              this.servicioForm.patchValue({
+                emprendimientoId: emprendimientoId
+              });
+            }
+
+            // Agregar las URLs de las imágenes al formulario
+            if (srv.imagenes && srv.imagenes.length > 0) {
+              const imagenesControl = this.servicioForm.get('imagenes') as any;
+              srv.imagenes.forEach((img: any) => {
+                imagenesControl.push(this.fb.control(img.url));  // Agregar cada URL de imagen al formulario
+              });
+            }
+
             // detalles dinámicos
             const grupo = this.detallesServicioGroup;
-            Object.entries(srv.detallesServicio||{}).forEach(([k,v])=>
+            Object.entries(srv.detallesServicio || {}).forEach(([k, v]) =>
               grupo.addControl(k, this.fb.control(v))
             );
           },
-          error: () => Swal.fire('Error','No se pudo cargar servicio','error')
+          error: () => Swal.fire('Error', 'No se pudo cargar servicio', 'error')
         });
     }
+  }
+    tieneRol(roles: string | string[]): boolean {
+    // Si roles es un string, lo convertimos a un arreglo para que sea más fácil de manejar
+    const rolesArray = Array.isArray(roles) ? roles : [roles];
+
+    // Verificamos si alguno de los roles que el usuario tiene coincide con los roles que le pasamos
+    return rolesArray.some(role => this.roles.includes(role));
   }
 
   ngAfterViewInit(): void {
@@ -118,7 +145,7 @@ export class FormServiciosComponent implements OnInit {
     this.map = L.map(this.mapContainer.nativeElement)
       .setView([center.lat, center.lng], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution:'&copy; OpenStreetMap'
+      attribution: '&copy; OpenStreetMap'
     }).addTo(this.map);
 
     this.map.on('click', (e: any) => {
@@ -200,74 +227,72 @@ export class FormServiciosComponent implements OnInit {
     return data.publicUrl;
   }
 
-async guardarServicio(): Promise<void> {
+  async guardarServicio(): Promise<void> {
     if (this.servicioForm.invalid) {
       const inv = Object.keys(this.servicioForm.controls)
-        .filter(k=>this.servicioForm.get(k)?.invalid);
-      Swal.fire('Error','Completa: '+inv.join(', '),'error');
+        .filter(k => this.servicioForm.get(k)?.invalid);
+      Swal.fire('Error', 'Completa: ' + inv.join(', '), 'error');
       return;
     }
     const fv = this.servicioForm.getRawValue();
     // convertir emprendimientoId a number
     const empId = Number(fv.emprendimientoId);
     if (isNaN(empId)) {
-      Swal.fire('Error','Selecciona un emprendedor válido','error');
+      Swal.fire('Error', 'Selecciona un emprendedor válido', 'error');
       return;
     }
 
-    Swal.fire({ title:'Guardando...', didOpen:()=>Swal.showLoading(), allowOutsideClick:false, showConfirmButton:false });
+    Swal.fire({ title: 'Guardando...', didOpen: () => Swal.showLoading(), allowOutsideClick: false, showConfirmButton: false });
 
     // subir imágenes
     const urls: string[] = [];
     for (const f of this.selectedFiles) {
       try { urls.push(await this.subirImagenASupabase(f)); }
-      catch { Swal.close(); await Swal.fire('Error','No se pudieron subir imágenes','error'); return; }
+      catch { Swal.close(); await Swal.fire('Error', 'No se pudieron subir imágenes', 'error'); return; }
     }
 
     // procesar detalles
-    const raw = this.detallesServicioGroup.value as Record<string,any>;
-    const det: Record<string,any> = {};
-    Object.entries(raw).forEach(([k,v])=>{
-      det[k] = (typeof v==='string' && v.includes(','))
-        ? v.split(',').map(s=>s.trim()).filter(s=>s)
+    const raw = this.detallesServicioGroup.value as Record<string, any>;
+    const det: Record<string, any> = {};
+    Object.entries(raw).forEach(([k, v]) => {
+      det[k] = (typeof v === 'string' && v.includes(','))
+        ? v.split(',').map(s => s.trim()).filter(s => s)
         : v;
     });
 
     const payload = {
       servicio: {
-        tipoServicioId:   Number(fv.tipoServicioId),
-        nombre:           fv.nombre,
-        descripcion:      fv.descripcion,
-        precioBase:       Number(fv.precioBase),
-        moneda:           fv.moneda,
-        estado:           fv.estado,
-        latitud:          fv.latitud,
-        longitud:         fv.longitud,
+        tipoServicioId: Number(fv.tipoServicioId),
+        nombre: fv.nombre,
+        descripcion: fv.descripcion,
+        precioBase: Number(fv.precioBase),
+        moneda: fv.moneda,
+        estado: fv.estado,
+        latitud: fv.latitud,
+        longitud: fv.longitud,
         detallesServicio: det,
-        imagenes:         urls.map(u=>({ url: u }))
+        imagenes: urls.map(u => ({ url: u }))
       },
       emprendimientoId: empId
     };
 
     const obs$ = this.isEdit && this.servicioIdEdit
-      ? this.serviciosService.actualizarServicio(this.servicioIdEdit,payload)
+      ? this.serviciosService.actualizarServicio(this.servicioIdEdit, payload)
       : this.serviciosService.crearServicio(payload);
 
     obs$.subscribe({
-      next:()=>{
+      next: () => {
         Swal.close();
-        Swal.fire('Éxito','Servicio guardado','success');
+        Swal.fire('Éxito', 'Servicio guardado', 'success');
         this.router.navigate(['/servicios']);
       },
-      error: e=>{
+      error: e => {
         Swal.close();
-        Swal.fire('Error','No se pudo guardar','error');
+        Swal.fire('Error', 'No se pudo guardar', 'error');
         console.error(e);
       }
     });
   }
-
-
   removeDetalle(key: string): void {
     const grp = this.detallesServicioGroup;
     if (grp.contains(key)) {

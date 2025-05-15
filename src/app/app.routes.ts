@@ -198,6 +198,7 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./business/tipos-servicio/form-tipos-servicio/form-tipos-servicio.component').then(m => m.FormTiposServicioComponent),
       },
+
       {
         path: 'disponibilidad', // Ruta para ver todas las disponibilidades
         loadComponent: () =>
@@ -243,7 +244,27 @@ export const routes: Routes = [
         path: 'carrito',
         loadComponent: () =>
           import('./business/cart/cart.component').then(m => m.CartComponent),
-      }
+      },
+      {
+        path: 'reserva',
+        loadComponent: () =>
+          import('./business/reserva/reserva.component').then(m => m.ReservaComponent),
+      },
+      {
+        path: 'newreserva',
+        loadComponent: () =>
+          import('./business/reserva/form-reserva/form-reserva.component').then(m => m.FormReservaComponent),
+      },
+      {
+        path: 'editreserva/:id',
+        loadComponent: () =>
+          import('./business/reserva/form-reserva/form-reserva.component').then(m => m.FormReservaComponent),
+      },
+      {
+        path: 'misreservas',
+        loadComponent: () =>
+          import('./business/misreservas/misreservas.component').then(m => m.MisreservasComponent),
+      },
 
 
 

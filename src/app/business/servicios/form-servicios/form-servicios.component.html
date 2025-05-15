@@ -33,14 +33,14 @@
               </div>
 
               <!-- Moneda -->
-<div>
-  <label class="block font-medium text-gray-700">Moneda</label>
-  <select formControlName="moneda" class="border p-3 rounded w-full" required>
-    <option value="" disabled>Selecciona la moneda</option>
-    <option value="PEN">PEN</option>
-    <option value="USD">USD</option>
-  </select>
-</div>
+              <div>
+                <label class="block font-medium text-gray-700">Moneda</label>
+                <select formControlName="moneda" class="border p-3 rounded w-full" required>
+                  <option value="" disabled>Selecciona la moneda</option>
+                  <option value="PEN">PEN</option>
+                  <option value="USD">USD</option>
+                </select>
+              </div>
 
 
               <!-- Estado -->
@@ -74,13 +74,10 @@
               </div>
             </div>
             <!-- Emprendedor -->
-            <div>
+            <div *ngIf="tieneRol(['SuperAdmin'])">
               <label class="block font-medium text-gray-700">Emprendedor</label>
               <select formControlName="emprendimientoId" class="border p-3 rounded w-full" required>
-                <option value="" disabled>-- Selecciona emprendedor --</option>
-                <option *ngFor="let emp of emprendimientos" [value]="emp.id">
-                  {{ emp.nombre }}
-                </option>
+                <option *ngFor="let emp of emprendimientos" [value]="emp.id">{{ emp.nombre }}</option>
               </select>
             </div>
 
@@ -112,12 +109,28 @@
             <div>
               <label class="block font-medium text-gray-700">Imágenes del Servicio</label>
 
+              <!-- Campo para subir nuevas imágenes -->
               <input type="file" accept="image/*" multiple (change)="onFileChange($event)"
                 class="border p-3 rounded w-full" />
 
+              <!-- Previsualización de imágenes ya cargadas (si existen) -->
+              <div *ngIf="servicioForm.get('imagenes')?.value?.length"
+                class="grid grid-cols-3 md:grid-cols-4 gap-2 mt-2">
+                <div *ngFor="let imgUrl of servicioForm.get('imagenes')?.value; let i = index" class="relative">
+                  <!-- Botón para eliminar imagen -->
+                  <button type="button" (click)="removeImage(i)"
+                    class="absolute top-1 right-1 bg-white rounded-full p-1 text-gray-600 hover:text-red-600 shadow">
+                    &times;
+                  </button>
+                  <img [src]="'https://twsevdzjdnwjhdysvecm.supabase.co/storage/v1/object/public/servicios/' + imgUrl"
+                    alt="Imagen del servicio" class="w-full h-24 object-cover rounded border" />
+                </div>
+              </div>
+
+              <!-- Previsualización de imágenes nuevas seleccionadas -->
               <div *ngIf="previewUrls.length" class="grid grid-cols-3 md:grid-cols-4 gap-2 mt-2">
                 <div *ngFor="let src of previewUrls; let i = index" class="relative">
-                  <!-- Botón para eliminar -->
+                  <!-- Botón para eliminar la previsualización -->
                   <button type="button" (click)="removeImage(i)"
                     class="absolute top-1 right-1 bg-white rounded-full p-1 text-gray-600 hover:text-red-600 shadow">
                     &times;
@@ -126,6 +139,8 @@
                 </div>
               </div>
             </div>
+
+
             <div class="flex justify-end gap-6 mt-6">
               <button type="submit" class="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700">
                 {{ isEdit ? 'Actualizar' : 'Guardar' }}

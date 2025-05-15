@@ -2,75 +2,154 @@ import { Component, OnInit } from '@angular/core';
 import Swal from 'sweetalert2';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { CommonModule } from '@angular/common';
+import { ReservasService } from '../../core/services/reservas.service';
+import { AuthService } from '../../core/services/auth.service';
+import { ItinerarioService } from '../../core/services/itinerario.service';
+import { RouterModule } from '@angular/router';
+import { initFlowbite } from 'flowbite';
 
 @Component({
   selector: 'app-cart',
-    standalone: true,
-      imports: [NavbarComponent, CommonModule],
+  standalone: true,
+  imports: [NavbarComponent, CommonModule, RouterModule],
   templateUrl: './cart.component.html',
   styleUrls: ['./cart.component.css']
 })
 export class CartComponent implements OnInit {
-  // Arreglo de items en el carrito
   cartItems: any[] = [];
 
-  constructor() { }
+  constructor(private reservaService: ReservasService, private authService: AuthService,private itinerarioService:ItinerarioService) { }
+
 
   ngOnInit(): void {
-    this.loadCart(); // Cargar carrito al inicializar el componente
+    initFlowbite();
+    this.loadCart();
   }
 
-  // Cargar carrito desde localStorage
-  loadCart(): void {
-    const storedCart = localStorage.getItem('cart');
-    if (storedCart) {
-      this.cartItems = JSON.parse(storedCart);
-    }
+loadCart(): void {
+  const storedCart = localStorage.getItem('cart');
+  try {
+    const parsed = storedCart ? JSON.parse(storedCart) : [];
+    this.cartItems = Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    this.cartItems = [];
+    console.error('Carrito corrupto:', e);
   }
+}
 
-  // Agregar al carrito
+
   addToCart(item: any): void {
     this.cartItems.push(item);
     this.saveCart();
   }
 
-  // Guardar carrito en localStorage
   saveCart(): void {
     localStorage.setItem('cart', JSON.stringify(this.cartItems));
   }
 
-  // Eliminar item del carrito
   removeFromCart(index: number): void {
     this.cartItems.splice(index, 1);
     this.saveCart();
   }
-getTotalPrice(): number {
+  getTotalPrice(): number {
     return this.cartItems.reduce((total, item) => {
-        // Asegura que el precio sea un número, de lo contrario, usa 0
-        const precio = isNaN(Number(item.precio)) ? 0 : Number(item.precio);
-        return total + precio;
+      const precio = isNaN(Number(item.totalPrice)) ? 0 : Number(item.totalPrice);
+      return total + precio;
     }, 0);
-}
+  }
 
-
-  // Realizar reserva (vaciar carrito y mostrar mensaje)
   reserve(): void {
-    if (this.cartItems.length > 0) {
-      Swal.fire({
-        icon: 'success',
-        title: 'Reserva Exitosa',
-        text: 'Tu reserva ha sido realizada.',
-        confirmButtonText: 'Aceptar'
-      });
-      this.cartItems = []; // Limpiar el carrito
-      this.saveCart(); // Guardar el carrito vacío
-    } else {
+    if (this.cartItems.length === 0) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
         text: 'Tu carrito está vacío.',
         confirmButtonText: 'Aceptar'
       });
+      return;
     }
+
+
+    const usuarioId = this.authService.getUsuarioId();
+    const tipoReserva = 'tiporeserva';
+    const estado = 'pendiente';
+    const moneda = 'PEN';
+    const fechaActual = new Date().toISOString().split('T')[0];
+    const total = this.getTotalPrice();
+    const cantidadPersonas = Math.max(...this.cartItems.map(item => item.numeroPersonas));
+    const fechaInicio = this.cartItems
+      .map(item => new Date(item.startDate))
+      .reduce((min, curr) => (curr < min ? curr : min)).toISOString();
+
+    // Obtener fechaFin más reciente
+    const fechaFin = this.cartItems
+      .map(item => new Date(item.endDate))
+      .reduce((max, curr) => (curr > max ? curr : max)).toISOString();
+    const reservaData = {
+      usuarioId: usuarioId,
+      tipoReserva: tipoReserva,
+      estado: estado,
+      moneda: moneda,
+      precioTotal: total,
+      cantidadPersonas: cantidadPersonas,
+      fechaInicio: fechaInicio,
+      fechaFin: fechaFin,
+      fechaReserva: fechaActual,
+      notas: 'asdasd',
+      motivoCancelacion: 'asdas',
+      fechaCancelacion: '2025-05-27T21:21'
+    };
+
+    this.reservaService.crearReserva(reservaData).subscribe({
+      next: (res) => {
+        console.log('Reserva creada:', res);
+        this.crearItinerarios(res.id);
+        Swal.fire({
+          icon: 'success',
+          title: 'Reserva Exitosa',
+          text: 'Tu reserva ha sido realizada.',
+          confirmButtonText: 'Aceptar'
+        });
+
+        this.cartItems = [];     // Vaciar carrito
+        this.saveCart();         // Guardar carrito vacío
+      },
+      error: (err) => {
+        console.error('Error al crear la reserva:', err);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo completar la reserva.',
+          confirmButtonText: 'Aceptar'
+        });
+      }
+    });
   }
+
+crearItinerarios(reservaId: number): void {
+  const itinerarios = this.cartItems.map(item => ({
+    reservaId: reservaId,
+    servicioId: item.id,
+    fechaInicioActividad: item.startDate,
+    fechaFinActividad: item.endDate,
+    lugarEncuentro: item.lugarEncuentro,
+    observaciones: item.observaciones || "Observaciones del itinerario",
+    tipoEvento: item.tipoEvento,
+    descripcion: item.descripcion
+  }));
+
+  const payload = {
+    reservaId: reservaId,
+    itinerarios: itinerarios
+  };
+
+  console.log("Payload a enviar:", payload);
+
+  this.itinerarioService.crearItinerario(payload).subscribe({
+    next: (res) => console.log('Itinerarios creados:', res),
+    error: (err) => console.error('Error al crear itinerarios:', err)
+  });
+}
+
+
 }

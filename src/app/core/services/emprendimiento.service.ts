@@ -18,6 +18,13 @@ export class EmprendimientoService {
 
 
   constructor(private http: HttpClient) {}
+    listarEmprendimientosPorUsuario(usuarioId: number): Observable<any> {
+    const token = localStorage.getItem('authToken') || '';
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+    return this.http.get<any>(`${this.API_EMPRENDIMIENTOS}/usuario/${usuarioId}`, { headers });
+  }
 
   listarEmprendimientos(params?: any): Observable<any> {
     return this.http.get<any>(this.LIST_URL, { params });
