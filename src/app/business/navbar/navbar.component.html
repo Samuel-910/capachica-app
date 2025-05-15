@@ -48,6 +48,8 @@
 
     <!-- Login/Register -->
     <div class="flex gap-4" *ngIf="!isLoggedIn()">
+            <button routerLink="/carrito" class="px-4 py-2 bg-green-500 text-white rounded-xl"><i
+          class="fa-solid fa-cart-shopping"></i></button>
       <button routerLink="/login" class="px-4 py-2 border rounded-xl">Ingresar</button>
       <button routerLink="/register" class="px-4 py-2 bg-green-500 text-white rounded-xl">Registrarse</button>
     </div>
