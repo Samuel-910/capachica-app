@@ -277,14 +277,13 @@ export const routes: Routes = [
       },
       {
         path: 'emprendimientos/editar/:id',
-        loadComponent: () => import('./business/emprendimiento/emprendimiento.component')
-          .then(m => m.EmprendimientoComponent),
+        loadComponent: () => import('./business/emprendimiento/form-emprendimiento/form-emprendimiento.component')
+          .then(m => m.FormEmprendimientoComponent),
         data: { isEdit: true }
       },
 
     ],
   },
-  // Ruta comodín para redirección en caso de ruta no encontrada
   {
     path: '**',
     redirectTo: '',
