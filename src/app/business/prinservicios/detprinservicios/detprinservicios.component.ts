@@ -41,13 +41,9 @@ export class DetprinserviciosComponent implements OnInit {
     this.dateForm = this.fb.group({
       startDate: [''],
       endDate: [''],
-      numeroPersonas: [1], // Campo para número de personas
+      numeroPersonas: [1],
     });
-
-    // Observamos cambios en las fechas seleccionadas y número de personas
-    // Observamos cambios tanto en las fechas como en el número de personas
     this.dateForm.valueChanges.subscribe(values => {
-      // Llamar a la función de cálculo con ambos valores
       this.calculatePrice(values.startDate, values.endDate, values.numeroPersonas);
     });
 
@@ -57,7 +53,6 @@ export class DetprinserviciosComponent implements OnInit {
     initFlowbite();
     this.obtenerServicio();
     this.obtenerReseñasPorServicio();
-    // Sincronizar numeroPersonas con el formControl
     this.dateForm.get('numeroPersonas')?.valueChanges.subscribe(value => {
       this.numeroPersonas = value;
     });
@@ -108,6 +103,7 @@ export class DetprinserviciosComponent implements OnInit {
   obtenerEmprendedor(emprendimientoId: number): void {
     this.emprendimientoService.verEmprendimiento(emprendimientoId).subscribe({
       next: data => {
+        console.log(data)
         this.emprendimientos = data;
       },
       error: () => {
@@ -115,7 +111,9 @@ export class DetprinserviciosComponent implements OnInit {
       }
     });
   }
-
+  verDetallesEmprendimiento(id: number) {
+    this.router.navigate([`/emprendimientodetalle/${id}`]);
+  }
   private buildMapUrl(lat: number, lng: number): void {
     const url = `https://maps.google.com/maps?q=${lat},${lng}&z=13&output=embed`;
     this.mapUrl = this.sanitizer.bypassSecurityTrustResourceUrl(url);
