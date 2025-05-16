@@ -21,22 +21,22 @@ import Swal from 'sweetalert2';
 export class NavbarComponent implements OnInit {
   tiposServicio: any[] = [];
   emprendimientoNombres: string[] = [];
-  paqueteNombres: string[]        = [];
-  tiposServicios: string[]        = [];
+  paqueteNombres: string[] = [];
+  tiposServicios: string[] = [];
 
   lugarOpciones: string[] = [];
-  resultados: any[]       = [];
+  resultados: any[] = [];
 
   // Inferior
-  searchSelection: string      = '';
+  searchSelection: string = '';
   searchSelectionLugar: string = '';
-  fechaInferior: string        = '';
+  fechaInferior: string = '';
 
   // Superior
-  tipoBusqueda: string  = 'emprendimientos';
+  tipoBusqueda: string = 'emprendimientos';
   lugarSuperior: string = '';
   fechaSuperior: string = '';
-
+  cartItems: any[] = [];
   public ocultarNav = false;
   @Output() resultadosBusqueda = new EventEmitter<any[]>();
 
@@ -46,14 +46,16 @@ export class NavbarComponent implements OnInit {
     private lugarService: LugaresService,
     private tiposServicioService: TiposServicioService,
     public router: Router,
-    
-  ) {}
+
+  ) { }
 
   @HostListener('window:scroll') onScroll() {
     this.ocultarNav = window.scrollY > 100;
   }
 
   ngOnInit(): void {
+    const storedCart = localStorage.getItem('cart');
+    this.cartItems = storedCart ? JSON.parse(storedCart) : [];
     initFlowbite();
     this.loadEmprendimientoNombres();
     this.loadPaqueteNombres();
@@ -116,11 +118,11 @@ export class NavbarComponent implements OnInit {
     });
 
     const filtros: any = {};
-    if (this.searchSelection)  filtros.nombre = this.searchSelection;
+    if (this.searchSelection) filtros.nombre = this.searchSelection;
     const lugar = this.searchSelectionLugar || this.lugarSuperior;
-    if (lugar)                 filtros.lugar  = lugar;
+    if (lugar) filtros.lugar = lugar;
     const fecha = this.fechaSuperior || this.fechaInferior;
-    if (fecha)                 filtros.fecha  = fecha;
+    if (fecha) filtros.fecha = fecha;
 
     switch (this.tipoBusqueda) {
       case 'emprendimientos':
@@ -159,7 +161,7 @@ export class NavbarComponent implements OnInit {
     this.resultadosBusqueda.emit(items);
   }
 
-    isLoggedIn(): boolean {
+  isLoggedIn(): boolean {
     return !!localStorage.getItem('token'); // Devuelve true si hay un token
   }
 

@@ -30,4 +30,8 @@
             </div>
         </button>
     </div>
+        <div *ngIf="servicios.length === 0" class="flex flex-col items-center justify-center py-16 col-span-2">
+        <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-green-600"></div>
+        <p class="mt-4 text-gray-600 text-lg">Cargando Servicios...</p>
+    </div>
 

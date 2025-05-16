@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavbarComponent } from "../../navbar/navbar.component";
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ServiciosService } from '../../../core/services/servicios.service';
 import { CommonModule } from '@angular/common';
 import { initFlowbite } from 'flowbite';
@@ -36,6 +36,7 @@ export class DetprinserviciosComponent implements OnInit {
     private fb: FormBuilder,
     private sanitizer: DomSanitizer,
     private emprendimientoService: EmprendimientoService,
+    public router: Router,
   ) {
     this.dateForm = this.fb.group({
       startDate: [''],
@@ -184,6 +185,7 @@ export class DetprinserviciosComponent implements OnInit {
       console.log("carrito:", cartItem)
       cart.push(cartItem);
       localStorage.setItem('cart', JSON.stringify(cart));
+      this.router.navigateByUrl('/', { skipLocationChange: true })
 
       Swal.fire({
         icon: 'success',

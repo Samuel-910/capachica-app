@@ -29,13 +29,11 @@ export class EmprendimientoComponent implements OnInit{
 
   cargarEmprendimientos(): void {
     this.emprendimientoService.listarEmprendimientos({
-      page: this.paginaActual,
-      limit: this.limitePorPagina
+
     }).subscribe({
       next: (res) => {
         this.emprendimientos = res.emprendimientos;
-        this.totalPaginas = res.totalPages;
-        this.totalElementos = res.total;
+        console.log(this.emprendimientos)
       },
       error: (err) => {
         console.error('Error al cargar emprendimientos:', err);

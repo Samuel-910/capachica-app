@@ -104,23 +104,23 @@ export class FormLugarComponent implements OnInit {
     this.map.setView([lat, lng], 13);
   }
 
-private cargarLugar(id: string): void {
+  private cargarLugar(id: string): void {
     this.lugaresService.getLugar(id).subscribe({
       next: lugar => {
         // patch de los campos
         this.lugarForm.patchValue({
-          nombre:          lugar.nombre,
-          descripcion:     lugar.descripcion,
-          direccion:       lugar.direccion,
-          latitud:         lugar.latitud,
-          longitud:        lugar.longitud,
+          nombre: lugar.nombre,
+          descripcion: lugar.descripcion,
+          direccion: lugar.direccion,
+          latitud: lugar.latitud,
+          longitud: lugar.longitud,
           horarioApertura: lugar.horarioApertura,
-          horarioCierre:   lugar.horarioCierre,
-          costoEntrada:    lugar.costoEntrada,
+          horarioCierre: lugar.horarioCierre,
+          costoEntrada: lugar.costoEntrada,
           recomendaciones: lugar.recomendaciones,
-          restricciones:   lugar.restricciones,
-          esDestacado:     lugar.esDestacado,
-          estado:          lugar.estado
+          restricciones: lugar.restricciones,
+          esDestacado: lugar.esDestacado,
+          estado: lugar.estado
         });
         // previews de imágenes existentes
         this.previewUrl = lugar.imagenes.map(img => img.url);
@@ -149,24 +149,24 @@ private cargarLugar(id: string): void {
     // Reset para permitir re-selección del mismo archivo
     event.target.value = '';
   }
-    async subirImagenASupabase(file: File): Promise<string> {
-      Swal.fire({
-        title: 'Subiendo imagen...',
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        didOpen: () => Swal.showLoading()
-      });
-      const supabase = this.supabaseService.getClient();
-      const path = `lugares-turisticos/${Date.now()}-${file.name}`;
-      const { error } = await supabase.storage.from('lugares-turisticos').upload(path, file);
-      if (error) {
-        Swal.close();
-        throw new Error(error.message);
-      }
-      const { data } = supabase.storage.from('lugares-turisticos').getPublicUrl(path);
+  async subirImagenASupabase(file: File): Promise<string> {
+    Swal.fire({
+      title: 'Subiendo imagen...',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => Swal.showLoading()
+    });
+    const supabase = this.supabaseService.getClient();
+    const path = `lugares-turisticos/${Date.now()}-${file.name}`;
+    const { error } = await supabase.storage.from('lugares-turisticos').upload(path, file);
+    if (error) {
       Swal.close();
-      return data.publicUrl;
+      throw new Error(error.message);
     }
+    const { data } = supabase.storage.from('lugares-turisticos').getPublicUrl(path);
+    Swal.close();
+    return data.publicUrl;
+  }
 
   async guardarLugar(): Promise<void> {
     if (this.lugarForm.invalid) {
@@ -213,7 +213,7 @@ private cargarLugar(id: string): void {
       restricciones: fv.restricciones || null,
       esDestacado: fv.esDestacado,
       estado: fv.estado,
-      imagenes:         imagenUrls.map(u => ({ url: u }))
+      imagenes: imagenUrls.map(u => ({ url: u }))
     };
 
     const req$ = this.isEdit && this.lugarIdEdit
