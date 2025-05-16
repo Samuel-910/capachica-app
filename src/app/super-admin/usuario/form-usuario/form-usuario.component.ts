@@ -64,7 +64,6 @@ export class FormUsuarioComponent implements OnInit {
             direccion: usuario.persona.direccion,
             fotoPerfilUrl: usuario.imagenes.fotoPerfilUrl,
             fechaNacimiento: usuario.fechaNacimiento?.substring(0, 10),
-            subdivisionId: usuario.subdivisionId,
             email: usuario.email,
             password: '',
             confirmPassword: ''
@@ -165,19 +164,13 @@ export class FormUsuarioComponent implements OnInit {
     const payload = {
       email: formValue.email,
       password: formValue.password,
-      preferencias: {},
-      usuariosRoles: [
-        {
-          rolId: 2 // Emprendedor
-        }
-      ],
       nombre: formValue.nombre,
       apellidos: formValue.apellidos,
       telefono: formValue.telefono,
       direccion: formValue.direccion,
       fotoPerfilUrl: fotoPerfilUrl,
       fechaNacimiento: formValue.fechaNacimiento || null,
-      subdivisionId: Number(formValue.subdivisionId) || 0
+      subdivisionId: 1
     };
   
     if (this.isEdit && this.usuarioIdEdit) {

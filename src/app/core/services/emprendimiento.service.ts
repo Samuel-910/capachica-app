@@ -69,7 +69,7 @@ export class EmprendimientoService {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`
     });
-    return this.http.put<any>(this.UPDATE_URL(id), data, { headers });
+    return this.http.patch<any>(this.UPDATE_URL(id), data, { headers });
   }
 
   eliminarEmprendimiento(id: number | string): Observable<any> {
