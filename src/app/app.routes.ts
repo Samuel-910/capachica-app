@@ -275,7 +275,12 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./business/prinemprendimiento/detemprendimiento/detemprendimiento.component').then(m => m.DetprinEmprendimientoComponent),
       },
-
+      {
+        path: 'emprendimientos/editar/:id',
+        loadComponent: () => import('./business/emprendimiento/emprendimiento.component')
+          .then(m => m.EmprendimientoComponent),
+        data: { isEdit: true }
+      },
 
     ],
   },
