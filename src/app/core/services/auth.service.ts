@@ -56,7 +56,7 @@ export class AuthService {
     return this.http.get<any[]>(`${this.API_BASE_usuario}`, { headers });
   }
   getUsuarioById(id: number): Observable<any> {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`
     });
@@ -78,7 +78,7 @@ export class AuthService {
   }
 
   actualizarUsuario(id: number, datos: any): Observable<any> {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`
     });
@@ -86,7 +86,7 @@ export class AuthService {
   }
 
   eliminarUsuario(id: number): Observable<any> {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`
     });
@@ -94,7 +94,7 @@ export class AuthService {
   }
 
   asignarRol(userId: number, roleId: number): Observable<any> {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`
     });
@@ -102,7 +102,7 @@ export class AuthService {
   }
 
   quitarRol(userId: number, roleId: number): Observable<any> {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`
     });
@@ -110,7 +110,7 @@ export class AuthService {
   }
 
   crearUsuarioComoAdmin(data: any): Observable<any> {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`
     });

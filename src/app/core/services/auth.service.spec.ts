@@ -164,7 +164,7 @@ describe('AuthService', () => {
 
   it('debe crear usuario como admin', () => {
     const userData = { email: 'admin@upeu.edu.pe' };
-    localStorage.setItem('authToken', 'abc');
+    localStorage.setItem('token', 'abc');
 
     service.crearUsuarioComoAdmin(userData).subscribe();
 

@@ -38,6 +38,7 @@
                 <th class="p-3 text-left">Dirección</th>
                 <th class="p-3 text-left">Coordenadas</th>
                 <th class="p-3 text-left">Estado</th>
+                <th class="p-3 text-left">Img</th>
                 <th class="p-3 text-left">Acciones</th>
               </tr>
             </thead>
@@ -52,6 +53,16 @@
                   Longitud:{{ lugar.longitud }}
                 </td>
                 <td class="p-3 text-gray-600">{{ lugar.estado === 'activo' ? 'Activo' : 'Inactivo' }}</td>
+                <td class="p-3">
+                  <img 
+                    *ngIf="lugar.imagenes.length > 0"
+                    [src]="'https://twsevdzjdnwjhdysvecm.supabase.co/storage/v1/object/public/lugares-turisticos/' + lugar.imagenes[0].url"
+                    alt="Imagen del lugar"
+                    class="w-16 h-10 object-cover rounded shadow border"
+                  />
+                </td>
+                
+                
                 <td class="p-3">
                   <div class="flex gap-2">
                     <button

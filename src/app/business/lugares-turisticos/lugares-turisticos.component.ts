@@ -1,42 +1,69 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DoCheck } from '@angular/core';
 import { LugaresService, LugarTuristico } from '../../core/services/lugar.service';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { NavbarComponent } from '../sidebar/navbar/navbar.component';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import Swal from 'sweetalert2';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
+import { BusquedaGlobalService, FiltrosBusqueda } from '../../core/services/busqueda-global.service';
 
 @Component({
   selector: 'app-lugares-turisticos',
-  imports: [SidebarComponent, NavbarComponent, CommonModule, RouterModule,FormsModule],
   standalone: true,
+  imports: [SidebarComponent, NavbarComponent, CommonModule, RouterModule, FormsModule],
   templateUrl: './lugares-turisticos.component.html',
   styleUrls: ['./lugares-turisticos.component.css']
 })
-export class LugaresTuristicosComponent implements OnInit {
+export class LugaresTuristicosComponent implements OnInit, DoCheck {
   filtroBusqueda: string = '';
-  columnaBusqueda: string = 'nombre'; // Establecer columna por defecto para búsqueda
+  columnaBusqueda: string = 'nombre';
   isLoading = true;
   lugares: LugarTuristico[] = [];
   lugaresFiltrados: LugarTuristico[] = [];
 
-  constructor(private router: Router, private lugaresService: LugaresService) {}
+  constructor(
+    private router: Router,
+    private lugaresService: LugaresService,
+    private busquedaService: BusquedaGlobalService
+  ) {}
 
   ngOnInit(): void {
     this.cargarLugares();
+
+    // 🔍 Escuchar filtros globales
+    this.busquedaService.getFiltros().subscribe((f: FiltrosBusqueda) => {
+      if (f.tipo !== 'lugares') return;
+
+      this.isLoading = true;
+
+      this.lugaresService.buscarConFiltros({
+        nombre: f.nombre,
+        lugar: f.lugar
+      }).subscribe({
+        next: (res: LugarTuristico[]) => {
+          this.lugares = res;
+          this.lugaresFiltrados = [...res];
+          this.isLoading = false;
+        },
+        error: (err) => {
+          console.error('Error al filtrar lugares:', err);
+          this.isLoading = false;
+        }
+      });
+    });
   }
 
   cargarLugares(): void {
     this.lugaresService.getLugares().subscribe({
       next: (data) => {
         this.lugares = data;
+        this.lugaresFiltrados = [...data];
         this.isLoading = false;
-        this.lugaresFiltrados = [...this.lugares];
-        console.log('Lugares cargados:', data);
       },
       error: (err) => {
         console.error('Error al obtener lugares:', err);
+        this.isLoading = false;
       }
     });
   }
@@ -96,5 +123,4 @@ export class LugaresTuristicosComponent implements OnInit {
       }
     });
   }
-  
 }

@@ -32,7 +32,7 @@ export class ResenaService {
 
   // Headers con token de autenticación
   private getAuthHeaders() {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('token');
     return {
       headers: new HttpHeaders({
         Authorization: `Bearer ${token}`

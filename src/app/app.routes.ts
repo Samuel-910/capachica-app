@@ -265,7 +265,16 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./business/misreservas/misreservas.component').then(m => m.MisreservasComponent),
       },
-
+      {
+        path: 'lugardetalle/:id',
+        loadComponent: () =>
+          import('./business/prinlugares/detprinlugares/detprinlugares.component').then(m => m.DetprinlugaresComponent),
+      },     
+      {
+        path: 'emprendimientodetalle/:id',
+        loadComponent: () =>
+          import('./business/prinemprendimiento/detemprendimiento/detemprendimiento.component').then(m => m.DetprinEmprendimientoComponent),
+      },
 
 
     ],

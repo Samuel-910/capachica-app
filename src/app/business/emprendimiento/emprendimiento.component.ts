@@ -4,65 +4,101 @@ import { NavbarComponent } from '../sidebar/navbar/navbar.component';
 import { EmprendimientoService } from '../../core/services/emprendimiento.service';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
+import { LugaresService } from '../../core/services/lugar.service';
+import { BusquedaGlobalService, FiltrosBusqueda } from '../../core/services/busqueda-global.service';
 
 @Component({
   selector: 'app-emprendimiento',
   standalone: true,
-  imports: [SidebarComponent,NavbarComponent, CommonModule, RouterModule],
+  imports: [SidebarComponent, NavbarComponent, CommonModule, RouterModule],
   templateUrl: './emprendimiento.component.html',
-  styleUrl: './emprendimiento.component.css'
+  styleUrls: ['./emprendimiento.component.css']
 })
-export class EmprendimientoComponent implements OnInit{
+export class EmprendimientoComponent implements OnInit {
   emprendimientos: any[] = [];
-  paginaActual: number = 1;
-  totalPaginas: number = 1;
-  totalElementos: number = 0;
-  limitePorPagina: number = 10;
+  paginaActual = 1;
+  limitePorPagina = 10;
+  isLoading = false;
+  lugaresMap: Record<number, string> = {};
 
-  constructor(private emprendimientoService:EmprendimientoService) {}
+  constructor(
+    private emprendimientoService: EmprendimientoService,
+    private lugarService: LugaresService,
+    private router: Router,
+    private busquedaService: BusquedaGlobalService
+
+  ) {}
 
   ngOnInit(): void {
-    this.cargarEmprendimientos();
-  }
+    // Cargar primero los lugares y luego los emprendimientos
+    this.emprendimientoService.listarEmprendimientos().subscribe(data => this.emprendimientos = data);
+    this.busquedaService.getFiltros().subscribe(f => this.aplicarFiltros(f));
 
-
-  cargarEmprendimientos(): void {
-    this.emprendimientoService.listarEmprendimientos({
-
-    }).subscribe({
-      next: (res) => {
-        this.emprendimientos = res.emprendimientos;
-        console.log(this.emprendimientos)
+    this.lugarService.listarLugares().subscribe({
+      next: (lugares: any[]) => {
+        lugares.forEach(l => this.lugaresMap[l.id] = l.nombre);
+        this.cargarEmprendimientos();
       },
-      error: (err) => {
-        console.error('Error al cargar emprendimientos:', err);
+      error: () => {
+        this.cargarEmprendimientos();
       }
     });
   }
+
+  cargarEmprendimientos(): void {
+    this.isLoading = true;
+    this.emprendimientoService.listarEmprendimientosa(this.paginaActual, this.limitePorPagina)
+      .subscribe({
+        next: (res: any[]) => {
+          this.emprendimientos = res.map(emp => ({
+            ...emp,
+            lugarNombre: this.lugaresMap[emp.lugarTuristicoId] || 'Sin asignar'
+          }));
+          this.isLoading = false;
+        },
+        error: (err: any) => {
+          console.error('Error al cargar emprendimientos:', err);
+          this.isLoading = false;
+          Swal.fire('Error', 'No se pudieron cargar los emprendimientos. Intenta nuevamente.', 'error');
+        }
+      });
+  }
+
+  getEmprendimientosPaginados(): any[] {
+    const start = (this.paginaActual - 1) * this.limitePorPagina;
+    return this.emprendimientos.slice(start, start + this.limitePorPagina);
+  }
+
   paginaSiguiente(): void {
-    if (this.paginaActual < this.totalPaginas) {
+    const totalPaginas = Math.ceil(this.emprendimientos.length / this.limitePorPagina);
+    if (this.paginaActual < totalPaginas) {
       this.paginaActual++;
       this.cargarEmprendimientos();
     }
   }
+
   paginaAnterior(): void {
     if (this.paginaActual > 1) {
       this.paginaActual--;
       this.cargarEmprendimientos();
     }
   }
-  getLimiteSuperior(): number {
-    return Math.min(this.paginaActual * this.limitePorPagina, this.totalElementos);
+
+  editar(id: string): void {
+    this.router.navigate([`/emprendimientos/editar/${id}`]);
   }
-
-
-  editar(emp: any): void {
-    // Aquí podrías redirigir a un formulario o abrir un modal con los datos
-    console.log('Editar emprendimiento:', emp);
-    Swal.fire('Editar', `Editando: ${emp.nombre}`, 'info');
+  private aplicarFiltros(f: FiltrosBusqueda) {
+    if (f.tipo !== 'emprendimientos') return; // ignora si no es para este tipo
+    // Llama a tu método buscarConFiltros del servicio
+    this.emprendimientoService.buscarConFiltros({
+      nombre: f.nombre,
+      lugar: f.lugar,
+      fechaDesde: f.fechaDesde,
+      fechaHasta: f.fechaHasta
+    }).subscribe(res => this.emprendimientos = res);
   }
-
+  
   eliminar(id: number): void {
     Swal.fire({
       title: '¿Estás seguro?',
@@ -72,19 +108,26 @@ export class EmprendimientoComponent implements OnInit{
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
       confirmButtonText: 'Sí, eliminar'
-    }).then((result) => {
+    }).then(result => {
       if (result.isConfirmed) {
+        this.isLoading = true;
         this.emprendimientoService.eliminarEmprendimiento(id).subscribe({
           next: () => {
+            // Eliminar el emprendimiento de la lista en el frontend
+            this.emprendimientos = this.emprendimientos.filter(emp => emp.id !== id);
+            
             Swal.fire('Eliminado', 'El emprendimiento ha sido eliminado.', 'success');
-            this.cargarEmprendimientos(); // Recarga la tabla
           },
-          error: (err) => {
+          error: (err: any) => {
             console.error('Error al eliminar:', err);
-            Swal.fire('Error', 'No se pudo eliminar el emprendimiento.', 'error');
+            Swal.fire('Error', 'No se pudo eliminar el emprendimiento. Intenta nuevamente.', 'error');
+          },
+          complete: () => {
+            this.isLoading = false;
           }
         });
       }
     });
   }
+  
 }

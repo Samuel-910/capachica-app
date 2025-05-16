@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 
 export interface LugarTuristico {
@@ -30,7 +30,7 @@ export class LugaresService {
   constructor(private http: HttpClient) {}
 
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('token');
     if (!token) {
       console.warn('Token no encontrado. Redirigiendo al login...');
       window.location.href = '/login'; // Redirige al usuario al login
@@ -45,27 +45,29 @@ export class LugaresService {
   }
 
   getLugares(): Observable<LugarTuristico[]> {
-    return this.http.get<LugarTuristico[]>(this.apiUrl, {
-      headers: this.getAuthHeaders()
-    }).pipe(
-      catchError(error => {
-        console.error('Error al obtener lugares:', error);
-        return throwError(() => new Error('Error al obtener lugares'));
-      })
-    );
+    return this.http.get<LugarTuristico[]>(this.apiUrl);
   }
 
   getLugar(id: string): Observable<LugarTuristico> {
-    return this.http.get<LugarTuristico>(`${this.apiUrl}/${id}`, {
-      headers: this.getAuthHeaders()
+    return this.http.get<LugarTuristico>(`${this.apiUrl}/${id}`);
+  }
+  buscarConFiltros(filtros: Record<string, any>): Observable<LugarTuristico[]> {
+    let params = new HttpParams();
+    Object.keys(filtros).forEach(key => {
+      if (filtros[key] !== undefined && filtros[key] !== null) {
+        params = params.set(key, filtros[key]);
+      }
+    });
+    return this.http.get<LugarTuristico[]>(this.apiUrl, {
+      headers: this.getAuthHeaders(),
+      params
     }).pipe(
       catchError(error => {
-        console.error('Error al obtener el lugar:', error);
-        return throwError(() => new Error('Error al obtener el lugar'));
+        console.error('Error al buscar lugares:', error);
+        return throwError(() => new Error('Error al buscar lugares'));
       })
     );
   }
-
   crearLugar(lugar: LugarTuristico): Observable<any> {
     return this.http.post<any>(this.apiUrl, lugar, {
       headers: this.getAuthHeaders()
