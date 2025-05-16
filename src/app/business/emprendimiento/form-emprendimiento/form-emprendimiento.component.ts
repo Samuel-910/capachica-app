@@ -138,7 +138,7 @@ export class FormEmprendimientoComponent implements OnInit {
         await this.emprendimientoService.crearEmprendimiento(datos).toPromise();
       }
       Swal.fire('¡Éxito!', 'Emprendimiento guardado correctamente', 'success')
-        .then(() => this.router.navigate(['/emprendimientos']));
+        .then(() => this.router.navigate(['/emprendimiento']));
     } catch (err) {
       console.error(err);
       Swal.fire('Error', 'Ocurrió un error guardando el emprendimiento', 'error');
@@ -146,6 +146,6 @@ export class FormEmprendimientoComponent implements OnInit {
   }
 
   cancelar(): void {
-    this.router.navigate(['/emprendimientos']);
+    this.router.navigate(['/emprendimiento']);
   }
 }
