@@ -42,93 +42,92 @@
     <div class="md:col-span-2">
       
 
-      <!-- Campos adicionales solicitados -->
-<div class="space-y-2 text-gray-800 mb-6">
-  <p>
-    <strong>
-      <svg class="inline w-5 h-5 mr-1 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 3.75-3 8.54-5 11.54C10 17.54 7 12.75 7 9z"/>
-        <circle cx="12" cy="9" r="2.5"/>
-      </svg>
-      Dirección:
-    </strong>
-    {{ emprendimiento.direccion }}
-  </p>
-  
-
-  <p *ngIf="emprendimiento.recomendaciones">
-    <strong>
-      <svg class="inline w-5 h-5 mr-1 text-green-500" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Recomendaciones:
-    </strong>
-    {{ emprendimiento.recomendaciones }}
-  </p>
-
-  <p *ngIf="emprendimiento.restricciones">
-    <strong>
-      <svg class="inline w-5 h-5 mr-1 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M18 6L6 18M6 6l12 12"/>
-      </svg>
-      Restricciones:
-    </strong>
-    {{ emprendimiento.restricciones }}
-  </p>
-
-  <p *ngIf="emprendimiento.contactoTelefono">
-    <strong>
-      <svg class="inline w-5 h-5 mr-1 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M3 5h2l3.5 7-1.5 1.5L6 10l-3 3v1h3l5-5-1.5-1.5L7 13l3.5 7h2a2 2 0 002-2v-3l-1-1 1-1v-3a2 2 0 00-2-2z"/>
-      </svg>
-      Teléfono de contacto:
-    </strong>
-    {{ emprendimiento.contactoTelefono }}
-  </p>
-
-  <p *ngIf="emprendimiento.contactoEmail">
-    <strong>
-      <svg class="inline w-5 h-5 mr-1 text-purple-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M16 12H8m8 0a4 4 0 01-8 0m8 0a4 4 0 01-8 0m-2 6h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-      </svg>
-      Email de contacto:
-    </strong>
-    {{ emprendimiento.contactoEmail }}
-  </p>
-
-  <p *ngIf="emprendimiento.sitioWeb">
-    <strong>
-      <svg class="inline w-5 h-5 mr-1 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l-2-2m0 0l2-2m-2 2h12"/>
-      </svg>
-      Sitio web:
-    </strong>
-    <a [href]="emprendimiento.sitioWeb" target="_blank" class="text-indigo-600 hover:underline">
-      {{ emprendimiento.sitioWeb }}
-    </a>
-  </p>
-
-  <p *ngIf="emprendimiento.redesSociales">
-    <strong>
-      <svg class="inline w-5 h-5 mr-1 text-pink-500" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12 2.04c-5.52 0-10 4.48-10 10 0 4.84 3.44 8.88 7.97 9.77v-6.9H8.1v-2.87h1.87v-2.2c0-1.85 1.13-2.87 2.79-2.87.81 0 1.65.15 1.65.15v1.81h-.92c-.91 0-1.19.57-1.19 1.15v1.56h2.03l-.32 2.87h-1.71v6.9c4.53-.89 7.97-4.93 7.97-9.77 0-5.52-4.48-10-10-10z"/>
-      </svg>
-      Redes sociales:
-    </strong>
-    {{ emprendimiento.redesSociales }}
-  </p>
-
-  <p>
-    <strong>
-      <svg class="inline w-5 h-5 mr-1 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="10" stroke-linecap="round" stroke-linejoin="round"/>
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3"/>
-      </svg>
-      Estado:
-    </strong>
-    {{ emprendimiento.estado }}
-  </p>
-</div>
+      <div class="space-y-2 text-gray-800 mb-6 bg-gray-50 border border-gray-200 rounded-xl shadow-sm p-4">
+        <p>
+          <strong>
+            <svg class="inline w-5 h-5 mr-1 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 3.75-3 8.54-5 11.54C10 17.54 7 12.75 7 9z"/>
+              <circle cx="12" cy="9" r="2.5"/>
+            </svg>
+            Dirección:
+          </strong>
+          {{ emprendimiento.direccion }}
+        </p>
+      
+        <p *ngIf="emprendimiento.recomendaciones">
+          <strong>
+            <svg class="inline w-5 h-5 mr-1 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Recomendaciones:
+          </strong>
+          {{ emprendimiento.recomendaciones }}
+        </p>
+      
+        <p *ngIf="emprendimiento.restricciones">
+          <strong>
+            <svg class="inline w-5 h-5 mr-1 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+            Restricciones:
+          </strong>
+          {{ emprendimiento.restricciones }}
+        </p>
+      
+        <p *ngIf="emprendimiento.contactoTelefono">
+          <strong>
+            <svg class="inline w-5 h-5 mr-1 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 5h2l3.5 7-1.5 1.5L6 10l-3 3v1h3l5-5-1.5-1.5L7 13l3.5 7h2a2 2 0 002-2v-3l-1-1 1-1v-3a2 2 0 00-2-2z"/>
+            </svg>
+            Teléfono de contacto:
+          </strong>
+          {{ emprendimiento.contactoTelefono }}
+        </p>
+      
+        <p *ngIf="emprendimiento.contactoEmail">
+          <strong>
+            <svg class="inline w-5 h-5 mr-1 text-purple-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M16 12H8m8 0a4 4 0 01-8 0m8 0a4 4 0 01-8 0m-2 6h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            Email de contacto:
+          </strong>
+          {{ emprendimiento.contactoEmail }}
+        </p>
+      
+        <p *ngIf="emprendimiento.sitioWeb">
+          <strong>
+            <svg class="inline w-5 h-5 mr-1 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l-2-2m0 0l2-2m-2 2h12"/>
+            </svg>
+            Sitio web:
+          </strong>
+          <a [href]="emprendimiento.sitioWeb" target="_blank" class="text-indigo-600 hover:underline">
+            {{ emprendimiento.sitioWeb }}
+          </a>
+        </p>
+      
+        <p *ngIf="emprendimiento.redesSociales">
+          <strong>
+            <svg class="inline w-5 h-5 mr-1 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2.04c-5.52 0-10 4.48-10 10 0 4.84 3.44 8.88 7.97 9.77v-6.9H8.1v-2.87h1.87v-2.2c0-1.85 1.13-2.87 2.79-2.87.81 0 1.65.15 1.65.15v1.81h-.92c-.91 0-1.19.57-1.19 1.15v1.56h2.03l-.32 2.87h-1.71v6.9c4.53-.89 7.97-4.93 7.97-9.77 0-5.52-4.48-10-10-10z"/>
+            </svg>
+            Redes sociales:
+          </strong>
+          {{ emprendimiento.redesSociales }}
+        </p>
+      
+        <p>
+          <strong>
+            <svg class="inline w-5 h-5 mr-1 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10" stroke-linecap="round" stroke-linejoin="round"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3"/>
+            </svg>
+            Estado:
+          </strong>
+          {{ emprendimiento.estado }}
+        </p>
+      </div>
+      
 
       <!-- Información del lugar -->
       <div class="mt-6 p-4 flex items-center gap-4 border rounded-xl bg-gray-50">
@@ -144,35 +143,29 @@
         <div class="mt-8 grid gap-6">
       
           <div class="flex gap-4">
-            <div class="p-3 rounded-xl bg-indigo-100 text-indigo-600">
-              <!-- Árbol con movimiento de balanceo -->
-              <svg class="w-6 h-6 sway-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" 
-                xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 2C10 6 7 10 12 15C17 10 14 6 12 2z" />
-                <rect x="11" y="15" width="2" height="5" rx="1" ry="1" />
-              </svg>
+            <div class="p-1 rounded-full border-2 border-indigo-300">
+              <!-- GIF con borde y sin fondo adicional -->
+              <img src="assets/earth.gif" alt="Aventura al aire libre" class="w-10 h-10 rounded-full object-contain" />
             </div>
             <div>
               <h4 class="text-lg font-semibold text-gray-900">Ideal para aventuras al aire libre</h4>
               <p class="text-sm text-gray-600">Este lugar ofrece vistas espectaculares para disfrutar de la naturaleza.</p>
             </div>
           </div>
+          
+          
       
           <div class="flex gap-4">
-            <div class="p-3 rounded-xl bg-green-100 text-green-600">
-              <!-- Grupo de personas con pulso -->
-              <svg class="w-6 h-6 pulse-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" 
-                xmlns="http://www.w3.org/2000/svg">
-                <circle cx="9" cy="7" r="4" />
-                <circle cx="17" cy="7" r="4" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 21v-2a4 4 0 014-4h10a4 4 0 014 4v2" />
-              </svg>
+            <div class="p-1 rounded-full border-2 border-green-300">
+              <!-- GIF con borde y sin fondo adicional -->
+              <img src="assets/lake.gif" alt="Espacios para grupos grandes" class="w-10 h-10 rounded-full object-contain" />
             </div>
             <div>
               <h4 class="text-lg font-semibold text-gray-900">Espacios para grupos grandes</h4>
               <p class="text-sm text-gray-600">Amplias áreas para disfrutar con familia o amigos.</p>
             </div>
           </div>
+          
       
         </div>
       </div>

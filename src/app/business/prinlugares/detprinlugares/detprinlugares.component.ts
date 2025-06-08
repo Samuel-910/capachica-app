@@ -44,6 +44,7 @@ export class DetprinlugaresComponent implements OnInit {
     initFlowbite();
     this.obtenerLugar();
   }
+  
 
   obtenerLugar(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -60,6 +61,7 @@ export class DetprinlugaresComponent implements OnInit {
       });
     }
   }
+  
 
   private buildMapUrl(lat: number, lng: number): void {
     const url = `https://maps.google.com/maps?q=${lat},${lng}&z=13&output=embed`;
