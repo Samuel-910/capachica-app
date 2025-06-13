@@ -64,9 +64,9 @@ export class PrincipalComponent implements OnInit {
 
   obtenerServiciosConReseñas(): void {
     this.isLoading = true;
-    this.servicioService.listarServiciosPorTipo('3').subscribe({
+    this.servicioService.listarServicios().subscribe({
       next: (res: any[]) => {
-        this.serviciosAlojamiento = res;
+        this.serviciosAlojamiento = res.filter(servicio => servicio.tipoServicio.nombre === 'Alojamiento');
         this.inicializarFavoritos(this.serviciosAlojamiento);
 
         this.serviciosAlojamiento.forEach(servicio => {
@@ -87,15 +87,19 @@ export class PrincipalComponent implements OnInit {
     });
   }
 
-  obtenerServiciosPorTipoExperiencia(): void {
-    this.servicioService.listarServiciosPorTipo('8').subscribe({
-      next: (res: any[]) => {
-        this.serviciosExperiencia = res;
-        this.inicializarFavoritos(this.serviciosExperiencia);
-      },
-      error: err => console.error('Error al cargar servicios de experiencia:', err)
-    });
-  }
+obtenerServiciosPorTipoExperiencia(): void {
+  this.servicioService.listarServicios().subscribe({
+    next: (res: any[]) => {
+      // Filtrar los servicios cuyo tipoServicio.nombre sea 'Alojamiento'
+      this.serviciosExperiencia = res.filter(servicio => servicio.tipoServicio.nombre === 'Experiencias');
+      
+      // Inicializar los favoritos
+      this.inicializarFavoritos(this.serviciosExperiencia);
+    },
+    error: err => console.error('Error al cargar servicios de experiencia:', err)
+  });
+}
+
 
   obtenerPaquetesTuristicos(): void {
     this.isLoading = true;
