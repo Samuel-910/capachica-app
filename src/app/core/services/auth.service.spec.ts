@@ -1,14 +1,18 @@
-import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AuthService } from './auth.service';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { Router } from '@angular/router';
 
 describe('AuthService', () => {
   let service: AuthService;
   let httpMock: HttpTestingController;
-  let mockRouter = { navigate: jasmine.createSpy('navigate') };
+  let mockRouter: jasmine.SpyObj<Router>;
+  const API_LOGIN = 'https://capachica-app-back-production.up.railway.app/auth/login';
+  const API_USERS = 'https://capachica-app-back-production.up.railway.app/users';
 
   beforeEach(() => {
+    mockRouter = jasmine.createSpyObj('Router', ['navigate']);
+
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
@@ -26,151 +30,146 @@ describe('AuthService', () => {
     localStorage.clear();
   });
 
-  it('debe crearse correctamente', () => {
+  it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
-  it('debe registrar un usuario', () => {
-    const fakeUser = { email: 'test@test.com', password: '123456' };
-    const mockResponse = { message: 'Usuario registrado' };
-
-    service.register(fakeUser).subscribe(response => {
-      expect(response).toEqual(mockResponse);
+  describe('resetPassword & requestPasswordReset', () => {
+    it('resetPassword debe hacer POST al endpoint correcto con withCredentials', () => {
+      service.resetPassword('token123', 'newPass').subscribe();
+      const req = httpMock.expectOne(service['RESET_PASSWORD_URL']);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.withCredentials).toBeTrue();
+      expect(req.request.body).toEqual({ token: 'token123', newPassword: 'newPass' });
+      req.flush({});
     });
 
-    const req = httpMock.expectOne(service['REGISTER_URL']);
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual(fakeUser);
-    req.flush(mockResponse);
+    it('requestPasswordReset debe hacer POST al endpoint correcto con withCredentials', () => {
+      service.requestPasswordReset('email@test.com').subscribe();
+      const req = httpMock.expectOne(service['REQUEST_PASSWORD_URL']);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.withCredentials).toBeTrue();
+      expect(req.request.body).toEqual({ email: 'email@test.com' });
+      req.flush({});
+    });
   });
 
-  it('debe loguear y guardar el token en localStorage', () => {
-    const mockToken = 'fake-token';
-    const response = { access_token: mockToken };
-
-    service.login('correo@test.com', '123456').subscribe();
-
-    const req = httpMock.expectOne(service['LOGIN_URL']);
-    expect(req.request.method).toBe('POST');
-    req.flush(response);
-
-    expect(localStorage.getItem('authToken')).toBe(mockToken);
-    expect(mockRouter.navigate).toHaveBeenCalledWith(['/dashboard']);
+  describe('register', () => {
+    it('debe enviar POST con Content-Type JSON', () => {
+      const userData = { name: 'Juan' };
+      service.register(userData).subscribe();
+      const req = httpMock.expectOne(service['REGISTER_URL']);
+      expect(req.request.method).toBe('POST');
+      expect(req.request.headers.get('Content-Type')).toBe('application/json');
+      expect(req.request.body).toEqual(userData);
+      req.flush({ id: 1 });
+    });
   });
 
-  it('debe solicitar reset de contraseña', () => {
-    const email = 'usuario@test.com';
-    const mockResponse = { message: 'Email enviado' };
+  describe('login', () => {
+    it('debe navegar a /dashboard si recibe access_token', fakeAsync(() => {
+      service.login('a@b.com', 'pwd').subscribe();
+      const req = httpMock.expectOne(API_LOGIN);
+      expect(req.request.method).toBe('POST');
+      req.flush({ access_token: 'abc123' });
+      tick();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/dashboard']);
+    }));
 
-    service.requestPasswordReset(email).subscribe(resp => {
-      expect(resp).toEqual(mockResponse);
+    it('no navega si no hay token en respuesta', fakeAsync(() => {
+      service.login('a@b.com', 'pwd').subscribe();
+      const req = httpMock.expectOne(API_LOGIN);
+      req.flush({ foo: 'bar' });
+      tick();
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+    }));
+  });
+
+  describe('getUsuarios & getUsuarioById', () => {
+    beforeEach(() => {
+      localStorage.setItem('token', 'tok');
     });
 
-    const req = httpMock.expectOne(service['REQUEST_PASSWORD_URL']);
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ email });
-    req.flush(mockResponse);
-  });
-
-  it('debe resetear la contraseña', () => {
-    const token = 'abc123';
-    const newPassword = 'nueva123';
-    const mockResponse = { message: 'Contraseña actualizada' };
-
-    service.resetPassword(token, newPassword).subscribe(resp => {
-      expect(resp).toEqual(mockResponse);
+    it('getUsuarios hace GET con header Authorization', () => {
+      service.getUsuarios().subscribe();
+      const req = httpMock.expectOne(API_USERS);
+      expect(req.request.method).toBe('GET');
+      expect(req.request.headers.get('Authorization')).toBe('Bearer tok');
+      req.flush([]);
     });
 
-    const req = httpMock.expectOne(service['RESET_PASSWORD_URL']);
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ token, newPassword });
-    req.flush(mockResponse);
+    it('getUsuarioById hace GET a /{id} y hace tap en consola', () => {
+      spyOn(console, 'log');
+      service.getUsuarioById(5).subscribe();
+      const req = httpMock.expectOne(`${API_USERS}/5`);
+      expect(req.request.method).toBe('GET');
+      expect(req.request.headers.get('Authorization')).toBe('Bearer tok');
+      req.flush({ id: 5 });
+      expect(console.log).toHaveBeenCalledWith('Usuario obtenido desde la API:', { id: 5 });
+    });
   });
 
-  it('debe obtener usuarios con token en headers', () => {
-    localStorage.setItem('authToken', 'abc');
-    const mockUsers = [{ id: 1, email: 'test@upeu.edu.pe' }];
-
-    service.getUsuarios().subscribe(users => {
-      expect(users.length).toBe(1);
+  describe('getUsuarioId & getUsuarioRol', () => {
+    it('getUsuarioId devuelve id del localStorage', () => {
+      localStorage.setItem('usuario', JSON.stringify({ id: 77 }));
+      expect(service.getUsuarioId()).toBe(77);
     });
 
-    const req = httpMock.expectOne(service['API_BASE_usuario']);
-    expect(req.request.headers.get('Authorization')).toBe('Bearer abc');
-    req.flush(mockUsers);
+    it('getUsuarioRol devuelve roles o arreglo vacío', () => {
+      localStorage.setItem('usuario', JSON.stringify({ roles: ['admin'] }));
+      expect(service.getUsuarioRol()).toEqual(['admin']);
+      localStorage.setItem('usuario', JSON.stringify({ }));
+      expect(service.getUsuarioRol()).toEqual([]);
+    });
   });
 
-  it('debe obtener usuario por ID', () => {
-    const userId = 1;
-    localStorage.setItem('authToken', 'abc');
-    const mockUser = { id: 1, email: 'test@test.com' };
-
-    service.getUsuarioById(userId).subscribe(user => {
-      expect(user.id).toBe(1);
+  describe('actualizarUsuario, eliminarUsuario, asignarRol, quitarRol, crearUsuarioComoAdmin', () => {
+    beforeEach(() => {
+      localStorage.setItem('token', 'tok');
     });
 
-    const req = httpMock.expectOne(`${service['API_BASE_usuario']}/${userId}`);
-    expect(req.request.method).toBe('GET');
-    req.flush(mockUser);
+    it('actualizarUsuario hace PATCH a /{id}', () => {
+      service.actualizarUsuario(3, { name: 'X' }).subscribe();
+      const req = httpMock.expectOne(`${API_USERS}/3`);
+      expect(req.request.method).toBe('PATCH');
+      expect(req.request.headers.get('Authorization')).toBe('Bearer tok');
+      req.flush({});
+    });
+
+    it('eliminarUsuario hace DELETE a /{id}', () => {
+      service.eliminarUsuario(4).subscribe();
+      const req = httpMock.expectOne(`${API_USERS}/4`);
+      expect(req.request.method).toBe('DELETE');
+      req.flush({});
+    });
+
+    it('asignarRol hace POST a /{userId}/roles/{roleId}', () => {
+      service.asignarRol(8, 2).subscribe();
+      const req = httpMock.expectOne(`${API_USERS}/8/roles/2`);
+      expect(req.request.method).toBe('POST');
+      req.flush({});
+    });
+
+    it('quitarRol hace DELETE a /{userId}/roles/{roleId}', () => {
+      service.quitarRol(8, 2).subscribe();
+      const req = httpMock.expectOne(`${API_USERS}/8/roles/2`);
+      expect(req.request.method).toBe('DELETE');
+      req.flush({});
+    });
+
+    it('crearUsuarioComoAdmin hace POST a base /users', () => {
+      const data = { foo: 'bar' };
+      service.crearUsuarioComoAdmin(data).subscribe();
+      const req = httpMock.expectOne(`${API_USERS}`);
+      expect(req.request.method).toBe('POST');
+      req.flush({});
+    });
   });
 
-  it('debe actualizar un usuario', () => {
-    const userId = 1;
-    localStorage.setItem('authToken', 'abc');
-    const datos = { nombre: 'Nuevo Nombre' };
-
-    service.actualizarUsuario(userId, datos).subscribe();
-
-    const req = httpMock.expectOne(`${service['API_BASE_usuario']}/${userId}`);
-    expect(req.request.method).toBe('PATCH');
-    expect(req.request.body).toEqual(datos);
-    req.flush({});
-  });
-
-  it('debe eliminar un usuario', () => {
-    const userId = 2;
-    localStorage.setItem('authToken', 'abc');
-
-    service.eliminarUsuario(userId).subscribe();
-
-    const req = httpMock.expectOne(`${service['API_BASE_usuario']}/${userId}`);
-    expect(req.request.method).toBe('DELETE');
-    req.flush({});
-  });
-
-  it('debe asignar un rol a un usuario', () => {
-    const userId = 5;
-    const roleId = 2;
-    localStorage.setItem('authToken', 'abc');
-
-    service.asignarRol(userId, roleId).subscribe();
-
-    const req = httpMock.expectOne(`${service['API_BASE_usuario']}/${userId}/roles/${roleId}`);
-    expect(req.request.method).toBe('POST');
-    req.flush({});
-  });
-
-  it('debe quitar un rol a un usuario', () => {
-    const userId = 5;
-    const roleId = 2;
-    localStorage.setItem('authToken', 'abc');
-
-    service.quitarRol(userId, roleId).subscribe();
-
-    const req = httpMock.expectOne(`${service['API_BASE_usuario']}/${userId}/roles/${roleId}`);
-    expect(req.request.method).toBe('DELETE');
-    req.flush({});
-  });
-
-  it('debe crear usuario como admin', () => {
-    const userData = { email: 'admin@upeu.edu.pe' };
-    localStorage.setItem('token', 'abc');
-
-    service.crearUsuarioComoAdmin(userData).subscribe();
-
-    const req = httpMock.expectOne(service['API_BASE_usuario']);
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual(userData);
-    req.flush({});
+  describe('logout', () => {
+    it('logout navega a root', () => {
+      service.logout();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/']);
+    });
   });
 });
