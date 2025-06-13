@@ -2,24 +2,53 @@
 <form #f="ngForm" (ngSubmit)="onSubmit()" novalidate class="relative min-h-screen flex justify-center items-center">
   <!-- Fondo degradado -->
   <div
-    class="bg-purple-900 absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-900 to-purple-800 h-full w-full overflow-hidden">
-  </div>
+  class="absolute top-0 left-0 w-full h-full bg-cover bg-center overflow-hidden z-0"
+  style="background-image: url('assets/hola.avif');"
+></div>
 
   <!-- Contenedor principal -->
-  <div class="relative z-10 bg-cover bg-center rounded-3xl w-[900px] flex overflow-hidden shadow-lg"
-    style="background-image: url('assets/ARDOX.png')">
-    <!-- Imagen lateral -->
-    <div class="w-full lg:w-1/2 flex items-center justify-center p-6 bg-white bg-opacity-50">
-      <img src="assets/chatgpt-image.png" alt="Imagen de registro" class="w-full h-auto max-h-[400px] object-contain" />
-    </div>
+  <div class="relative min-h-screen flex justify-center items-center px-4 z-10">
+  <!-- Tarjeta con borde animado -->
+  <div class="relative flex flex-col md:flex-row w-full max-w-5xl bg-transparent rounded-3xl overflow-hidden shadow-lg">
 
+    <!-- SVG borde animado -->
+    <svg
+      class="absolute inset-0 w-full h-full pointer-events-none z-20 border-svg"
+      viewBox="0 0 900 450"
+      preserveAspectRatio="none"
+    >
+      <defs>
+        <linearGradient id="grad-neon" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#39FF14" />
+          <stop offset="50%" stop-color="#32CD32" />
+          <stop offset="100%" stop-color="#39FF14" />
+        </linearGradient>
+      </defs>
+      <rect
+        x="3" y="3"
+        width="894" height="444"
+        rx="24" ry="24"
+        fill="none"
+        stroke="url(#grad-neon)"
+        stroke-width="6"
+        class="border-rect"
+      />
+    </svg>
+
+   <!-- Imagen izquierda -->
+   <div class="w-full md:w-1/2 relative min-h-[100px] md:min-h-[250px] rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none overflow-hidden">
+    <div
+      class="absolute inset-0 bg-center bg-contain bg-no-repeat scale-90 opacity-90"
+      style="background-image: url('img/chatgpt-image.png');"
+    ></div>
+  </div>
     <!-- Formulario -->
-    <div class="w-full lg:w-1/2 p-10 bg-white bg-opacity-50">
+    <div class="w-full lg:w-1/2 p-10 bg-white bg-opacity-90">
       <div class="mb-7">
         <h3 class="font-semibold text-2xl text-gray-800">Crear cuenta</h3>
-        <p class="text-gray-400">
+        <p class="text-white-400">
           ¿Ya tienes una cuenta?
-          <a routerLink="/login" class="text-sm text-black-700 hover:text-purple-700">Iniciar sesión</a>
+          <a routerLink="/login" class="text-sm text-green-700 hover:text-green-700">Iniciar sesión</a>
         </p>
       </div>
 
@@ -88,12 +117,13 @@
       <!-- Botón de Registro -->
       <div class="mt-7">
         <button type="submit" [disabled]="f.invalid"
-          class="w-full flex justify-center bg-black hover:bg-gray-900 text-white p-3 rounded-lg tracking-wide font-semibold transition ease-in duration-500">
+          class="w-full flex justify-center bg-green-700 hover:bg-gray-900 text-white p-3 rounded-lg tracking-wide font-semibold transition ease-in duration-500">
           Registrarse
         </button>
       </div>
     </div>
   </div>
+</div>
 
   <!-- Ola inferior -->
   <svg class="absolute bottom-0 left-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">

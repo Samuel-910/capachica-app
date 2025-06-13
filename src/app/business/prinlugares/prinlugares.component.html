@@ -1,56 +1,37 @@
 <app-navbar ></app-navbar>
 
-<!-- Sección principal -->
-<section
-  class="bg-green-500 text-white mt-40 py-8 px-6 w-full rounded-lg shadow-lg"
-  role="banner"
->
-  <div class="max-w-6xl mx-auto text-center">
-    <h2
-      class="text-4xl font-bold mb-4 leading-tight tracking-tight font-serif"
-      tabindex="0"
-    >
-      Turismo Local
-    </h2>
-    <p
-      class="text-base sm:text-lg md:text-xl font-light mb-4 px-4 font-serif"
-      tabindex="0"
-    >
-      Descubre los encantos de Capachica. Explora destinos turísticos únicos,
-      actividades locales y la rica cultura que ofrece esta hermosa región.
-    </p>
-  </div>
+<!-- Sección principal con video de fondo más delgado -->
+<section class="relative mt-40 w-full h-[280px] overflow-hidden rounded-lg shadow-lg" role="banner">
+  <!-- Video de fondo -->
+  <video autoplay muted loop playsinline class="absolute top-0 left-0 w-full h-full object-cover z-0">
+    <source src="https://videos.pexels.com/video-files/31823467/13558115_640_360_60fps.mp4" type="video/mp4" />
+    Tu navegador no soporta video HTML5.
+  </video>
+
+ <!-- Contenido encima del video -->
+<div class="relative z-10 bg-black/50 w-full h-full flex flex-col justify-center items-center text-white text-center px-6">
+  <h2 class="text-4xl sm:text-5xl font-extrabold mb-2 leading-tight tracking-wide font-[PlayfairDisplay] drop-shadow-md" tabindex="0">
+    Turismo Local
+  </h2>
+  <p class="text-base sm:text-lg md:text-xl font-light px-4 max-w-2xl font-[Inter] drop-shadow-sm" tabindex="0">
+    Descubre los encantos de Capachica. Explora destinos turísticos únicos, actividades locales y la rica cultura que ofrece esta hermosa región.
+  </p>
+</div>
+
 </section>
 
-<!-- Loader -->
-<div
-  *ngIf="isLoading"
-  class="flex justify-center items-center my-10"
-  role="status"
-  aria-live="polite"
->
-  <svg
-    class="animate-spin h-8 w-8 text-green-600"
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-  >
-    <circle
-      class="opacity-25"
-      cx="12"
-      cy="12"
-      r="10"
-      stroke="currentColor"
-      stroke-width="4"
-    ></circle>
-    <path
-      class="opacity-75"
-      fill="currentColor"
-      d="M4 12a8 8 0 018-8v8H4z"
-    ></path>
-  </svg>
-  <span class="ml-2 text-green-700 font-semibold">Cargando lugares...</span>
+
+<!-- Loader con sk-folding-cube -->
+<div *ngIf="isLoading" class="flex justify-center items-center flex-col my-10" role="status" aria-live="polite">
+  <div class="sk-folding-cube">
+    <div class="sk-cube1 sk-cube"></div>
+    <div class="sk-cube2 sk-cube"></div>
+    <div class="sk-cube3 sk-cube"></div>
+    <div class="sk-cube4 sk-cube"></div>
+  </div>
+  <span class="mt-4 text-green-700 font-semibold text-xl">Cargando lugares...</span>
 </div>
+
 
 <!-- Mensaje si no hay resultados -->
 <div
