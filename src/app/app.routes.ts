@@ -130,6 +130,21 @@ export const routes: Routes = [
           import('./business/role-list/rol-form/rol-form.component').then(m => m.RolFormComponent),
       },
       {
+        path: 'permisos',
+        loadComponent: () =>
+          import('./business/permisos/permisos.component').then(m => m.PermisosComponent),
+      },
+      {
+        path: 'newpermisos',
+        loadComponent: () =>
+          import('./business/permisos/form-permisos/form-permisos.component').then(m => m.FormPermisosComponent),
+      },
+      {
+        path: 'editpermisos/:id',
+        loadComponent: () =>
+          import('./business/permisos/form-permisos/form-permisos.component').then(m => m.FormPermisosComponent),
+      },
+      {
         path: 'usuario',
         loadComponent: () =>
           import('./super-admin/usuario/usuario.component').then(m => m.UsuarioComponent),

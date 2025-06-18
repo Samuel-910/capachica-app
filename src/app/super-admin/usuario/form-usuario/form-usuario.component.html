@@ -13,20 +13,24 @@
             <div class="grid md:grid-cols-2 gap-6">
               <div>
                 <label class="block font-medium text-gray-700">Nombre</label>
-                <input type="text" formControlName="nombre" placeholder="Nombre" class="border p-3 rounded w-full" required />
+                <input type="text" formControlName="nombre" placeholder="Nombre" class="border p-3 rounded w-full"
+                  required />
               </div>
               <div>
                 <label class="block font-medium text-gray-700">Apellidos</label>
-                <input type="text" formControlName="apellidos" placeholder="Apellidos" class="border p-3 rounded w-full" required />
+                <input type="text" formControlName="apellidos" placeholder="Apellidos" class="border p-3 rounded w-full"
+                  required />
               </div>
 
               <div>
                 <label class="block font-medium text-gray-700">Teléfono</label>
-                <input type="text" formControlName="telefono" placeholder="Teléfono" class="border p-3 rounded w-full" />
+                <input type="text" formControlName="telefono" placeholder="Teléfono"
+                  class="border p-3 rounded w-full" />
               </div>
               <div>
                 <label class="block font-medium text-gray-700">Dirección</label>
-                <input type="text" formControlName="direccion" placeholder="Dirección" class="border p-3 rounded w-full" />
+                <input type="text" formControlName="direccion" placeholder="Dirección"
+                  class="border p-3 rounded w-full" />
               </div>
 
               <!-- Imagen de perfil -->
@@ -44,16 +48,38 @@
               </div>
               <div>
                 <label class="block font-medium text-gray-700">Correo Electrónico</label>
-                <input type="email" formControlName="email" placeholder="correo@ejemplo.com" class="border p-3 rounded w-full" required />
+                <input type="email" formControlName="email" placeholder="correo@ejemplo.com"
+                  class="border p-3 rounded w-full" required />
+              </div>
+              <div class="mb-4">
+                <label class="block text-sm text-gray-700 mb-1">Pais</label>
+                <select (change)="onPaisSeleccionado($event)" class="w-full rounded">
+                  <option value="" disabled selected>Selecciona país</option>
+                  <option *ngFor="let c of countries" [value]="c.id">{{ c.name }}</option>
+                </select>
               </div>
 
+
+
+              <!-- Selección de subdivisión -->
+              <div class="mb-4">
+                <label class="block text-sm text-gray-700 mb-1">Subdivisión</label>
+                <select formControlName="subdivisionId" class="w-full border p-2 rounded"
+                  [disabled]="!subdivisions.length">
+                  <option value="" disabled selected>Selecciona subdivisión</option>
+                  <option *ngFor="let s of subdivisions" [value]="s.id">{{ s.name }}</option>
+                </select>
+                <div *ngIf="subdivisions.length === 0" class="text-gray-500 text-sm">Selecciona un país primero.</div>
+              </div>
               <div>
                 <label class="block font-medium text-gray-700">Contraseña</label>
-                <input [type]="mostrarPassword ? 'text' : 'password'" formControlName="password" placeholder="Contraseña" class="border p-3 rounded w-full" />
+                <input [type]="mostrarPassword ? 'text' : 'password'" formControlName="password"
+                  placeholder="Contraseña" class="border p-3 rounded w-full" />
               </div>
               <div>
                 <label class="block font-medium text-gray-700">Confirmar Contraseña</label>
-                <input [type]="mostrarPassword ? 'text' : 'password'" formControlName="confirmPassword" placeholder="Confirmar contraseña" class="border p-3 rounded w-full" />
+                <input [type]="mostrarPassword ? 'text' : 'password'" formControlName="confirmPassword"
+                  placeholder="Confirmar contraseña" class="border p-3 rounded w-full" />
               </div>
             </div>
 
@@ -61,7 +87,8 @@
               <button type="submit" class="bg-green-600 text-white px-8 py-3 rounded hover:bg-green-700">
                 {{ isEdit ? 'Actualizar' : 'Guardar' }}
               </button>
-              <button type="button" class="bg-gray-300 text-gray-800 px-8 py-3 rounded hover:bg-gray-400" (click)="cancelar()">
+              <button type="button" class="bg-gray-300 text-gray-800 px-8 py-3 rounded hover:bg-gray-400"
+                (click)="cancelar()">
                 Cancelar
               </button>
             </div>

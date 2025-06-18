@@ -1,37 +1,72 @@
-import { Component }      from '@angular/core';
-import { CommonModule }   from '@angular/common';
-import { FormsModule }    from '@angular/forms';
-import { Router, RouterModule }   from '@angular/router';
-import { AuthService }    from '../../../core/services/auth.service';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
 import Swal from 'sweetalert2';
 import { SupabaseService } from '../../../core/services/supabase.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, ReactiveFormsModule],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css'],
 })
-export class RegisterComponent {
-nombre = '';
-  apellidos = '';
-  telefono = '';
-  direccion = '';
-  email = '';
-  password = '';
-  confirmPassword = '';
-  subdivisionId = 0;
-  fechaNacimiento = '';
+export class RegisterComponent implements OnInit {
+  countries: any[] = [];
+  subdivisions: any[] = [];
+  isLoadingCountries = true;
   selectedFile: File | null = null;
   previewUrl: string | null = null;
   showPassword = false;
-
+  registerForm: FormGroup;
+  subdivisionId = 0;
   constructor(
+    private fb: FormBuilder,
     private authService: AuthService,
     private supabaseService: SupabaseService,
     private router: Router
-  ) {}
+  ) {
+    // Definimos el formulario
+    this.registerForm = this.fb.group({
+      nombre: ['', Validators.required],
+      apellidos: ['', Validators.required],
+      telefono: ['', Validators.required],
+      direccion: ['', Validators.required],
+      fechaNacimiento: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
+      confirmPassword: ['', Validators.required],
+      subdivisionId: ['', Validators.required], // Agregar subdivisionId
+    });
+  }
+
+  ngOnInit(): void {
+    this.cargarPaises();
+  }
+
+  cargarPaises(): void {
+    fetch('https://capachica-app-back-production.up.railway.app/countries')
+      .then(res => res.json())
+      .then(data => {
+        this.countries = data;
+        this.isLoadingCountries = false;
+      })
+      .catch(err => {
+        console.error('Error al cargar países:', err);
+        this.isLoadingCountries = false;
+      });
+  }
+  onPaisSeleccionado(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const paisId = selectElement.value;  // Aseguramos que `paisId` sea un string
+    const pais = this.countries.find(c => c.id === +paisId); // Convertimos el valor a número
+    this.subdivisions = pais?.subdivisions || [];
+    this.subdivisionId = 0; // Reinicia la selección anterior
+  }
+
+
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
@@ -68,11 +103,15 @@ nombre = '';
   }
 
   async onSubmit(): Promise<void> {
-    if (!this.nombre || !this.apellidos || !this.email || !this.password || this.password !== this.confirmPassword) {
+    if (this.registerForm.invalid) {
       Swal.fire('Error', 'Por favor completa todos los campos requeridos correctamente.', 'error');
       return;
     }
 
+const { nombre, apellidos, telefono, fechaNacimiento, direccion, email, password, subdivisionId: rawSubdivisionId } = this.registerForm.value;
+
+// Convierte a número
+const subdivisionId = Number(rawSubdivisionId); 
     let fotoPerfilUrl = '';
     if (this.selectedFile) {
       try {
@@ -85,15 +124,15 @@ nombre = '';
     }
 
     const payload = {
-      email: this.email,
-      password: this.password,
-      nombre: this.nombre,
-      apellidos: this.apellidos,
-      telefono: this.telefono,
-      direccion: this.direccion,
-      fotoPerfilUrl: fotoPerfilUrl,
-      fechaNacimiento: this.fechaNacimiento || null,
-      subdivisionId: 1
+      email,
+      password,
+      nombre,
+      apellidos,
+      telefono,
+      direccion,
+      fechaNacimiento,
+      fotoPerfilUrl,
+      subdivisionId
     };
 
     this.authService.register(payload).subscribe({

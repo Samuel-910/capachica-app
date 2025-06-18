@@ -16,22 +16,26 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./form-usuario.component.css']
 })
 export class FormUsuarioComponent implements OnInit {
+  countries: any[] = [];
+  subdivisions: any[] = [];
+  isLoadingCountries = true;
   selectedFile: File | null = null;
   previewUrl: string | null = null;
   usuarioForm!: FormGroup;
   mostrarPassword: boolean = false;
   isEdit: boolean = false;
   usuarioIdEdit: number | null = null;
-
+  subdivisionId = 0;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
     private route: ActivatedRoute,
     private supabaseService: SupabaseService
-  ) {}
+  ) { }
 
   ngOnInit() {
+    this.cargarPaises();
     this.usuarioForm = this.fb.group(
       {
         nombre: ['', Validators.required],
@@ -98,7 +102,18 @@ export class FormUsuarioComponent implements OnInit {
       reader.readAsDataURL(file);
     }
   }
-
+  cargarPaises(): void {
+    fetch('https://capachica-app-back-production.up.railway.app/countries')
+      .then(res => res.json())
+      .then(data => {
+        this.countries = data;
+        this.isLoadingCountries = false;
+      })
+      .catch(err => {
+        console.error('Error al cargar países:', err);
+        this.isLoadingCountries = false;
+      });
+  }
   async subirImagenASupabase(file: File): Promise<string> {
     // Mostrar el mensaje de espera
     Swal.fire({
@@ -124,7 +139,13 @@ export class FormUsuarioComponent implements OnInit {
     Swal.close();  // Cerrar el mensaje de carga
     return publicUrlData?.publicUrl;
   }
-
+  onPaisSeleccionado(event: Event): void {
+    const selectElement = event.target as HTMLSelectElement;
+    const paisId = selectElement.value;  // Aseguramos que `paisId` sea un string
+    const pais = this.countries.find(c => c.id === +paisId); // Convertimos el valor a número
+    this.subdivisions = pais?.subdivisions || [];
+    this.subdivisionId = 0; // Reinicia la selección anterior
+  }
   async guardarUsuario() {
     if (this.usuarioForm.invalid) {
       const camposInvalidos = Object.keys(this.usuarioForm.controls)
@@ -139,7 +160,7 @@ export class FormUsuarioComponent implements OnInit {
             default: return key;
           }
         });
-  
+
       Swal.fire({
         icon: 'error',
         title: 'Formulario incompleto',
@@ -147,10 +168,10 @@ export class FormUsuarioComponent implements OnInit {
       });
       return;
     }
-  
+
     const formValue = this.usuarioForm.getRawValue();
     let fotoPerfilUrl = '';
-  
+
     if (this.selectedFile) {
       try {
         fotoPerfilUrl = await this.subirImagenASupabase(this.selectedFile);
@@ -160,7 +181,7 @@ export class FormUsuarioComponent implements OnInit {
         return;
       }
     }
-  
+
     const payload = {
       email: formValue.email,
       password: formValue.password,
@@ -170,9 +191,9 @@ export class FormUsuarioComponent implements OnInit {
       direccion: formValue.direccion,
       fotoPerfilUrl: fotoPerfilUrl,
       fechaNacimiento: formValue.fechaNacimiento || null,
-      subdivisionId: 1
+        subdivisionId: Number(formValue.subdivisionId),
     };
-  
+
     if (this.isEdit && this.usuarioIdEdit) {
       this.authService.actualizarUsuario(this.usuarioIdEdit, payload).subscribe({
         next: () => {

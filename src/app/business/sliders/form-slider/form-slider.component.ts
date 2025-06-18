@@ -51,7 +51,7 @@ export class FormSliderComponent implements OnInit {
           });
 
           if (slider.imagenes?.length) {
-            this.previewUrl = slider.imagenes[0]?.url || null;
+            this.previewUrl = 'https://twsevdzjdnwjhdysvecm.supabase.co/storage/v1/object/public/sliders/' + slider.imagenes[0]?.url || null;
           }
         },
         error: (err) => {

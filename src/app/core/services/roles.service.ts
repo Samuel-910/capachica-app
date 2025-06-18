@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 export class RolesService {
   private readonly API = 'https://capachica-app-back-production.up.railway.app/roles';
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   // Crear nuevo rol
   crearRol(data: any): Observable<any> {

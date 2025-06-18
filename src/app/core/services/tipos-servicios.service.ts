@@ -21,7 +21,10 @@ export class TiposServicioService {
     obtenerTipoServicio(id: number | string): Observable<any> {
         return this.http.get(`${this.API}/${id}`, this.getAuthHeaders());
     }
-
+    // Actualizar un tipo de servicio (PATCH /tipos-servicio/{id})
+    actualizarTipoServicio(id: number | string, data: any): Observable<any> {
+        return this.http.patch(`${this.API}/${id}`, data, this.getAuthHeaders());
+    }
     // Eliminar un tipo de servicio (DELETE /tipos-servicio/{id})
     eliminarTipoServicio(id: number | string): Observable<any> {
         return this.http.delete(`${this.API}/${id}`, this.getAuthHeaders());
@@ -39,8 +42,8 @@ export class TiposServicioService {
     buscarConFiltros(filtros: { nombre?: string; lugar?: string; fecha?: string }): Observable<any[]> {
         let params = new HttpParams();
         if (filtros.nombre) { params = params.set('nombre', filtros.nombre); }
-        if (filtros.lugar)  { params = params.set('lugar', filtros.lugar); }
-        if (filtros.fecha)  { params = params.set('fecha', filtros.fecha); }
+        if (filtros.lugar) { params = params.set('lugar', filtros.lugar); }
+        if (filtros.fecha) { params = params.set('fecha', filtros.fecha); }
         return this.http.get<any[]>(this.API, { params });
     }
 }

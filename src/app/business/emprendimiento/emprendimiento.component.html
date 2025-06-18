@@ -7,17 +7,23 @@
       <div class="p-6">
         <!-- Filtros y botón agregar -->
         <div class="flex justify-between items-center mb-4">
-          <div class="flex gap-2 items-center">
-            <button class="flex items-center gap-2 px-4 py-2 bg-white border rounded shadow">
-              <i class="fas fa-filter text-gray-500"></i> Filtros
-            </button>
-            <button routerLink="/newemprendimiento"
-              class="px-4 py-2 bg-green-500 text-white font-semibold rounded-lg shadow hover:bg-green-700">
-              Agregar Nuevo Emprendimiento +
-            </button>
+          <button routerLink="/newemprendimiento"
+            class="px-4 py-2 bg-green-500 text-white font-semibold rounded-lg shadow hover:bg-green-700">
+            Agregar Nuevo Emprendimiento +
+          </button>
+          <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+            <select [(ngModel)]="columnaBusqueda"
+              class="px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300">
+              <option value="nombre">Nombre</option>
+              <option value="descripcion">Descripción</option>
+              <option value="categoria">Categoria</option>
+              <option value="lugar">Lugar</option>
+              <option value="estado">Estado</option>
+            </select>
+
+            <input type="text" [(ngModel)]="filtroBusqueda" placeholder="Buscar"
+              class="px-4 py-2 border rounded-lg w-64 focus:outline-none focus:ring focus:border-blue-300" />
           </div>
-          <input type="text" placeholder="Buscar"
-            class="px-4 py-2 border rounded-lg w-64 focus:outline-none focus:ring focus:border-blue-300" />
         </div>
 
         <h2 class="text-xl font-bold text-gray-800 mb-4">Lista de Emprendimientos</h2>

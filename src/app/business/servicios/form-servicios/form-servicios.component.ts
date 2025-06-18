@@ -50,14 +50,14 @@ export class FormServiciosComponent implements OnInit {
   servicioIdEdit: number | null = null;
 
   constructor(
-    private fb: FormBuilder,
-    private serviciosService: ServiciosService,
-    private tiposServicioService: TiposServicioService,
-    private emprendimientoService: EmprendimientoService,
-    private supabaseService: SupabaseService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private authService: AuthService
+    private readonly fb: FormBuilder,
+    private readonly serviciosService: ServiciosService,
+    private readonly tiposServicioService: TiposServicioService,
+    private readonly emprendimientoService: EmprendimientoService,
+    private readonly supabaseService: SupabaseService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly authService: AuthService
   ) { }
 
   ngOnInit(): void {

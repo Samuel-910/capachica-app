@@ -27,6 +27,9 @@ export  class LoginComponent {
   }
 
 login(): void {
+  console.log(this.email)
+  console.log(this.password)
+
   this.authService.login(this.email, this.password).subscribe({
     next: (response) => {
       const token = response.access_token;

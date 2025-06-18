@@ -87,7 +87,7 @@ export class FormTiposServicioComponent implements OnInit {
     };
 
     if (this.isEdit && this.tipoServicioIdEdit) {
-      this.tiposServicioService.crearTipoServicio(payload).subscribe({
+      this.tiposServicioService.actualizarTipoServicio(this.tipoServicioIdEdit,payload).subscribe({
         next: () => {
           Swal.fire('Actualizado', 'El tipo de servicio fue actualizado correctamente.', 'success');
           this.router.navigate(['/tipos-servicio']);
