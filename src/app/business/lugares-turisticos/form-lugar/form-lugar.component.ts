@@ -1,7 +1,6 @@
 import {
   Component,
   OnInit,
-  AfterViewInit,
   ViewChild,
   ElementRef
 } from '@angular/core';
@@ -25,6 +24,7 @@ export class FormLugarComponent implements OnInit {
   @ViewChild('mapContainer', { static: false })
   mapContainer!: ElementRef<HTMLDivElement>;
 
+  previewUrls: string[] = [];
   map!: any;
   marker!: any;
   selectedFile: File[] = [];
@@ -34,11 +34,11 @@ export class FormLugarComponent implements OnInit {
   lugarIdEdit: string | null = null;
 
   constructor(
-    private fb: FormBuilder,
-    private lugaresService: LugaresService,
-    private supabaseService: SupabaseService,
-    private route: ActivatedRoute,
-    private router: Router
+    private readonly fb: FormBuilder,
+    private readonly lugaresService: LugaresService,
+    private readonly supabaseService: SupabaseService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
   ) { }
 
   ngOnInit(): void {
@@ -50,10 +50,11 @@ export class FormLugarComponent implements OnInit {
       longitud: [null, Validators.required],
       horarioApertura: [''],
       horarioCierre: [''],
-      costoEntrada: [null],
+      costoEntrada: [0, Validators.required],
       recomendaciones: [''],
       restricciones: [''],
       esDestacado: [false],
+      imagenes: this.fb.array([]),
       estado: ['activo', Validators.required]
     });
 
@@ -71,63 +72,57 @@ export class FormLugarComponent implements OnInit {
   }
   ngAfterViewInit(): void {
     const center = { lat: -15.6000, lng: -69.9000 };
-    this.map = L.map(this.mapContainer.nativeElement).setView(
-      [center.lat, center.lng],
-      12
-    );
+    this.map = L.map(this.mapContainer.nativeElement)
+      .setView([center.lat, center.lng], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+      attribution: '&copy; OpenStreetMap'
     }).addTo(this.map);
 
-    this.map.on('click', (e: any) => this.onMapClick(e));
+    this.map.on('click', (e: any) => {
+      const { lat, lng } = e.latlng;
+      if (this.marker) this.map.removeLayer(this.marker);
+      this.marker = L.marker([lat, lng]).addTo(this.map);
+      this.lugarForm.patchValue({ latitud: lat, longitud: lng });
+    });
 
-    // Si ya vino en edición, colocamos marker
-    const lat = this.lugarForm.get('latitud')?.value;
-    const lng = this.lugarForm.get('longitud')?.value;
-    if (lat != null && lng != null) {
-      this.placeMarker(lat, lng);
-    }
+    // si ya editando, colocar marcador
+    setTimeout(() => {
+      const lat = this.lugarForm.get('latitud')!.value;
+      const lng = this.lugarForm.get('longitud')!.value;
+      if (lat != null && lng != null) {
+        this.marker = L.marker([lat, lng]).addTo(this.map);
+        this.map.setView([lat, lng], 13);
+      }
+    }, 500);
   }
-
-  private onMapClick(e: any): void {
-    const { lat, lng } = e.latlng;
-    if (this.marker) {
-      this.map.removeLayer(this.marker);
-    }
-    this.placeMarker(lat, lng);
-    this.lugarForm.patchValue({ latitud: lat, longitud: lng });
-  }
-
-  private placeMarker(lat: number, lng: number): void {
-    this.marker = L.marker([lat, lng]).addTo(this.map);
-    this.map.setView([lat, lng], 13);
-  }
-
-private cargarLugar(id: string): void {
+  private cargarLugar(id: string): void {
     this.lugaresService.getLugar(id).subscribe({
       next: lugar => {
-        // patch de los campos
+        console.log(lugar)
         this.lugarForm.patchValue({
-          nombre:          lugar.nombre,
-          descripcion:     lugar.descripcion,
-          direccion:       lugar.direccion,
-          latitud:         lugar.latitud,
-          longitud:        lugar.longitud,
-          horarioApertura: lugar.horarioApertura,
-          horarioCierre:   lugar.horarioCierre,
-          costoEntrada:    lugar.costoEntrada,
+          nombre: lugar.nombre,
+          descripcion: lugar.descripcion,
+          direccion: lugar.direccion,
+          latitud: lugar.latitud,
+          longitud: lugar.longitud,
+          horarioApertura: lugar.horarioApertura
+            ? lugar.horarioApertura.substring(0, 10)
+            : null,
+          horarioCierre: lugar.horarioCierre
+            ? lugar.horarioCierre.substring(0, 10)
+            : null,
+          costoEntrada: lugar.costoEntrada,
           recomendaciones: lugar.recomendaciones,
-          restricciones:   lugar.restricciones,
-          esDestacado:     lugar.esDestacado,
-          estado:          lugar.estado
+          restricciones: lugar.restricciones,
+          esDestacado: lugar.esDestacado,
+          estado: lugar.estado
         });
-        // previews de imágenes existentes
-        this.previewUrl = lugar.imagenes.map(img => img.url);
-
-        // marcamos en el mapa si ya hay coords
-        if (this.map && lugar.latitud != null && lugar.longitud != null) {
-          this.placeMarker(lugar.latitud, lugar.longitud);
+        // Agregar las URLs de las imágenes al formulario
+        if (lugar.imagenes && lugar.imagenes.length > 0) {
+          const imagenesControl = this.lugarForm.get('imagenes') as any;
+          lugar.imagenes.forEach((img: any) => {
+            imagenesControl.push(this.fb.control(img.url));  // Agregar cada URL de imagen al formulario
+          });
         }
       },
       error: err => {
@@ -149,24 +144,24 @@ private cargarLugar(id: string): void {
     // Reset para permitir re-selección del mismo archivo
     event.target.value = '';
   }
-    async subirImagenASupabase(file: File): Promise<string> {
-      Swal.fire({
-        title: 'Subiendo imagen...',
-        allowOutsideClick: false,
-        showConfirmButton: false,
-        didOpen: () => Swal.showLoading()
-      });
-      const supabase = this.supabaseService.getClient();
-      const path = `lugares-turisticos/${Date.now()}-${file.name}`;
-      const { error } = await supabase.storage.from('lugares-turisticos').upload(path, file);
-      if (error) {
-        Swal.close();
-        throw new Error(error.message);
-      }
-      const { data } = supabase.storage.from('lugares-turisticos').getPublicUrl(path);
+  async subirImagenASupabase(file: File): Promise<string> {
+    Swal.fire({
+      title: 'Subiendo imagen...',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => Swal.showLoading()
+    });
+    const supabase = this.supabaseService.getClient();
+    const path = `lugares-turisticos/${Date.now()}-${file.name}`;
+    const { error } = await supabase.storage.from('lugares-turisticos').upload(path, file);
+    if (error) {
       Swal.close();
-      return data.publicUrl;
+      throw new Error(error.message);
     }
+    const { data } = supabase.storage.from('lugares-turisticos').getPublicUrl(path);
+    Swal.close();
+    return data.publicUrl;
+  }
 
   async guardarLugar(): Promise<void> {
     if (this.lugarForm.invalid) {
@@ -213,7 +208,7 @@ private cargarLugar(id: string): void {
       restricciones: fv.restricciones || null,
       esDestacado: fv.esDestacado,
       estado: fv.estado,
-      imagenes:         imagenUrls.map(u => ({ url: u }))
+      imagenes: imagenUrls.map(u => ({ url: u }))
     };
 
     const req$ = this.isEdit && this.lugarIdEdit
