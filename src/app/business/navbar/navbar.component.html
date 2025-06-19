@@ -5,50 +5,56 @@
     <div class="flex-shrink-0">
       <img src="assets/logo-capachica.png" class="h-24" />
     </div>
-    
-<!-- Navegación centrada con íconos mejorados -->
-<div *ngIf="!ocultarNav" class="flex-1 flex justify-center px-8">
-  <div class="flex gap-8 overflow-x-auto whitespace-nowrap scrollbar-hide">
-    
-    <!-- Principal -->
-    <button routerLink="" routerLinkActive="text-white"
-       class="flex flex-col items-center gap-1 min-w-[80px] group">
-      <div class="w-12 h-12 flex items-center justify-center text-green-600 group-hover:text-green-800 transition-all duration-300 transform group-hover:scale-110">
-        <i class="fas fa-compass text-2xl"></i>
+
+    <!-- Navegación centrada con íconos mejorados -->
+    <div *ngIf="!ocultarNav" class="flex-1 flex justify-center px-8">
+      <div class="flex gap-8 overflow-x-auto whitespace-nowrap scrollbar-hide">
+
+        <!-- Principal -->
+        <button routerLink="" routerLinkActive="text-white" class="flex flex-col items-center gap-1 min-w-[80px] group">
+          <div
+            class="w-12 h-12 flex items-center justify-center text-green-600 group-hover:text-green-800 transition-all duration-300 transform group-hover:scale-110">
+            <i class="fas fa-compass text-2xl"></i>
+          </div>
+          <span class="text-sm text-green-600 group-hover:text-green-800 transition-colors font-medium">Principal</span>
+        </button>
+
+        <!-- Emprendimientos -->
+        <button routerLink="/prinemprendimiento" routerLinkActive="text-white"
+          class="flex flex-col items-center gap-1 min-w-[80px] group">
+          <div
+            class="w-12 h-12 flex items-center justify-center text-green-600 group-hover:text-green-800 transition-all duration-300 transform group-hover:scale-110">
+            <i class="fas fa-seedling text-2xl"></i>
+          </div>
+          <span
+            class="text-sm text-green-600 group-hover:text-green-800 transition-colors font-medium">Emprendimientos</span>
+        </button>
+
+        <!-- Lugares Turísticos -->
+        <button routerLink="/prinlugares" routerLinkActive="text-white"
+          class="flex flex-col items-center gap-1 min-w-[80px] group">
+          <div
+            class="w-12 h-12 flex items-center justify-center text-green-600 group-hover:text-green-800 transition-all duration-300 transform group-hover:scale-110">
+            <i class="fas fa-map-marked-alt text-2xl"></i>
+          </div>
+          <span class="text-sm text-green-600 group-hover:text-green-800 transition-colors font-medium">Lugares
+            Turísticos</span>
+        </button>
+
+        <!-- Tipos de Servicios (dinámicos con íconos específicos) -->
+        <button *ngFor="let tipo of tiposServicio" [routerLink]="['/prinservicios', tipo.id]"
+          routerLinkActive="text-white" (click)="refreshData(tipo.id)"
+          class="flex flex-col items-center gap-1 min-w-[80px] group">
+          <div
+            class="w-12 h-12 flex items-center justify-center text-green-600 group-hover:text-green-800 transition-all duration-300 transform group-hover:scale-110">
+            <!-- Íconos específicos por tipo de servicio -->
+            <i class="text-2xl" [ngClass]="getServiceIcon(tipo.nombre)"></i>
+          </div>
+          <span class="text-sm text-green-600 group-hover:text-green-800 transition-colors font-medium">{{ tipo.nombre
+            }}</span>
+        </button>
       </div>
-      <span class="text-sm text-green-600 group-hover:text-green-800 transition-colors font-medium">Principal</span>
-    </button>
-    
-    <!-- Emprendimientos -->
-    <button routerLink="/prinemprendimiento" routerLinkActive="text-white"
-      class="flex flex-col items-center gap-1 min-w-[80px] group">
-      <div class="w-12 h-12 flex items-center justify-center text-green-600 group-hover:text-green-800 transition-all duration-300 transform group-hover:scale-110">
-        <i class="fas fa-seedling text-2xl"></i>
-      </div>
-      <span class="text-sm text-green-600 group-hover:text-green-800 transition-colors font-medium">Emprendimientos</span>
-    </button>
-    
-    <!-- Lugares Turísticos -->
-    <button routerLink="/prinlugares" routerLinkActive="text-white"
-       class="flex flex-col items-center gap-1 min-w-[80px] group">
-      <div class="w-12 h-12 flex items-center justify-center text-green-600 group-hover:text-green-800 transition-all duration-300 transform group-hover:scale-110">
-        <i class="fas fa-map-marked-alt text-2xl"></i>
-      </div>
-      <span class="text-sm text-green-600 group-hover:text-green-800 transition-colors font-medium">Lugares Turísticos</span>
-    </button>
-    
-    <!-- Tipos de Servicios (dinámicos con íconos específicos) -->
-    <button *ngFor="let tipo of tiposServicio" [routerLink]="['/prinservicios', tipo.id]"
-      routerLinkActive="text-white" (click)="refreshData(tipo.id)"
-      class="flex flex-col items-center gap-1 min-w-[80px] group">
-      <div class="w-12 h-12 flex items-center justify-center text-green-600 group-hover:text-green-800 transition-all duration-300 transform group-hover:scale-110">
-        <!-- Íconos específicos por tipo de servicio -->
-        <i class="text-2xl" [ngClass]="getServiceIcon(tipo.nombre)"></i>
-      </div>
-      <span class="text-sm text-green-600 group-hover:text-green-800 transition-colors font-medium">{{ tipo.nombre }}</span>
-    </button>
-  </div>
-</div>
+    </div>
 
     <!-- Login/Register -->
     <div class="flex items-center gap-3 flex-shrink-0" *ngIf="!isLoggedIn()">
@@ -59,10 +65,12 @@
           {{ cartItems.length }}
         </span>
       </button>
-      <button routerLink="/login" class="px-4 py-2 hover:bg-gray-100 rounded-full text-gray-700 font-medium transition-colors">
+      <button routerLink="/login"
+        class="px-4 py-2 hover:bg-gray-100 rounded-full text-gray-700 font-medium transition-colors">
         Ingresar
       </button>
-      <button routerLink="/register" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full font-medium transition-colors">
+      <button routerLink="/register"
+        class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full font-medium transition-colors">
         Registrarse
       </button>
     </div>
@@ -76,7 +84,7 @@
           {{ cartItems.length }}
         </span>
       </button>
-      
+
 
       <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown23"
         class="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-full transition-colors">
@@ -87,22 +95,27 @@
       </button>
 
       <!-- Dropdown menu -->
-      <div id="dropdown23" class="z-10 hidden bg-white rounded-2xl shadow-lg border border-gray-100 w-56 overflow-hidden">
+      <div id="dropdown23"
+        class="z-10 hidden bg-white rounded-2xl shadow-lg border border-gray-100 w-56 overflow-hidden">
         <div class="py-2">
-          <button routerLink="/misreservas" class="flex items-center gap-3 w-full px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors text-sm">
+          <button routerLink="/misreservas"
+            class="flex items-center gap-3 w-full px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors text-sm">
             <i class="fas fa-bookmark text-gray-400"></i>
             <span>Mis reservas</span>
           </button>
-          <button class="flex items-center gap-3 w-full px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors text-sm">
+          <button
+            class="flex items-center gap-3 w-full px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors text-sm">
             <i class="fas fa-clock text-gray-400"></i>
             <span>Pagos pendientes</span>
           </button>
-          <button class="flex items-center gap-3 w-full px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors text-sm">
+          <button
+            class="flex items-center gap-3 w-full px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors text-sm">
             <i class="fas fa-check-circle text-gray-400"></i>
             <span>Pagos realizados</span>
           </button>
           <div class="h-[1px] bg-gray-100 my-1"></div>
-          <button (click)="logout()" class="flex items-center gap-3 w-full px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors text-sm">
+          <button (click)="logout()"
+            class="flex items-center gap-3 w-full px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors text-sm">
             <i class="fas fa-sign-out-alt text-gray-400"></i>
             <span>Cerrar sesión</span>
           </button>
@@ -132,7 +145,8 @@
             </div>
           </ng-template>
           <!-- Badge de tipo -->
-          <div class="absolute top-3 left-3 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-sm font-medium text-gray-700">
+          <div
+            class="absolute top-3 left-3 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-sm font-medium text-gray-700">
             {{ item.tipo || 'Servicio turístico' }}
           </div>
         </div>
@@ -194,11 +208,15 @@
 
     <!-- Messages -->
     <div class="flex-1 overflow-y-auto p-4 space-y-2">
-      <div *ngFor="let msg of messages"
-        [ngClass]="msg.from === 'user' ? 'self-end bg-green-100 text-right' : 'self-start bg-gray-100 text-left'"
-        class="px-3 py-2 rounded-lg max-w-xs break-words">
-        {{ msg.text }}
-      </div>
+<div *ngFor="let msg of messages"
+     [ngClass]="msg.from === 'user' ? 'self-end bg-green-100 text-right' : 'self-start bg-gray-100 text-left'"
+     class="px-3 py-2 rounded-lg max-w-xs break-words">
+  
+  <!-- Usamos innerHTML para mostrar el texto con formato -->
+  <div [innerHTML]="msg.text"></div>
+</div>
+
+
     </div>
 
     <!-- Input -->

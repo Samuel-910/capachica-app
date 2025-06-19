@@ -97,26 +97,39 @@ export class NavbarComponent implements OnInit {
     });
   }
 
-  send(): void {
-    if (!this.inputMessage.trim()) return;
-    this.messages.push({ from: 'user', text: this.inputMessage });
-    this.loading = true;
+send(): void {
+  if (!this.inputMessage.trim()) return;
+  this.messages.push({ from: 'user', text: this.inputMessage });
+  this.loading = true;
 
-    this.chatbot.sendMessage(this.inputMessage).subscribe(
-      res => {
-        // Ahora el backend devuelve { response: string }
-        const reply = res.response ?? res.reply ?? res.message ?? 'Sin respuesta';
-        this.messages.push({ from: 'bot', text: reply });
-        this.loading = false;
-      },
-      () => {
-        this.messages.push({ from: 'bot', text: 'Error al enviar mensaje.' });
-        this.loading = false;
-      }
-    );
+  this.chatbot.sendMessage(this.inputMessage).subscribe(
+    res => {
+      const reply = res.response ?? res.reply ?? res.message ?? 'Sin respuesta';
+      // Convertir los **texto** en negrita a <b>texto</b> y añadir saltos de línea
+      const formattedReply = this.convertMarkdownToHtml(reply);
+      this.messages.push({ from: 'bot', text: formattedReply });
+      this.loading = false;
+    },
+    () => {
+      this.messages.push({ from: 'bot', text: 'Error al enviar mensaje.' });
+      this.loading = false;
+    }
+  );
 
-    this.inputMessage = '';
-  }
+  this.inputMessage = '';
+}
+
+// Función para convertir markdown **texto** a <b>texto</b> y agregar saltos de página
+convertMarkdownToHtml(text: string): string {
+  // Reemplazar **texto** por <b>texto</b>
+  let formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');  
+  // Insertar un salto de línea (<br>) después de cada punto
+  formattedText = formattedText.replace(/(\.)(?=\s)/g, '$1<br>'); // Salto de línea después de cada punto
+  return formattedText;
+}
+
+
+
 //aqui
   @HostListener('window:scroll', ['$event'])
   onScroll() {

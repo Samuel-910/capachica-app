@@ -137,42 +137,45 @@ export class PrincipalComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
   }
-
+  private inicializarFavoritos(servicios: any[]) {
+    servicios.forEach(s => s.isFavorito = s.isFavorito ?? false);
+  }
   obtenerServiciosConReseñas(): void {
-    this.tipoServicioId = '3';
     this.isLoading = true;
-    this.servicioService.listarServiciosPorTipo(this.tipoServicioId).subscribe((res: any) => {
-      this.serviciosAlojamiento = res;
+    this.servicioService.listarServicios().subscribe({
+      next: (res: any[]) => {
+        this.serviciosAlojamiento = res.filter(servicio => servicio.tipoServicio.nombre === 'Alojamiento');
+        this.inicializarFavoritos(this.serviciosAlojamiento);
 
-      this.serviciosAlojamiento.forEach(servicio => {
-        this.resenaService.obtenerPromedioDeCalificacion(servicio.id).subscribe((promedio: any) => {
-          servicio.promedioCalificacion = promedio.promedioCalificacion;
-          servicio.totalResenas = promedio.totalResenas;
+        this.serviciosAlojamiento.forEach(servicio => {
+          this.resenaService.obtenerPromedioDeCalificacion(servicio.id)
+            .subscribe(prom => {
+              servicio.promedioCalificacion = prom.promedioCalificacion;
+              servicio.totalResenas = prom.totalResenas;
+            });
+
         });
 
-        this.resenaService.obtenerReseñas().subscribe((reseñas: any) => {
-          servicio.reseñas = reseñas.filter((resena: any) => resena.servicioId === servicio.id);
-        });
-      });
-
-      this.isLoading = false;
+        this.isLoading = false;
+      },
+      error: err => {
+        console.error('Error al cargar servicios de alojamiento:', err);
+        this.isLoading = false;
+      }
     });
   }
 
   obtenerServiciosPorTipoExperiencia(): void {
-    this.tipoServicioId = '8';
-    this.servicioService.listarServiciosPorTipo(this.tipoServicioId).subscribe(
-      (res: any) => {
-        if (res) {
-          this.serviciosExperiencia = res;
-        } else {
-          console.error('Error al obtener los servicios de Experiencia', res);
-        }
+    this.servicioService.listarServicios().subscribe({
+      next: (res: any[]) => {
+        // Filtrar los servicios cuyo tipoServicio.nombre sea 'Alojamiento'
+        this.serviciosExperiencia = res.filter(servicio => servicio.tipoServicio.nombre === 'Experiencias');
+
+        // Inicializar los favoritos
+        this.inicializarFavoritos(this.serviciosExperiencia);
       },
-      error => {
-        console.error('Error en la solicitud de servicios por tipo Experiencia', error);
-      }
-    );
+      error: err => console.error('Error al cargar servicios de experiencia:', err)
+    });
   }
 
  // 3. Método simplificado para obtener paquetes (SIN procesar array de imágenes)
@@ -225,19 +228,12 @@ obtenerImagenPaqueteConFallbacks(paquete: any): string {
 // 1. Método principal para obtener imagen (USAR ESTE EN EL HTML)
 obtenerImagenPaquete(paquete: any): string {
   const imagenFallback = 'img/fam1.png';
-  const supabaseStorageUrl = 'https://twsevdzjdnwjhdysvecm.supabase.co/storage/v1/object/public/paquetes-turisticos/';
-  
   // Verificar que el paquete tenga un ID válido
   if (!paquete || !paquete.id) {
     console.warn('Paquete sin ID:', paquete);
     return imagenFallback;
   }
-  
-  // Construir URL basada en ID del paquete
-  // Formato: paquete-{id}.jpg (puedes cambiar la extensión según tus archivos)
-  const urlImagen = `${supabaseStorageUrl}paquete-${paquete.id}.jpg`;
-  
-  console.log(`Intentando cargar imagen para paquete ${paquete.id}:`, urlImagen);
+  const urlImagen = `${paquete.imagenes[0]?.url}`;
   return urlImagen;
 }
 
