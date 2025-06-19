@@ -6,6 +6,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { forkJoin, map, of, switchMap, tap } from 'rxjs';
 import { EmprendimientoService } from '../../core/services/emprendimiento.service';
 import Swal from 'sweetalert2';
+import { initFlowbite } from 'flowbite';
 
 @Component({
   selector: 'app-misfavoritos',
@@ -24,6 +25,7 @@ export class MisfavoritosComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    initFlowbite();
     this.cargarFavoritos();
   }
 

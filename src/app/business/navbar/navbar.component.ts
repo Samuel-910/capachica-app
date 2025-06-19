@@ -1,7 +1,6 @@
 import { Component, HostListener, OnInit, Output, EventEmitter } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { initFlowbite } from 'flowbite';
 
@@ -10,7 +9,11 @@ import { PaqueteTuristicoService } from '../../core/services/paquetes-turisticos
 import { LugaresService } from '../../core/services/lugar.service';
 import { TiposServicioService } from '../../core/services/tipos-servicios.service';
 import Swal from 'sweetalert2';
-
+import { ChatbotService } from '../../core/services/chatbot.service';
+interface Message {
+  from: 'user' | 'bot';
+  text: string;
+}
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -19,6 +22,13 @@ import Swal from 'sweetalert2';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit {
+    //chatbot
+  messages: Message[] = [];
+  inputMessage = '';
+  loading = false;
+  showChat = false;
+  //catbot
+
   tiposServicio: any[] = [];
   emprendimientoNombres: string[] = [];
   paqueteNombres: string[] = [];
@@ -41,12 +51,12 @@ export class NavbarComponent implements OnInit {
   @Output() resultadosBusqueda = new EventEmitter<any[]>();
 
   constructor(
-    private emprendimientoService: EmprendimientoService,
-    private paqueteService: PaqueteTuristicoService,
-    private lugarService: LugaresService,
-    private tiposServicioService: TiposServicioService,
-    public router: Router,
-
+    private readonly emprendimientoService: EmprendimientoService,
+    private readonly paqueteService: PaqueteTuristicoService,
+    private readonly lugarService: LugaresService,
+    private readonly tiposServicioService: TiposServicioService,
+    public readonly router: Router,
+    private readonly chatbot: ChatbotService
   ) { }
 
   @HostListener('window:scroll') onScroll() {
@@ -63,6 +73,42 @@ export class NavbarComponent implements OnInit {
     this.loadLugaresTuristicos();
     this.cargarTiposServicio();
   }
+
+    //chatbot
+  toggleChat(): void {
+    this.showChat = !this.showChat;
+    if (this.showChat && this.messages.length === 0) {
+      this.loadHistory();
+    }
+  }
+
+  private loadHistory(): void {
+    this.chatbot.getHistory().subscribe(history => {
+      this.messages = history.map(h => ({ from: 'user', text: h.message }));
+    });
+  }
+
+  send(): void {
+    if (!this.inputMessage.trim()) return;
+    this.messages.push({ from: 'user', text: this.inputMessage });
+    this.loading = true;
+
+    this.chatbot.sendMessage(this.inputMessage).subscribe(
+      res => {
+        // Ahora el backend devuelve { response: string }
+        const reply = res.response ?? res.reply ?? res.message ?? 'Sin respuesta';
+        this.messages.push({ from: 'bot', text: reply });
+        this.loading = false;
+      },
+      () => {
+        this.messages.push({ from: 'bot', text: 'Error al enviar mensaje.' });
+        this.loading = false;
+      }
+    );
+
+    this.inputMessage = '';
+  }
+//aqui
   cargarTiposServicio(): void {
     this.tiposServicioService.listarTiposServicio().subscribe({
       next: (data) => {

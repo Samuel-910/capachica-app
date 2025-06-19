@@ -306,7 +306,11 @@ export const routes: Routes = [
           .then(m => m.FormEmprendimientoComponent),
         data: { isEdit: true }
       },
-
+      {
+        path: 'configuraciones',
+        loadComponent: () =>
+          import('./business/configuracion/configuracion.component').then(m => m.ConfiguracionComponent),
+      },
     ],
   },
   {

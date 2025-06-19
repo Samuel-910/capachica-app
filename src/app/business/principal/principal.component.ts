@@ -11,16 +11,22 @@ import { ResenaService } from '../../core/services/resenas.service';
 import { initFlowbite } from 'flowbite';
 import { register } from 'swiper/element/bundle';
 import Swal from 'sweetalert2';
+import { ChatbotService } from '../../core/services/chatbot.service';
+import { FormsModule } from '@angular/forms';
 
 register();
-
+interface Message {
+  from: 'user' | 'bot';
+  text: string;
+}
 @Component({
   selector: 'app-principal',
   standalone: true,
   imports: [
     CommonModule,
     NavbarComponent,
-    RouterModule
+    RouterModule,
+    FormsModule
   ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   templateUrl: './principal.component.html',
@@ -32,14 +38,20 @@ export class PrincipalComponent implements OnInit {
   serviciosAlojamiento: any[] = [];
   serviciosExperiencia: any[] = [];
   isLoading: boolean = false;
-
+  //chatbot
+  messages: Message[] = [];
+  inputMessage = '';
+  loading = false;
+  showChat = false;
+  //catbot
   constructor(
     private slidersService: SlidersService,
     private servicioService: ServiciosService,
     private paqueteTuristicoService: PaqueteTuristicoService,
     private resenaService: ResenaService,
-    private router: Router
-  ) {}
+    private router: Router,
+    private chatbot: ChatbotService
+  ) { }
 
   ngOnInit(): void {
     this.cargarSliders();
@@ -47,7 +59,41 @@ export class PrincipalComponent implements OnInit {
     this.obtenerServiciosPorTipoExperiencia();
     this.obtenerPaquetesTuristicos();
   }
+  //chatbot
+  toggleChat(): void {
+    this.showChat = !this.showChat;
+    if (this.showChat && this.messages.length === 0) {
+      this.loadHistory();
+    }
+  }
 
+  private loadHistory(): void {
+    this.chatbot.getHistory().subscribe(history => {
+      this.messages = history.map(h => ({ from: 'user', text: h.message }));
+    });
+  }
+
+  send(): void {
+    if (!this.inputMessage.trim()) return;
+    this.messages.push({ from: 'user', text: this.inputMessage });
+    this.loading = true;
+
+    this.chatbot.sendMessage(this.inputMessage).subscribe(
+      res => {
+        // Ahora el backend devuelve { response: string }
+        const reply = res.response ?? res.reply ?? res.message ?? 'Sin respuesta';
+        this.messages.push({ from: 'bot', text: reply });
+        this.loading = false;
+      },
+      () => {
+        this.messages.push({ from: 'bot', text: 'Error al enviar mensaje.' });
+        this.loading = false;
+      }
+    );
+
+    this.inputMessage = '';
+  }
+//aqui
   private inicializarFavoritos(servicios: any[]) {
     servicios.forEach(s => s.isFavorito = s.isFavorito ?? false);
   }
@@ -87,19 +133,18 @@ export class PrincipalComponent implements OnInit {
     });
   }
 
-obtenerServiciosPorTipoExperiencia(): void {
-  this.servicioService.listarServicios().subscribe({
-    next: (res: any[]) => {
-      // Filtrar los servicios cuyo tipoServicio.nombre sea 'Alojamiento'
-      this.serviciosExperiencia = res.filter(servicio => servicio.tipoServicio.nombre === 'Experiencias');
-      
-      // Inicializar los favoritos
-      this.inicializarFavoritos(this.serviciosExperiencia);
-    },
-    error: err => console.error('Error al cargar servicios de experiencia:', err)
-  });
-}
+  obtenerServiciosPorTipoExperiencia(): void {
+    this.servicioService.listarServicios().subscribe({
+      next: (res: any[]) => {
+        // Filtrar los servicios cuyo tipoServicio.nombre sea 'Alojamiento'
+        this.serviciosExperiencia = res.filter(servicio => servicio.tipoServicio.nombre === 'Experiencias');
 
+        // Inicializar los favoritos
+        this.inicializarFavoritos(this.serviciosExperiencia);
+      },
+      error: err => console.error('Error al cargar servicios de experiencia:', err)
+    });
+  }
 
   obtenerPaquetesTuristicos(): void {
     this.isLoading = true;

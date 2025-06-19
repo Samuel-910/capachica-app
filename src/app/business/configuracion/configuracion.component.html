@@ -1,0 +1,77 @@
+<div class="flex">
+    <app-sidebar class="w-[260px] fixed h-screen z-20"></app-sidebar>
+    <div class="flex-1 ml-[260px]">
+        <app-navbar class="fixed top-0 left-[260px] right-0 h-[64px] z-10 bg-white border-b"></app-navbar>
+        <div class="mt-24">
+            <div class="max-w-3xl mx-auto">
+                <h1 class="text-center text-2xl font-bold mb-6">Perfil público</h1>
+
+                <form class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Columna izquierda: campos de texto -->
+                        <div class="space-y-4">
+                            <!-- Nombre -->
+                            <div>
+                                <label for="nombre" class="block text-sm font-medium mb-1">Nombre</label>
+                                <input type="text" id="nombre" name="nombre" value="Admin"
+                                    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                            </div>
+
+                            <!-- Apellidos -->
+                            <div>
+                                <label for="apellidos" class="block text-sm font-medium mb-1">Apellidos</label>
+                                <input type="text" id="apellidos" name="apellidos" value="Sistema"
+                                    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                            </div>
+
+                            <!-- Teléfono -->
+                            <div>
+                                <label for="telefono" class="block text-sm font-medium mb-1">Teléfono</label>
+                                <input type="tel" id="telefono" name="telefono" value="999999999"
+                                    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                            </div>
+
+                            <!-- Dirección -->
+                            <div>
+                                <label for="direccion" class="block text-sm font-medium mb-1">Dirección</label>
+                                <input type="text" id="direccion" name="direccion" value="Av. Principal 123"
+                                    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                            </div>
+
+                            <!-- Fecha de nacimiento -->
+                            <div>
+                                <label for="fecha-nacimiento" class="block text-sm font-medium mb-1">Fecha de
+                                    nacimiento</label>
+                                <input type="date" id="fecha-nacimiento" name="fechaNacimiento" value="1990-01-01"
+                                    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                            </div>
+
+                            <!-- Subdivisión ID -->
+                            <div>
+                                <label for="subdivision" class="block text-sm font-medium mb-1">ID de
+                                    subdivisión</label>
+                                <input type="number" id="subdivision" name="subdivisionId" value="3080"
+                                    class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+                            </div>
+                        </div>
+
+                        <!-- Columna derecha: foto de perfil -->
+                        <div class="flex flex-col items-center">
+                            <label class="block text-xl font-medium mb-1">Foto de perfil</label>
+                            <img src="https://example.com/images/admin-profile.jpg" alt="Foto de perfil"
+                                class="w-32 h-32 rounded-full object-cover border border-gray-300 mb-4" />
+                        </div>
+                    </div>
+
+                    <!-- Botón de guardar -->
+                    <div class="pt-4 border-t border-gray-200">
+                        <button type="submit"
+                            class="w-full px-4 py-2 bg-green-600 text-white font-medium rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400">
+                            Guardar cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
