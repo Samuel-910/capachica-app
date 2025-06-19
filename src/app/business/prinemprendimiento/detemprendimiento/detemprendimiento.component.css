@@ -30,3 +30,47 @@
   .rotate-icon {
     animation: slow-rotate 20s linear infinite;
   }
+
+  /* Estilos para el footer */
+  footer {
+    box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  /* Efecto hover suave para los enlaces */
+  footer a {
+    transition: all 0.2s ease-in-out;
+  }
+
+  footer a:hover {
+    transform: translateX(5px);
+  }
+
+  /* Estilos para los iconos */
+  footer .fab {
+    transition: transform 0.2s ease-in-out;
+  }
+
+  footer .fab:hover {
+    transform: scale(1.2);
+  }
+
+  /* Estilos responsivos */
+  @media (max-width: 768px) {
+    footer .grid {
+      gap: 2rem;
+    }
+    
+    footer .social-icons {
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+  }
+
+  /* Efecto de hover para las imágenes de certificación */
+  footer img {
+    transition: opacity 0.2s ease-in-out;
+  }
+
+  footer img:hover {
+    opacity: 1 !important;
+  }

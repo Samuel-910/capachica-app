@@ -1,7 +1,7 @@
 <app-navbar></app-navbar>
 
-<!-- Sección principal con video de fondo más delgado -->
-<section class="relative mt-40 w-full h-[280px] overflow-hidden rounded-lg shadow-lg" role="banner">
+<!-- Sección principal con video de fondo más integrado -->
+<section class="relative mt-0 w-full h-[350px] overflow-hidden shadow-lg" role="banner">
   <!-- Video de fondo -->
   <video autoplay muted loop playsinline class="absolute top-0 left-0 w-full h-full object-cover z-0">
     <source src="https://videos.pexels.com/video-files/31823467/13558115_640_360_60fps.mp4" type="video/mp4" />
@@ -9,11 +9,14 @@
   </video>
 
   <!-- Contenido encima del video -->
-  <div class="relative z-10 bg-black/50 w-full h-full flex flex-col justify-center items-center text-white text-center px-6">
-    <h2 class="text-4xl sm:text-5xl font-extrabold mb-2 leading-tight tracking-wide font-[PlayfairDisplay] drop-shadow-md" tabindex="0">
+  <div
+    class="relative z-10 bg-black/50 w-full h-full flex flex-col justify-center items-center text-white text-center px-6">
+    <h2
+      class="text-4xl sm:text-5xl font-extrabold mb-4 leading-tight tracking-wide font-[PlayfairDisplay] drop-shadow-lg"
+      tabindex="0">
       Emprendimiento Local
     </h2>
-    <p class="text-base sm:text-lg md:text-xl font-light px-4 max-w-2xl font-[Inter] drop-shadow-sm" tabindex="0">
+    <p class="text-base sm:text-lg md:text-xl font-light px-4 max-w-2xl font-[Inter] drop-shadow-md" tabindex="0">
       Apoya a los emprendedores locales de Capachica. Descubre proyectos innovadores,
       productos únicos y la pasión de los empresarios de la región.
     </p>
@@ -23,10 +26,8 @@
 <!-- Grid de Cards -->
 <section class="relative w-full py-12 px-4">
   <!-- Fondo de pantalla -->
-  <div
-    class="absolute inset-0 z-0 bg-no-repeat bg-center bg-[length:100%_100%]"
-    style="background-image: url('assets/ka.jpg');"
-  ></div>
+  <div class="absolute inset-0 z-0 bg-no-repeat bg-center bg-[length:100%_100%]"
+    style="background-image: url('assets/ka.jpg');"></div>
 
   <!-- Capa blanca translúcida encima del fondo -->
   <div class="absolute inset-0 z-5 bg-white/10 backdrop-blur-sm"></div>
@@ -44,22 +45,13 @@
   <!-- Contenido con los cards -->
   <div *ngIf="!isLoading" class="relative z-20 flex justify-center items-start gap-8 px-4">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-6">
-      <!-- Cards de emprendimientos -->
-      <div
-        *ngFor="let emp of emprendimientos"
-        (click)="verDetallesEmprendimiento(emp.id)"
-        class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform transform hover:-translate-y-1 cursor-pointer"
-      >
-        <!-- Imagen del emprendimiento -->
-        <img
-          [src]="
+      <div *ngFor="let emp of emprendimientos" (click)="verDetallesEmprendimiento(emp.id)"
+        class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform transform hover:-translate-y-1 cursor-pointer">
+        <img [src]="
             emp.imagenes?.length
               ? 'https://twsevdzjdnwjhdysvecm.supabase.co/storage/v1/object/public/emprendimientos/' + emp.imagenes[0].url
               : 'assets/placeholder.jpg'
-          "
-          alt="Imagen de {{ emp.nombre }}"
-          class="rounded-t-xl w-full h-48 object-cover"
-        />
+          " alt=" de {{ emp.nombre }}" class="rounded-t-xl w-full h-48 object-cover" />
 
         <div class="p-4 space-y-3">
           <h3 class="text-xl font-semibold text-gray-800 flex items-center gap-2">

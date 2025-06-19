@@ -4,29 +4,29 @@
     <h2 class="text-4xl font-bold mb-4">
       {{ emprendimiento.lugarTuristico?.nombre }}
     </h2>
-    
+
     <h2 class="text-2xl font-bold text-gray-800 mb-4">
       {{ emprendimiento.nombre }}
     </h2>
     <p class="text-sm text-gray-600 mb-4">
       {{ emprendimiento.descripcion }}
     </p>
-    
-    
+
+
     <div class="relative w-full h-96 overflow-hidden rounded-xl mt-8">
       <ng-container *ngIf="emprendimiento.imagenes?.length; else noImages">
         <div *ngFor="let img of emprendimiento.imagenes; let i = index"
-             class="absolute inset-0 transition-opacity duration-700 ease-in-out"
-             [class.opacity-0]="i !== currentSlide"
-             [class.opacity-100]="i === currentSlide">
+          class="absolute inset-0 transition-opacity duration-700 ease-in-out" [class.opacity-0]="i !== currentSlide"
+          [class.opacity-100]="i === currentSlide">
           <img [src]="'https://twsevdzjdnwjhdysvecm.supabase.co/storage/v1/object/public/emprendimientos/' + img.url"
-               alt="Imagen {{ i+1 }}"
-               class="w-full h-full object-cover" />
+            alt="Imagen {{ i+1 }}" class="w-full h-full object-cover" />
         </div>
 
         <!-- Flechas -->
-        <button (click)="prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2">‹</button>
-        <button (click)="nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2">›</button>
+        <button (click)="prevSlide()"
+          class="absolute left-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2">‹</button>
+        <button (click)="nextSlide()"
+          class="absolute right-4 top-1/2 -translate-y-1/2 bg-black bg-opacity-50 text-white rounded-full p-2">›</button>
       </ng-container>
 
       <ng-template #noImages>
@@ -38,66 +38,176 @@
   </section>
 
   <section class="bg-white p-6 mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+
     <!-- Columna Izquierda -->
     <div class="md:col-span-2">
-      
+      <div class="container mx-auto px-4 py-6">
+        <div class="mt-8 grid gap-6">
+
+          <!-- Información del propietario -->
+          <div class="flex gap-4">
+            <div class="p-1 rounded-full border-2 border-blue-300">
+              <!-- Foto del propietario o avatar por defecto -->
+              <img [src]="emprendimiento.usuario?.persona?.fotoPerfilUrl || 'assets/default-owner.png'"
+                [alt]="emprendimiento.usuario?.persona?.nombre + ' ' + emprendimiento.usuario?.persona?.apellidos"
+                class="w-10 h-10 rounded-full object-cover" />
+            </div>
+            <div>
+              <h4 class="text-lg font-semibold text-gray-900">
+                Propietario: {{ emprendimiento.usuario?.persona?.nombre }} {{ emprendimiento.usuario?.persona?.apellidos
+                }}
+              </h4>
+              <p class="text-sm text-gray-600">
+                Emprendedor verificado con experiencia en {{ emprendimiento.tipo?.toLowerCase() }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Información de contacto -->
+          <div class="flex gap-4" *ngIf="emprendimiento.contactoTelefono">
+            <div class="p-1 rounded-full border-2 border-green-300">
+              <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" stroke-width="2"
+                  viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                </svg>
+              </div>
+            </div>
+            <div>
+              <h4 class="text-lg font-semibold text-gray-900">Contacto directo disponible</h4>
+              <p class="text-sm text-gray-600">
+                Comunícate directamente al {{ emprendimiento.contactoTelefono }} para consultas específicas
+              </p>
+            </div>
+          </div>
+
+          <!-- Tipo de emprendimiento -->
+          <div class="flex gap-4">
+            <div class="p-1 rounded-full border-2 border-purple-300">
+              <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" stroke-width="2"
+                  viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H9m11 0v-7a2 2 0 00-2-2h-2m-4 0H9m11 0V9a2 2 0 00-2-2V5a2 2 0 00-2-2m-6 0V3a2 2 0 00-2-2v0a2 2 0 00-2 2v2m0 0h4v2m-4-2V5m4 0v2" />
+                </svg>
+              </div>
+            </div>
+            <div>
+              <h4 class="text-lg font-semibold text-gray-900">
+                Especialidad en {{ emprendimiento.tipo }}
+              </h4>
+              <p class="text-sm text-gray-600">
+                Emprendimiento enfocado en brindar experiencias de calidad en el sector turístico
+              </p>
+            </div>
+          </div>
+
+          <!-- Estado del emprendimiento -->
+          <div class="flex gap-4" *ngIf="emprendimiento.estado === 'aprobado'">
+            <div class="p-1 rounded-full border-2 border-green-300">
+              <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" stroke-width="2"
+                  viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
+            <div>
+              <h4 class="text-lg font-semibold text-gray-900">Emprendimiento Verificado</h4>
+              <p class="text-sm text-gray-600">
+                Negocio aprobado y verificado desde {{ emprendimiento.fechaAprobacion | date:'mediumDate' }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Redes sociales si están disponibles -->
+          <div class="flex gap-4" *ngIf="emprendimiento.redesSociales">
+            <div class="p-1 rounded-full border-2 border-pink-300">
+              <div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center">
+                <svg class="w-5 h-5 text-pink-600" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
+                </svg>
+              </div>
+            </div>
+            <div>
+              <h4 class="text-lg font-semibold text-gray-900">Síguenos en redes sociales</h4>
+              <p class="text-sm text-gray-600">
+                Mantente conectado con nuestras últimas actualizaciones y ofertas especiales
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
 
       <div class="space-y-2 text-gray-800 mb-6 bg-gray-50 border border-gray-200 rounded-xl shadow-sm p-4">
         <p>
           <strong>
             <svg class="inline w-5 h-5 mr-1 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 3.75-3 8.54-5 11.54C10 17.54 7 12.75 7 9z"/>
-              <circle cx="12" cy="9" r="2.5"/>
+              <path
+                d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zM7 9c0-2.76 2.24-5 5-5s5 2.24 5 5c0 3.75-3 8.54-5 11.54C10 17.54 7 12.75 7 9z" />
+              <circle cx="12" cy="9" r="2.5" />
             </svg>
             Dirección:
           </strong>
           {{ emprendimiento.direccion }}
         </p>
-      
+
         <p *ngIf="emprendimiento.recomendaciones">
           <strong>
             <svg class="inline w-5 h-5 mr-1 text-green-500" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"
+                stroke-linejoin="round" />
             </svg>
             Recomendaciones:
           </strong>
           {{ emprendimiento.recomendaciones }}
         </p>
-      
+
         <p *ngIf="emprendimiento.restricciones">
           <strong>
-            <svg class="inline w-5 h-5 mr-1 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M18 6L6 18M6 6l12 12"/>
+            <svg class="inline w-5 h-5 mr-1 text-red-500" fill="none" stroke="currentColor" stroke-width="2"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M18 6L6 18M6 6l12 12" />
             </svg>
             Restricciones:
           </strong>
           {{ emprendimiento.restricciones }}
         </p>
-      
+
         <p *ngIf="emprendimiento.contactoTelefono">
           <strong>
-            <svg class="inline w-5 h-5 mr-1 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 5h2l3.5 7-1.5 1.5L6 10l-3 3v1h3l5-5-1.5-1.5L7 13l3.5 7h2a2 2 0 002-2v-3l-1-1 1-1v-3a2 2 0 00-2-2z"/>
+            <svg class="inline w-5 h-5 mr-1 text-blue-500" fill="none" stroke="currentColor" stroke-width="2"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M3 5h2l3.5 7-1.5 1.5L6 10l-3 3v1h3l5-5-1.5-1.5L7 13l3.5 7h2a2 2 0 002-2v-3l-1-1 1-1v-3a2 2 0 00-2-2z" />
             </svg>
             Teléfono de contacto:
           </strong>
           {{ emprendimiento.contactoTelefono }}
         </p>
-      
+
         <p *ngIf="emprendimiento.contactoEmail">
           <strong>
-            <svg class="inline w-5 h-5 mr-1 text-purple-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M16 12H8m8 0a4 4 0 01-8 0m8 0a4 4 0 01-8 0m-2 6h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            <svg class="inline w-5 h-5 mr-1 text-purple-500" fill="none" stroke="currentColor" stroke-width="2"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M16 12H8m8 0a4 4 0 01-8 0m8 0a4 4 0 01-8 0m-2 6h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
             Email de contacto:
           </strong>
           {{ emprendimiento.contactoEmail }}
         </p>
-      
+
         <p *ngIf="emprendimiento.sitioWeb">
           <strong>
-            <svg class="inline w-5 h-5 mr-1 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l-2-2m0 0l2-2m-2 2h12"/>
+            <svg class="inline w-5 h-5 mr-1 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l-2-2m0 0l2-2m-2 2h12" />
             </svg>
             Sitio web:
           </strong>
@@ -105,251 +215,351 @@
             {{ emprendimiento.sitioWeb }}
           </a>
         </p>
-      
+
         <p *ngIf="emprendimiento.redesSociales">
           <strong>
             <svg class="inline w-5 h-5 mr-1 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2.04c-5.52 0-10 4.48-10 10 0 4.84 3.44 8.88 7.97 9.77v-6.9H8.1v-2.87h1.87v-2.2c0-1.85 1.13-2.87 2.79-2.87.81 0 1.65.15 1.65.15v1.81h-.92c-.91 0-1.19.57-1.19 1.15v1.56h2.03l-.32 2.87h-1.71v6.9c4.53-.89 7.97-4.93 7.97-9.77 0-5.52-4.48-10-10-10z"/>
+              <path
+                d="M12 2.04c-5.52 0-10 4.48-10 10 0 4.84 3.44 8.88 7.97 9.77v-6.9H8.1v-2.87h1.87v-2.2c0-1.85 1.13-2.87 2.79-2.87.81 0 1.65.15 1.65.15v1.81h-.92c-.91 0-1.19.57-1.19 1.15v1.56h2.03l-.32 2.87h-1.71v6.9c4.53-.89 7.97-4.93 7.97-9.77 0-5.52-4.48-10-10-10z" />
             </svg>
             Redes sociales:
           </strong>
           {{ emprendimiento.redesSociales }}
         </p>
-      
-        <p>
-          <strong>
-            <svg class="inline w-5 h-5 mr-1 text-gray-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10" stroke-linecap="round" stroke-linejoin="round"/>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3"/>
-            </svg>
-            Estado:
-          </strong>
-          {{ emprendimiento.estado }}
-        </p>
+
+
       </div>
-      
+
+
 
       <!-- Información del lugar -->
       <div class="mt-6 p-4 flex items-center gap-4 border rounded-xl bg-gray-50">
-        <img src="assets/planet.png" alt="Foto del lugar" 
-             class="w-14 h-14 rounded-full object-cover shadow-md rotate-icon" />
+        <img src="assets/planet.png" alt="Foto del lugar"
+          class="w-14 h-14 rounded-full object-cover shadow-md rotate-icon" />
         <div>
           <h3 class="text-lg font-semibold text-gray-900">Ubicación: {{ emprendimiento.ubicacion }}</h3>
           <p class="text-sm text-indigo-600">✨ Popular entre los viajeros</p>
         </div>
       </div>
 
-      <div class="container mx-auto px-4 py-6">
-        <div class="mt-8 grid gap-6">
-      
-          <div class="flex gap-4">
-            <div class="p-1 rounded-full border-2 border-indigo-300">
-              <!-- GIF con borde y sin fondo adicional -->
-              <img src="assets/earth.gif" alt="Aventura al aire libre" class="w-10 h-10 rounded-full object-contain" />
-            </div>
-            <div>
-              <h4 class="text-lg font-semibold text-gray-900">Ideal para aventuras al aire libre</h4>
-              <p class="text-sm text-gray-600">Este lugar ofrece vistas espectaculares para disfrutar de la naturaleza.</p>
-            </div>
+
+    </div>
+    <!-- Servicios que ofreces (lista vertical con scroll) -->
+    <div class="bg-white shadow-md rounded-xl p-6 mt-6 w-full max-w-3xl mx-auto">
+      <h3 class="text-2xl font-semibold text-gray-900 mb-4">Servicios que ofreces</h3>
+
+      <!-- Contenedor con alto fijo y scroll vertical -->
+      <div class="max-h-[500px] overflow-y-auto space-y-4">
+        <div *ngFor="let servicio of serviciosFiltrados"
+          class="flex items-center gap-4 p-4 border rounded-xl hover:shadow-lg transition"
+          (click)="goToServicio(servicio)">
+          <!-- Imagen cuadrada -->
+          <div class="w-24 h-24 flex-shrink-0 overflow-hidden rounded-lg">
+            <img [src]="servicio.imagenes?.length > 0
+            ? 'https://twsevdzjdnwjhdysvecm.supabase.co/storage/v1/object/public/servicios/' + servicio.imagenes[0].url
+            : 'https://via.placeholder.com/150?text=Sin+imagen'" alt="{{ servicio.nombre }}"
+              class="w-full h-full object-cover" />
           </div>
-          
-          
-      
-          <div class="flex gap-4">
-            <div class="p-1 rounded-full border-2 border-green-300">
-              <!-- GIF con borde y sin fondo adicional -->
-              <img src="assets/lake.gif" alt="Espacios para grupos grandes" class="w-10 h-10 rounded-full object-contain" />
-            </div>
-            <div>
-              <h4 class="text-lg font-semibold text-gray-900">Espacios para grupos grandes</h4>
-              <p class="text-sm text-gray-600">Amplias áreas para disfrutar con familia o amigos.</p>
-            </div>
+          <!-- Texto -->
+          <div class="flex-1">
+            <h4 class="text-lg font-medium text-gray-800 truncate">
+              {{ servicio.nombre }}
+            </h4>
+            <!-- Badge de tipo de servicio -->
+            <span class="inline-block mt-1 px-2 py-0.5 text-xs font-semibold text-white bg-indigo-600 rounded-full">
+              Tipo: {{ servicio.tipoServicioId }}
+            </span>
           </div>
-          
-      
         </div>
       </div>
     </div>
-<!-- Servicios que ofreces (lista vertical con scroll) -->
-<div class="bg-white shadow-md rounded-xl p-6 mt-6 w-full max-w-3xl mx-auto">
-  <h3 class="text-2xl font-semibold text-gray-900 mb-4">Servicios que ofreces</h3>
-
-  <!-- Contenedor con alto fijo y scroll vertical -->
-  <div class="max-h-[500px] overflow-y-auto space-y-4">
-    <div
-      *ngFor="let servicio of serviciosFiltrados"
-      class="flex items-center gap-4 p-4 border rounded-xl hover:shadow-lg transition"
-      (click)="goToServicio(servicio)"
-    >
-      <!-- Imagen cuadrada -->
-      <div class="w-24 h-24 flex-shrink-0 overflow-hidden rounded-lg">
-        <img
-          [src]="servicio.imagenes?.length > 0
-            ? 'https://twsevdzjdnwjhdysvecm.supabase.co/storage/v1/object/public/servicios/' + servicio.imagenes[0].url
-            : 'https://via.placeholder.com/150?text=Sin+imagen'"
-          alt="{{ servicio.nombre }}"
-          class="w-full h-full object-cover"
-        />
-      </div>
-      <!-- Texto -->
-      <div class="flex-1">
-        <h4 class="text-lg font-medium text-gray-800 truncate">
-          {{ servicio.nombre }}
-        </h4>
-        <!-- Badge de tipo de servicio -->
-        <span class="inline-block mt-1 px-2 py-0.5 text-xs font-semibold text-white bg-indigo-600 rounded-full">
-          Tipo: {{ servicio.tipoServicioId }}
-        </span>
-      </div>
-    </div>
-  </div>
-</div>
 
 
   </section>
-  
+
 
   <section class="py-10">
     <div class="bg-white shadow-lg rounded-xl p-6">
       <h2 class="text-3xl font-semibold text-gray-900 mb-3">📍 ¿A dónde irás?</h2>
-  
+
       <p class="text-md text-gray-600 mb-5">
         {{ emprendimiento.direccion }}
       </p>
-  
+
       <div class="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
-        <iframe *ngIf="mapUrl"
-                [src]="mapUrl"
-                class="w-full h-80"
-                style="border:0"
-                allowfullscreen
-                loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade">
+        <iframe *ngIf="mapUrl" [src]="mapUrl" class="w-full h-80" style="border:0" allowfullscreen loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade">
         </iframe>
       </div>
-  
+
       <div class="mt-5 text-sm text-gray-700 flex items-center gap-2">
         <span class="font-medium">📌 Coordenadas:</span>
         <span>{{ emprendimiento.latitud }}, {{ emprendimiento.longitud }}</span>
       </div>
     </div>
   </section>
- 
-<!-- Lugares Turísticos Relacionados (ahora en la posición de Servicios) -->
-<div class="bg-white shadow-md rounded-xl p-6 mt-6">
-  <h3 class="text-2xl font-semibold text-gray-900 mb-4">Lugares turísticos relacionados</h3>
 
-  <div class="max-h-[500px] overflow-y-auto">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div *ngFor="let lugar of lugaresTuristicos"
-           class="cursor-pointer border rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow flex flex-col bg-white"
-           (click)="goToLugarTuristico(lugar)">
 
-        <!-- Imagen con título superpuesto -->
-        <div class="relative w-full h-48">
-          <img
-            [src]="lugar.imagenes?.length > 0
-                    ? 'https://twsevdzjdnwjhdysvecm.supabase.co/storage/v1/object/public/lugares-turisticos/' + lugar.imagenes[0].url
-                    : 'https://via.placeholder.com/300x200?text=Sin+imagen'"
-            alt="{{ lugar.nombre }}"
-            class="w-full h-full object-cover"
-          />
-          <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent px-4 py-2">
-            <h4 class="text-white text-lg font-semibold truncate">{{ lugar.nombre }}</h4>
+
+
+  <!-- Sección de Reseñas -->
+  <section class="px-6 sm:px-6 lg:px-8 py-10">
+    <div class="max-w-7xl mx-auto">
+      <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <!-- Encabezado de Reseñas -->
+        <div class="p-8 border-b border-gray-200">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="flex items-center gap-2">
+                <h2 class="text-2xl font-semibold text-gray-900">Reseñas</h2>
+                <div class="flex items-center">
+                  <i class="fas fa-star text-yellow-400"></i>
+                  <span class="ml-1 font-medium">
+                    {{ promedioCalificacion | number:'1.1-1' }}
+                    <span class="text-gray-600 ml-1">({{ resenas.length }} reseñas)</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botón para mostrar/ocultar formulario -->
+            <button (click)="mostrarFormulario = !mostrarFormulario"
+              class="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-500 transition-colors duration-200 flex items-center gap-2 text-sm font-medium">
+              <i class="fas fa-plus"></i>
+              Escribir reseña
+            </button>
           </div>
+
+          <!-- Formulario de Nueva Reseña -->
+          <div *ngIf="mostrarFormulario" class="mt-6 bg-gray-50 p-6 rounded-xl">
+            <form [formGroup]="resenaForm" (ngSubmit)="enviarResena()" class="space-y-6">
+              <!-- Calificación -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">¿Cómo calificarías tu experiencia?</label>
+                <div class="flex items-center gap-2">
+                  <ng-container *ngFor="let star of [1,2,3,4,5]">
+                    <button type="button" (click)="setCalificacion(star)"
+                      class="text-2xl focus:outline-none transition-colors duration-200"
+                      [class.text-yellow-400]="star <= resenaForm.get('calificacion')?.value"
+                      [class.text-gray-300]="star > resenaForm.get('calificacion')?.value">
+                      <i class="fas fa-star"></i>
+                    </button>
+                  </ng-container>
+                </div>
+              </div>
+
+              <!-- Comentario -->
+              <div>
+                <label for="comentario" class="block text-sm font-medium text-gray-700 mb-2">Comparte los detalles de tu
+                  experiencia</label>
+                <textarea id="comentario" formControlName="comentario" rows="4"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-rose-500"
+                  placeholder="¿Qué te gustó? ¿Qué podría mejorarse? Tu opinión ayudará a otros viajeros..."></textarea>
+              </div>
+
+              <!-- Botones de acción -->
+              <div class="flex justify-end gap-4">
+                <button type="button" (click)="mostrarFormulario = false"
+                  class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-sm font-medium">
+                  Cancelar
+                </button>
+                <button type="submit" [disabled]="!resenaForm.valid"
+                  class="px-4 py-2 bg-rose-600 text-white rounded-lg hover:bg-rose-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium">
+                  Publicar reseña
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Lista de Reseñas con Scroll -->
+        <div class="max-h-[600px] overflow-y-auto custom-scrollbar">
+          <div class="p-8">
+            <!-- Grid de 2 columnas para las reseñas -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12">
+              <div *ngFor="let resena of resenas; let i = index" class="border-b border-gray-100 pb-8 last:border-b-0">
+                <!-- Cabecera con avatar y datos del usuario -->
+                <div class="flex items-start mb-4">
+                  <div class="w-12 h-12 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
+                    <img [src]="'assets/avatars/default-avatar.png'" alt="Avatar" class="w-full h-full object-cover"
+                      onerror="this.src='https://ui-avatars.com/api/?name=Usuario&background=random'">
+                  </div>
+                  <div class="ml-4">
+                    <h3 class="font-medium text-gray-900">
+                      {{ resena.usuario?.nombre || 'Usuario' }}
+                    </h3>
+                    <div class="text-sm text-gray-500">
+                      {{ resena.createdAt | date:'MMMM yyyy' }}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Calificación y comentario -->
+                <div>
+                  <div class="flex items-center mb-2">
+                    <ng-container *ngFor="let _ of getEstrellas(resena.calificacion)">
+                      <i class="fas fa-star text-yellow-400"></i>
+                    </ng-container>
+                    <ng-container *ngFor="let _ of getEstrellasVacias(resena.calificacion)">
+                      <i class="far fa-star text-yellow-400"></i>
+                    </ng-container>
+                  </div>
+                  <p class="text-gray-700"
+                    [class.line-clamp-3]="!isCommentExpanded(i) && resena.comentario.length > 150">
+                    {{ resena.comentario }}
+                  </p>
+                  <button *ngIf="resena.comentario.length > 150" (click)="toggleComment(i)"
+                    class="text-gray-600 hover:underline mt-2 text-sm font-medium">
+                    {{ isCommentExpanded(i) ? 'Mostrar menos' : 'Mostrar más' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Mensaje si no hay reseñas -->
+            <div *ngIf="resenas.length === 0" class="text-center py-12">
+              <div class="text-gray-400 mb-3">
+                <i class="fas fa-comment-slash text-5xl"></i>
+              </div>
+              <p class="text-xl text-gray-600">Aún no hay reseñas</p>
+              <p class="text-gray-500 mt-2">¡Sé el primero en compartir tu experiencia!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<style>
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #E5E7EB transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #E5E7EB;
+    border-radius: 3px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #D1D5DB;
+  }
+
+  /* Para truncar el texto en 3 líneas */
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
+
+<!-- Footer específico para detemprendimiento -->
+<footer class="bg-white shadow-lg mt-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <!-- Grid de columnas -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+
+      <!-- Columna 1: Explora Capachica -->
+      <div>
+        <h3 class="text-gray-900 text-lg font-semibold mb-4">Explora Capachica</h3>
+        <ul class="space-y-2">
+          <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Tours disponibles</a></li>
+          <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Actividades culturales</a></li>
+          <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Gastronomía local</a></li>
+          <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Artesanía</a></li>
+          <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Festividades</a></li>
+        </ul>
+      </div>
+
+      <!-- Columna 2: Servicios -->
+      <div>
+        <h3 class="text-gray-900 text-lg font-semibold mb-4">Servicios</h3>
+        <ul class="space-y-2">
+          <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Alojamiento rural</a></li>
+          <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Transporte</a></li>
+          <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Guías locales</a></li>
+          <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Talleres artesanales</a></li>
+          <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Experiencias únicas</a></li>
+        </ul>
+      </div>
+
+      <!-- Columna 3: Información -->
+      <div>
+        <h3 class="text-gray-900 text-lg font-semibold mb-4">Información</h3>
+        <ul class="space-y-2">
+          <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Cómo llegar</a></li>
+          <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Clima</a></li>
+          <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Mejor época para visitar</a></li>
+          <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Recomendaciones</a></li>
+          <li><a href="#" class="text-gray-600 hover:text-blue-600 transition-colors">Preguntas frecuentes</a></li>
+        </ul>
+      </div>
+
+      <!-- Columna 4: Contacto -->
+      <div>
+        <h3 class="text-gray-900 text-lg font-semibold mb-4">Contacto</h3>
+        <ul class="space-y-2">
+          <li class="flex items-center text-gray-600">
+            <i class="fas fa-phone mr-2"></i>
+            +51 999 888 777
+          </li>
+          <li class="flex items-center text-gray-600">
+            <i class="fas fa-envelope mr-2"></i>
+            info&#64;capachicatours.com
+          </li>
+          <li class="flex items-center text-gray-600">
+            <i class="fas fa-map-marker-alt mr-2"></i>
+            Capachica, Puno, Perú
+          </li>
+          <!-- Redes sociales -->
+          <li class="mt-4">
+            <div class="flex space-x-4">
+              <a href="#" class="text-gray-400 hover:text-blue-600 transition-colors">
+                <i class="fab fa-facebook-f text-xl"></i>
+              </a>
+              <a href="#" class="text-gray-400 hover:text-blue-600 transition-colors">
+                <i class="fab fa-instagram text-xl"></i>
+              </a>
+              <a href="#" class="text-gray-400 hover:text-blue-600 transition-colors">
+                <i class="fab fa-whatsapp text-xl"></i>
+              </a>
+              <a href="#" class="text-gray-400 hover:text-blue-600 transition-colors">
+                <i class="fab fa-tiktok text-xl"></i>
+              </a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Separador -->
+    <div class="border-t border-gray-200 pt-8">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="mb-4 md:mb-0">
+          <p class="text-sm text-gray-600">
+            Descubre la auténtica experiencia del turismo vivencial en Capachica
+          </p>
+          <p class="text-sm text-gray-500 mt-2">
+            © {{ currentYear }} CapachicaTours. Todos los derechos reservados.
+          </p>
+        </div>
+        <!-- Certificaciones o badges -->
+        <div class="flex items-center space-x-4">
+          <img src="assets/logo-capachica.png" alt="Marca Perú" class="h-16 w-auto opacity-75">
         </div>
 
       </div>
     </div>
   </div>
-</div>
-
-
-  
-<!-- Sección “Conoce al anfitrión” -->
-<section class="py-12 grid grid-cols-1 lg:grid-cols-2 gap-10">
-  <div class="bg-white p-8 rounded-2xl shadow-xl text-center">
-    <div class="relative">
-      <img src="img/chatgpt-image.png" class="w-36 h-36 rounded-full object-cover border-4 border-white shadow-md" alt="Anfitrión" />
-      <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center">
-        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2l4-4m5 2a9 9 0 11-18 0a9 9 0 0118 0z" />
-        </svg>
-      </div>
-    </div>
-    <h3 class="mt-5 text-2xl font-bold text-gray-900">{{ emprendimiento.usuario?.persona?.nombre }} {{ emprendimiento.usuario?.persona?.apellidos }}</h3>
-    <p class="text-sm text-gray-500">Superanfitrión</p>
-    <div class="mt-6 border-t pt-4">
-      <div class="flex justify-between text-gray-700 text-sm">
-        <span><strong>93</strong> Reseñas</span>
-        <span><strong class="text-yellow-500">4.87★</strong> Calificación</span>
-        <span><strong>2</strong> Años</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="flex flex-col justify-between">
-    <div>
-      <h2 class="text-3xl font-extrabold text-gray-900 mb-4">Superanfitrión verificado</h2>
-      <p class="text-gray-700 mb-6 leading-relaxed">
-        Los Superanfitriones tienen una amplia experiencia y excelentes valoraciones. Se esfuerzan al máximo para que vivas una estadía inolvidable.
-      </p>
-      <h3 class="text-xl font-semibold text-gray-900 mb-3">Información del anfitrión</h3>
-      <ul class="text-gray-700 space-y-2">
-        <li><strong>Índice de respuesta:</strong> 100%</li>
-        <li><strong>Tiempo de respuesta:</strong> Menos de una hora</li>
-      </ul>
-    </div>
-    <button class="mt-8 px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition">Enviar mensaje al anfitrión</button>
-  </div>
-</section>
-
-<!-- Sección de información del anfitrión con diseño refinado -->
-<section class="mt-10 bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
-  <!-- Encabezado -->
-  <div class="mb-4">
-    <h2 class="text-xl font-semibold text-gray-900">Conoce al anfitrión</h2>
-  </div>
-
-  <!-- Info personal -->
-  <div class="flex flex-col sm:flex-row sm:justify-between gap-6">
-    <div class="space-y-2 text-gray-700 text-sm">
-      <div class="flex items-center">
-        <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2"
-          viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M3 5h12M9 3v2m0 16v2m8-18h2M5 21h2m12-2v-2m0-12V3m4 4h-2m-6 0H7m0 16H5m16 0h-2" />
-        </svg>
-        Hablo inglés y español
-      </div>
-      <div class="flex items-center">
-        <svg class="w-5 h-5 mr-2 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2"
-          viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M12 8c-1.104 0-2 .896-2 2s.896 2 2 2s2-.896 2-2s-.896-2-2-2zm0-6C6.477 2 2 6.477 2 12s4.477 10 10 10s10-4.477 10-10S17.523 2 12 2z" />
-        </svg>
-        Vive en Lima, Perú
-      </div>
-    </div>
-
-    <div class="sm:w-1/2 text-sm text-gray-700">
-      <p>
-        ¡Hola! Soy <span class="font-semibold text-black">Barbara</span>, mamá de familia. Alquilo un lindo
-        departamento totalmente equipado con una hermosa vista al...
-        <a href="#" class="text-indigo-600 font-semibold hover:underline">Mostrar más ›</a>
-      </p>
-    </div>
-  </div>
-
-  <!-- Nota de seguridad -->
-  <div class="mt-6 pt-4 border-t border-gray-200 flex items-center text-sm text-gray-600">
-    <svg class="w-5 h-5 mr-2 text-pink-600" fill="none" stroke="currentColor" stroke-width="2"
-      viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round"
-        d="M12 14l9-5l-9-5l-9 5l9 5z M12 14l6.16-3.422M12 14l-6.16-3.422M12 14v7" />
-    </svg>
-    Para proteger tus pagos, usa siempre Airbnb a la hora de transferir dinero y comunicarte con los anfitriones.
-  </div>
-</section>
-
-</div>
+</footer>

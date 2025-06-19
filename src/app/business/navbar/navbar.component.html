@@ -1,197 +1,188 @@
-<!-- NAVBAR FIJO -->
-<div class="fixed top-0 left-0 w-full z-50 bg-white shadow">
+<div class="fixed top-0 left-0 w-full z-50 bg-transparent">
+  <!-- Barra principal (siempre visible) -->
   <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
     <!-- Logo -->
-    <img src="assets/logo-capachica.png" class="h-24" />
-    <div class="flex-1 relative h-12 flex justify-center items-center">
-      <nav class="absolute flex gap-4 font-medium text-gray-700 transition-all w-full">
-        <div class="flex border rounded-full shadow h-16 overflow-hidden max-w-4xl mx-auto">
-          <!-- ¿Qué buscas? -->
-          <div class="w-1/3 px-4 py-3 border-r">
-            <select [(ngModel)]="searchSelection" class="w-full border rounded px-3 py-2" placeholder="¿Qué buscas?">
-              <option value="" disabled selected>¿Qué buscas?</option>
-              <optgroup label="Emprendimientos">
-                <option *ngFor="let n of emprendimientoNombres" [value]="n">{{ n }}</option>
-              </optgroup>
-              <optgroup label="Paquetes turísticos">
-                <option *ngFor="let p of paqueteNombres" [value]="p">{{ p }}</option>
-              </optgroup>
-              <optgroup label="Tipos de servicios">
-                <option *ngFor="let s of tiposServicios" [value]="s">{{ s }}</option>
-              </optgroup>
-            </select>
-          </div>
-          <!-- ¿Dónde? -->
-          <div class="w-1/3 px-4 py-3 border-r">
-            <select [(ngModel)]="searchSelectionLugar" class="w-full border rounded px-3 py-2" placeholder="¿Dónde?">
-              <option value="" disabled selected>¿Dónde?</option>
-              <option value="">Todos los lugares</option>
-              <option *ngFor="let loc of lugarOpciones" [value]="loc">{{ loc }}</option>
-            </select>
-          </div>
-          <!-- ¿Cuándo? -->
-          <div class="w-1/3 px-4 py-3">
-            <input type="date" [(ngModel)]="fechaInferior" class="w-full border rounded px-3 py-2"
-              placeholder="¿Cuándo?" />
-          </div>
-          <!-- Botón Buscar -->
-          <div class="flex items-center px-4">
-            <button (click)="buscar()" class="px-4 py-2 bg-green-500 text-white rounded-full">
-              <i class="fas fa-search"></i>
-            </button>
-          </div>
-        </div>
-      </nav>
+    <div class="flex-shrink-0">
+      <img src="assets/logo-capachica.png" class="h-24" />
     </div>
-
-
+    
+<!-- Navegación centrada con íconos mejorados -->
+<div *ngIf="!ocultarNav" class="flex-1 flex justify-center px-8">
+  <div class="flex gap-8 overflow-x-auto whitespace-nowrap scrollbar-hide">
+    
+    <!-- Principal -->
+    <button routerLink="" routerLinkActive="text-white"
+       class="flex flex-col items-center gap-1 min-w-[80px] group">
+      <div class="w-12 h-12 flex items-center justify-center text-green-600 group-hover:text-green-800 transition-all duration-300 transform group-hover:scale-110">
+        <i class="fas fa-compass text-2xl"></i>
+      </div>
+      <span class="text-sm text-green-600 group-hover:text-green-800 transition-colors font-medium">Principal</span>
+    </button>
+    
+    <!-- Emprendimientos -->
+    <button routerLink="/prinemprendimiento" routerLinkActive="text-white"
+      class="flex flex-col items-center gap-1 min-w-[80px] group">
+      <div class="w-12 h-12 flex items-center justify-center text-green-600 group-hover:text-green-800 transition-all duration-300 transform group-hover:scale-110">
+        <i class="fas fa-seedling text-2xl"></i>
+      </div>
+      <span class="text-sm text-green-600 group-hover:text-green-800 transition-colors font-medium">Emprendimientos</span>
+    </button>
+    
+    <!-- Lugares Turísticos -->
+    <button routerLink="/prinlugares" routerLinkActive="text-white"
+       class="flex flex-col items-center gap-1 min-w-[80px] group">
+      <div class="w-12 h-12 flex items-center justify-center text-green-600 group-hover:text-green-800 transition-all duration-300 transform group-hover:scale-110">
+        <i class="fas fa-map-marked-alt text-2xl"></i>
+      </div>
+      <span class="text-sm text-green-600 group-hover:text-green-800 transition-colors font-medium">Lugares Turísticos</span>
+    </button>
+    
+    <!-- Tipos de Servicios (dinámicos con íconos específicos) -->
+    <button *ngFor="let tipo of tiposServicio" [routerLink]="['/prinservicios', tipo.id]"
+      routerLinkActive="text-white" (click)="refreshData(tipo.id)"
+      class="flex flex-col items-center gap-1 min-w-[80px] group">
+      <div class="w-12 h-12 flex items-center justify-center text-green-600 group-hover:text-green-800 transition-all duration-300 transform group-hover:scale-110">
+        <!-- Íconos específicos por tipo de servicio -->
+        <i class="text-2xl" [ngClass]="getServiceIcon(tipo.nombre)"></i>
+      </div>
+      <span class="text-sm text-green-600 group-hover:text-green-800 transition-colors font-medium">{{ tipo.nombre }}</span>
+    </button>
+  </div>
+</div>
 
     <!-- Login/Register -->
-    <div class="flex gap-4" *ngIf="!isLoggedIn()">
-      <div class="relative inline-block">
-        <button routerLink="/carrito" class="px-4 py-2 bg-green-500 text-white rounded-xl relative">
-          <i class="fa-solid fa-cart-shopping text-xl"></i>
-
-          <!-- Contador -->
-          <span *ngIf="cartItems.length > 0"
-            class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-            {{ cartItems.length }}
-          </span>
-        </button>
-      </div>
-      <button routerLink="/login" class="px-4 py-2 border rounded-xl">Ingresar</button>
-      <button routerLink="/register" class="px-4 py-2 bg-green-500 text-white rounded-xl">Registrarse</button>
+    <div class="flex items-center gap-3 flex-shrink-0" *ngIf="!isLoggedIn()">
+      <button routerLink="/carrito" class="relative p-2 hover:bg-gray-100 rounded-full transition-colors">
+        <i class="fa-solid fa-cart-shopping text-xl text-gray-700"></i>
+        <span *ngIf="cartItems.length > 0"
+          class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+          {{ cartItems.length }}
+        </span>
+      </button>
+      <button routerLink="/login" class="px-4 py-2 hover:bg-gray-100 rounded-full text-gray-700 font-medium transition-colors">
+        Ingresar
+      </button>
+      <button routerLink="/register" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full font-medium transition-colors">
+        Registrarse
+      </button>
     </div>
 
-    <div class="flex gap-4" *ngIf="isLoggedIn()">
-      <div class="relative inline-block">
-        <button routerLink="/carrito" class="px-4 py-2 bg-green-500 text-white rounded-xl relative">
-          <i class="fa-solid fa-cart-shopping text-xl"></i>
-
-          <!-- Contador -->
-          <span *ngIf="cartItems.length > 0"
-            class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-            {{ cartItems.length }}
-          </span>
-        </button>
-      </div>
-
+    <!-- Usuario logueado -->
+    <div class="flex items-center gap-3 flex-shrink-0" *ngIf="isLoggedIn()">
+      <button routerLink="/carrito" class="relative p-2 hover:bg-green-500 rounded-full transition-colors duration-300">
+        <i class="fa-solid fa-cart-shopping text-xl text-white"></i>
+        <span *ngIf="cartItems.length > 0"
+          class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+          {{ cartItems.length }}
+        </span>
+      </button>
+      
 
       <button id="dropdownDefaultButton" data-dropdown-toggle="dropdown23"
-        class="text-white bg-green-500 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center"
-        type="button">
-        <i class="fa-solid fa-user"></i>
-        <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-          viewBox="0 0 10 6">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="m1 1 4 4 4-4" />
-        </svg>
+        class="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-full transition-colors">
+        <div class="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center">
+          <i class="fa-solid fa-user text-white"></i>
+        </div>
+        <i class="fas fa-chevron-down text-gray-600 text-xs"></i>
       </button>
 
       <!-- Dropdown menu -->
-      <div id="dropdown23" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 ">
-        <ul class="py-2 text-sm text-gray-700 " aria-labelledby="dropdownDefaultButton">
-          <li>
-            <button routerLink="/misreservas" class="block px-4 w-full py-2 hover:bg-gray-100">Mis reservas</button>
-          </li>
-          <li>
-            <button routerLink="/mispagos" class="block px-4 w-full py-2 hover:bg-gray-100">Mis Pagos</button>
-          </li>
-          <li>
-            <button routerLink="/misfavoritos" class="block px-4 w-full py-2 hover:bg-gray-100">Mis favoritos</button>
-          </li>
-          <li>
-            <button (click)="logout()" class="block px-4 w-full py-2 hover:bg-gray-100"><i
-                class="fa-solid fa-right-from-bracket"></i> Cerrar secion</button>
-          </li>
-        </ul>
+      <div id="dropdown23" class="z-10 hidden bg-white rounded-2xl shadow-lg border border-gray-100 w-56 overflow-hidden">
+        <div class="py-2">
+          <button routerLink="/misreservas" class="flex items-center gap-3 w-full px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors text-sm">
+            <i class="fas fa-bookmark text-gray-400"></i>
+            <span>Mis reservas</span>
+          </button>
+          <button class="flex items-center gap-3 w-full px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors text-sm">
+            <i class="fas fa-clock text-gray-400"></i>
+            <span>Pagos pendientes</span>
+          </button>
+          <button class="flex items-center gap-3 w-full px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors text-sm">
+            <i class="fas fa-check-circle text-gray-400"></i>
+            <span>Pagos realizados</span>
+          </button>
+          <div class="h-[1px] bg-gray-100 my-1"></div>
+          <button (click)="logout()" class="flex items-center gap-3 w-full px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors text-sm">
+            <i class="fas fa-sign-out-alt text-gray-400"></i>
+            <span>Cerrar sesión</span>
+          </button>
+        </div>
       </div>
-
     </div>
-
-  </div>
-  <div *ngIf="!ocultarNav"
-    class="flex gap-6 overflow-x-auto whitespace-nowrap text-sm text-gray-600 pl-10 pr-10 pt-4 pb-4 bg-white ">
-
-    <button routerLink="/" routerLinkActive="text-green-600" class="flex flex-col items-center flex-shrink-0">
-      <i class="fas fa-store"></i>
-      <span>Principal</span>
-    </button>
-
-    <button routerLink="/prinemprendimiento" routerLinkActive="text-green-600"
-      class="flex flex-col items-center flex-shrink-0">
-      <i class="fas fa-store"></i>
-      <span>Emprendimientos</span>
-    </button>
-
-    <button routerLink="/prinlugares" routerLinkActive="text-green-600"
-      class="flex flex-col items-center flex-shrink-0">
-      <i class="fas fa-landmark"></i>
-      <span>Lugares Turísticos</span>
-    </button>
-
-    <button *ngFor="let tipo of tiposServicio" [routerLink]="['/prinservicios', tipo.id]"
-      routerLinkActive="text-green-600" (click)="refreshData(tipo.id)" class="flex flex-col items-center flex-shrink-0">
-      <i class="fas fa-landmark"></i>
-      <p>{{ tipo.nombre }}</p>
-    </button>
   </div>
 
+  <!-- Barra de navegación animada removida para mantener transparencia -->
+</div>
 
+<!-- Contenido principal -->
+<div class="pt-20">
   <!-- Cards de Resultados -->
-  <div *ngIf="resultados.length" class="mt-8 px-6">
-    <h2 class="text-2xl font-semibold mb-6">Resultados</h2>
-    <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+  <div *ngIf="resultados.length" class="px-6 max-w-7xl mx-auto">
+    <h2 class="text-2xl font-semibold mb-6">Resultados de búsqueda</h2>
+    <div class="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       <div *ngFor="let item of resultados"
-        class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
-        <!-- Imagen (pon aquí item.imagen si la tienes) -->
-        <div class="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
-          <img *ngIf="item.imagenUrl; else placeholder" [src]="item.imagenUrl" alt="{{ item.nombre }}"
+        class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+        <!-- Imagen -->
+        <div class="relative h-48 overflow-hidden">
+          <img *ngIf="item.imagenUrl; else placeholder" [src]="item.imagenUrl" [alt]="item.nombre"
             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
           <ng-template #placeholder>
-            <span class="text-gray-400">Sin imagen</span>
+            <div class="w-full h-full bg-gray-100 flex items-center justify-center">
+              <i class="fas fa-image text-4xl text-gray-300"></i>
+            </div>
           </ng-template>
+          <!-- Badge de tipo -->
+          <div class="absolute top-3 left-3 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-sm font-medium text-gray-700">
+            {{ item.tipo || 'Servicio turístico' }}
+          </div>
         </div>
-        <div class="p-4 flex flex-col h-full">
-          <!-- Título y precio en línea -->
-          <div class="flex justify-between items-center mb-2">
+
+        <div class="p-4">
+          <!-- Encabezado -->
+          <div class="flex justify-between items-start mb-2">
             <h3 class="text-lg font-bold text-gray-800 line-clamp-1">{{ item.nombre }}</h3>
-            <span *ngIf="item.precio" class="text-green-600 font-semibold">
+            <span *ngIf="item.precio" class="text-green-600 font-semibold whitespace-nowrap">
               S/{{ item.precio }}
             </span>
           </div>
-          <!-- Descripción breve -->
+
+          <!-- Ubicación -->
+          <p *ngIf="item.ubicacion || item.lugar" class="text-sm text-gray-500 mb-2 flex items-center gap-1">
+            <i class="fas fa-map-marker-alt text-gray-400"></i>
+            {{ item.ubicacion || item.lugar }}
+          </p>
+
+          <!-- Descripción -->
           <p class="text-sm text-gray-600 mb-4 line-clamp-2">
             {{ item.descripcion }}
           </p>
-          <!-- Botón y rating abajo -->
-          <div class="mt-auto flex items-center justify-between">
+
+          <!-- Footer -->
+          <div class="flex items-center justify-between pt-3 border-t border-gray-100">
+            <div *ngIf="item.rating" class="flex items-center gap-1">
+              <i class="fas fa-star text-yellow-400"></i>
+              <span class="font-medium text-sm">{{ item.rating }}</span>
+              <span class="text-gray-400 text-sm">({{ item.numResenas || 0 }})</span>
+            </div>
+
             <button (click)="router.navigate([tipoBusqueda, item.id])"
               class="px-4 py-2 bg-green-500 text-white rounded-full text-sm font-medium hover:bg-green-600 transition-colors">
               Ver más
             </button>
-
-            <div *ngIf="item.rating" class="flex items-center text-yellow-500 text-sm">
-              <i class="fas fa-star mr-1"></i> {{ item.rating }}
-            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-
 </div>
+
 <button
   class="fixed bottom-4 right-4 bg-green-600 hover:bg-green-700 text-white p-4 rounded-full shadow-lg focus:outline-none z-50"
-  (click)="toggleChat()"
->
+  (click)="toggleChat()">
   💬
 </button>
 
-<div
-  *ngIf="showChat"
-  class="fixed inset-0 z-50 bg-white bg-opacity-50 flex items-end justify-end"
->
+<div *ngIf="showChat" class="fixed inset-0 z-50 bg-white bg-opacity-50 flex items-end justify-end">
   <div class="w-full max-w-sm h-3/4 bg-white rounded-tl-lg rounded-bl-lg shadow-xl flex flex-col">
     <!-- Header -->
     <div class="flex items-center justify-between p-4 border-b border-gray-200">
@@ -203,29 +194,19 @@
 
     <!-- Messages -->
     <div class="flex-1 overflow-y-auto p-4 space-y-2">
-      <div
-        *ngFor="let msg of messages"
+      <div *ngFor="let msg of messages"
         [ngClass]="msg.from === 'user' ? 'self-end bg-green-100 text-right' : 'self-start bg-gray-100 text-left'"
-        class="px-3 py-2 rounded-lg max-w-xs break-words"
-      >
+        class="px-3 py-2 rounded-lg max-w-xs break-words">
         {{ msg.text }}
       </div>
     </div>
 
     <!-- Input -->
     <div class="p-4 border-t border-gray-200 flex items-center space-x-2">
-      <input
-        [(ngModel)]="inputMessage"
-        (keyup.enter)="send()"
-        type="text"
-        placeholder="Escribe un mensaje..."
-        class="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-green-300"
-      />
-      <button
-        (click)="send()"
-        [disabled]="loading || !inputMessage.trim()"
-        class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
-      >
+      <input [(ngModel)]="inputMessage" (keyup.enter)="send()" type="text" placeholder="Escribe un mensaje..."
+        class="flex-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-green-300" />
+      <button (click)="send()" [disabled]="loading || !inputMessage.trim()"
+        class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed">
         Enviar
       </button>
     </div>
